@@ -1,0 +1,15 @@
+# Let NetworkManager manage all devices on this system
+network:
+  version: 2
+  renderer: NetworkManager
+  ethernets:
+    ens160:
+      addresses:
+      - 10.126.106.15/24
+      nameservers:
+        addresses:
+        - 8.8.8.8
+        - 8.8.4.4
+      routes:
+        - to: 0.0.0.0/0
+          via: 10.126.106.253

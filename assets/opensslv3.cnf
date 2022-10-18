@@ -1,0 +1,24 @@
+[ v3_req ]
+basicConstraints = CA:FALSE
+keyUsage = nonRepudiation, digitalSignature, keyEncipherment
+
+[ v3_ca ]
+basicConstraints = critical,CA:TRUE
+subjectKeyIdentifier = hash
+authorityKeyIdentifier = keyid:always,issuer:always
+
+[req]
+distinguished_name = req_distinguished_name
+req_extensions = v3_req
+prompt = no
+[req_distinguished_name]
+C = US
+ST = CA
+L = PaloAlto
+O = VMware
+OU = mamburger
+CN = tanzu.demo
+
+[alt_names]
+DNS.1 = tanzu.demo
+DNS.2 = www.tanzu.demo
