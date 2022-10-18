@@ -1,5 +1,12 @@
 # Semantic Versioning Changelog
 
+## [1.0.2](https://github.com/afewell/ovathetap/compare/v1.0.1...v1.0.2) (2022-10-18)
+
+
+### Bug Fixes
+
+* Adding /test3.txt to verify semantic release action for features ([82c0a9b](https://github.com/afewell/ovathetap/commit/82c0a9b5e2cf8ceee3962cd9f5e84327e909f35d))
+
 ## [1.0.1](https://github.com/afewell/ovathetap/compare/v1.0.0...v1.0.1) (2022-10-18)
 
 
