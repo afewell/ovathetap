@@ -1,5 +1,12 @@
 # Semantic Versioning Changelog
 
+## [1.1.1](https://github.com/afewell/ovathetap/compare/v1.1.0...v1.1.1) (2022-10-18)
+
+
+### Bug Fixes
+
+* deleted artifacts used for testing semantic versioning ([54f51fb](https://github.com/afewell/ovathetap/commit/54f51fb22624738789ff3ccd305a8af3e54c701f))
+
 # [1.1.0](https://github.com/afewell/ovathetap/compare/v1.0.2...v1.1.0) (2022-10-18)
 
 
