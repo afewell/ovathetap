@@ -1,5 +1,12 @@
 # Semantic Versioning Changelog
 
+# [1.2.0](https://github.com/afewell/ovathetap/compare/v1.1.1...v1.2.0) (2022-10-18)
+
+
+### Features
+
+* initial prototype scripts were pushed in the previous (1.1.1) release ([d6f19a0](https://github.com/afewell/ovathetap/commit/d6f19a098b5b4bb3493ec6976c466148cd6c57aa))
+
 ## [1.1.1](https://github.com/afewell/ovathetap/compare/v1.1.0...v1.1.1) (2022-10-18)
 
 
