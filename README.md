@@ -1,10 +1,8 @@
 #OvaTheTap
 
-
 The purpose of this document is to create a complete Full Profile installation for Tanzu Application Platform on a single VM. 
 
 The project is currently focused on a single environment topology, using a single, minimal ubuntu desktop VM to install kubernetes and TAP on a single host. The instructions and assets provided here should work on an ubuntu host with sufficient resources and performance, regardless of whether it is on bare metal or any virtualization platform, but the user may need to adjust some values for different environments. 
-
 
 # TAP 1.3 Single-node Lab Install Flow
 
