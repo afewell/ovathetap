@@ -1,5 +1,12 @@
 # Semantic Versioning Changelog
 
+## [1.2.1](https://github.com/afewell/ovathetap/compare/v1.2.0...v1.2.1) (2022-10-29)
+
+
+### Bug Fixes
+
+* changing files referencing taphostprep repo to ovathetap repo and from devhost.sh to hostprep.sh fixes [#2](https://github.com/afewell/ovathetap/issues/2) ([068990d](https://github.com/afewell/ovathetap/commit/068990d78c4049928c24361913998738135b87f5))
+
 # [1.2.0](https://github.com/afewell/ovathetap/compare/v1.1.1...v1.2.0) (2022-10-18)
 
 
