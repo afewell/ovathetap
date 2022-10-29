@@ -1,4 +1,4 @@
-#OvaTheTap
+# OvaTheTap
 
 The purpose of this document is to create a complete Full Profile installation for Tanzu Application Platform on a single VM. 
 
@@ -54,19 +54,18 @@ network:
 - `sudo netplan apply`
 
 
-### Install all items in devhost.sh
-#### Note you will need to run this script twice per the instructions below
+### Install all items in hostprep.sh
 ```sh
-wget -O /tmp/devhost.sh https://raw.githubusercontent.com/afewell/taphostprep-type1/main/installscripts/compound/devhost.sh
-sudo chmod +x /tmp/devhost.sh 
-sudo /tmp/devhost.sh 
+wget -O /tmp/hostprep.sh https://raw.githubusercontent.com/afewell/ovathetap/main/installscripts/compound/hostprep.sh
+sudo chmod +x /tmp/hostprep.sh 
+sudo /tmp/hostprep.sh 
 ```
 #### After the script installs docker, the current iteration of the script will exit and \
 #### you will need to enter the following command to finish docker setup:
 - `newgrp docker`
 #### Run the devhost script again, this time you can say no to each option until after \
 #### you select no to installing docker CE, and then say yes to every option afterward
-- `sudo /tmp/devhost.sh `
+- `sudo /tmp/hostprep.sh `
 
 #### Install CA Cert in Firefox to trust local sites
 
@@ -103,7 +102,7 @@ export minikubeip=$(minikube ip)
 
 ```sh
 # this script depends on the $minikubip variable being populated in the sourcing env
-wget -O /tmp/dnsmasq.template https://raw.githubusercontent.com/afewell/taphostprep-type1/main/assets/dnsmasq.template
+wget -O /tmp/dnsmasq.template https://raw.githubusercontent.com/afewell/ovathetap/main/assets/dnsmasq.template
 chown "viadmin:" /tmp/dnsmasq.template
 chmod 777 /tmp/dnsmasq.template
 envsubst < /tmp/dnsmasq.template > /tmp/dnsmasq.conf
@@ -117,7 +116,7 @@ systemctl restart dnsmasq
 ### complete the dnsmasq configuration
 
 ```sh
-wget -O /tmp/NetworkManager.conf https://raw.githubusercontent.com/afewell/taphostprep-type1/main/assets/NetworkManager.conf
+wget -O /tmp/NetworkManager.conf https://raw.githubusercontent.com/afewell/ovathetap/main/assets/NetworkManager.conf
 chown "root:" /tmp/NetworkManager.conf
 chmod 644 /tmp/NetworkManager.conf
 mv /etc/NetworkManager/NetworkManager.conf /etc/NetworkManager/NetworkManager.old

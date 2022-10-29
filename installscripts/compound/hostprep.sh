@@ -1,9 +1,9 @@
 #!/bin/bash
 
 ## Copy, uncomment and enter the following commands to execute this script 
-### wget -O /tmp/devhost.sh https://raw.githubusercontent.com/afewell/taphostprep-type1/main/installscripts/compound/devhost.sh
-### sudo chmod +x /tmp/devhost.sh 
-### sudo /tmp/devhost.sh
+### wget -O /tmp/hostprep.sh https://raw.githubusercontent.com/afewell/ovathetap/main/installscripts/compound/hostprep.sh
+### sudo chmod +x /tmp/hostprep.sh 
+### sudo /tmp/hostprep.sh
 
 ## Note: if any manual steps will be required after any install script, you can append instructions to >> /tmp/postactions.txt from the install script, and these will be displayed to the user at the end of this script  
 
@@ -34,7 +34,7 @@ func_install_script () {
     echo "##################################################" | tee -a /tmp/taphostprep.log
     echo "# Installing: $1 " | tee -a /tmp/taphostprep.log
     echo "##################################################" | tee -a /tmp/taphostprep.log
-    wget https://raw.githubusercontent.com/afewell/taphostprep-type1/main/installscripts/$1 -O /tmp/$1 | tee -a /tmp/taphostprep.log
+    wget https://raw.githubusercontent.com/afewell/ovathetap/main/installscripts/$1 -O /tmp/$1 | tee -a /tmp/taphostprep.log
     chmod +x "/tmp/$1" | tee -a /tmp/taphostprep.log
     source "/tmp/$1" | tee -a /tmp/taphostprep.log
     rm "/tmp/$1" | tee -a /tmp/taphostprep.log
@@ -95,10 +95,10 @@ then
     func_install_script "age-v1_0_0.sh"
 fi
 
-read -p "Clone the afewell/taphostprep-type1 repo? (y/n):" install
+read -p "Clone the afewell/ovathetap repo? (y/n):" install
 if [ "$install" = "y" ] || [ "$install" = "Y" ]
 then
-    func_clone_repo "https://github.com/afewell/taphostprep-type1.git"
+    func_clone_repo "https://github.com/afewell/ovathetap.git"
 fi
 
 read -p "Install Docker CE? (y/n):" install
