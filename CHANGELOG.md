@@ -1,5 +1,12 @@
 # Semantic Versioning Changelog
 
+## [1.3.1](https://github.com/afewell/ovathetap/compare/v1.3.0...v1.3.1) (2022-12-15)
+
+
+### Bug Fixes
+
+* removing redundant tap values file from assets to fix [#7](https://github.com/afewell/ovathetap/issues/7) ([8ca895f](https://github.com/afewell/ovathetap/commit/8ca895f0c4040016c5451a1a79e8268a89fddc60))
+
 # [1.3.0](https://github.com/afewell/ovathetap/compare/v1.2.1...v1.3.0) (2022-12-15)
 
 
