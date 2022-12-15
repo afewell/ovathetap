@@ -1,5 +1,13 @@
 # Semantic Versioning Changelog
 
+# [1.3.0](https://github.com/afewell/ovathetap/compare/v1.2.1...v1.3.0) (2022-12-15)
+
+
+### Features
+
+* adding multiple unpushed updates from test 6 to reach clean slate ([5b6fcd3](https://github.com/afewell/ovathetap/commit/5b6fcd32dd1047ed289402b6a1253826710a1f3d))
+* adding multiple unpushed updates from test 6 to reach clean slate ([ebe65fc](https://github.com/afewell/ovathetap/commit/ebe65fc2fbab27085677f435bc057cc9283d249e))
+
 ## [1.2.1](https://github.com/afewell/ovathetap/compare/v1.2.0...v1.2.1) (2022-10-29)
 
 
