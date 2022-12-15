@@ -1,9 +1,9 @@
 #!/bin/bash
 
 ## Copy, uncomment and enter the following commands to execute this script 
-### wget -O /tmp/hostprep.sh https://raw.githubusercontent.com/afewell/ovathetap/main/installscripts/compound/hostprep.sh
-### sudo chmod +x /tmp/hostprep.sh 
-### sudo /tmp/hostprep.sh
+### wget -O /tmp/devhost.sh https://raw.githubusercontent.com/afewell/taphostprep-type1/main/installscripts/compound/devhost.sh
+### sudo chmod +x /tmp/devhost.sh 
+### sudo /tmp/devhost.sh
 
 ## Note: if any manual steps will be required after any install script, you can append instructions to >> /tmp/postactions.txt from the install script, and these will be displayed to the user at the end of this script  
 
@@ -20,40 +20,40 @@ echo "user value is: ${user}"
 ### 3. func_clone_repo clones a repo from the users home directory
 
 func_apt_install () {
-    echo "##################################################" | tee -a /tmp/taphostprep.log
-    echo "# Installing: $1 " | tee -a /tmp/taphostprep.log
-    echo "##################################################" | tee -a /tmp/taphostprep.log
-    apt-get update | tee -a /tmp/taphostprep.log
-    apt install "$1" -y | tee -a /tmp/taphostprep.log
-    echo "##################################################" | tee -a /tmp/taphostprep.log
-    echo "# Finished Installing: $1 " | tee -a /tmp/taphostprep.log
-    echo "##################################################" | tee -a /tmp/taphostprep.log
+    echo "##################################################" | tee - a /tmp/taphostprep.log
+    echo "# Installing: $1 " | tee - a /tmp/taphostprep.log
+    echo "##################################################" | tee - a /tmp/taphostprep.log
+    apt-get update | tee - a /tmp/taphostprep.log
+    apt install "$1" -y | tee - a /tmp/taphostprep.log
+    echo "##################################################" | tee - a /tmp/taphostprep.log
+    echo "# Finished Installing: $1 " | tee - a /tmp/taphostprep.log
+    echo "##################################################" | tee - a /tmp/taphostprep.log
 }
 
 func_install_script () {
-    echo "##################################################" | tee -a /tmp/taphostprep.log
-    echo "# Installing: $1 " | tee -a /tmp/taphostprep.log
-    echo "##################################################" | tee -a /tmp/taphostprep.log
-    wget https://raw.githubusercontent.com/afewell/ovathetap/main/installscripts/$1 -O /tmp/$1 | tee -a /tmp/taphostprep.log
-    chmod +x "/tmp/$1" | tee -a /tmp/taphostprep.log
-    source "/tmp/$1" | tee -a /tmp/taphostprep.log
-    rm "/tmp/$1" | tee -a /tmp/taphostprep.log
-    echo "##################################################" | tee -a /tmp/taphostprep.log
-    echo "# Finished Installing: $1 " | tee -a /tmp/taphostprep.log
-    echo "##################################################" | tee -a /tmp/taphostprep.log
+    echo "##################################################" | tee - a /tmp/taphostprep.log
+    echo "# Installing: $1 " | tee - a /tmp/taphostprep.log
+    echo "##################################################" | tee - a /tmp/taphostprep.log
+    wget https://raw.githubusercontent.com/afewell/taphostprep-type1/main/installscripts/$1 -O /tmp/$1 | tee - a /tmp/taphostprep.log
+    chmod +x "/tmp/$1" | tee - a /tmp/taphostprep.log
+    source "/tmp/$1" | tee - a /tmp/taphostprep.log
+    rm "/tmp/$1" | tee - a /tmp/taphostprep.log
+    echo "##################################################" | tee - a /tmp/taphostprep.log
+    echo "# Finished Installing: $1 " | tee - a /tmp/taphostprep.log
+    echo "##################################################" | tee - a /tmp/taphostprep.log
 }
 
 func_clone_repo () {
-    echo "##################################################" | tee -a /tmp/taphostprep.log
-    echo "# Cloning Repository: $1 " | tee -a /tmp/taphostprep.log
-    echo "##################################################" | tee -a /tmp/taphostprep.log
-    cd "/home/${user}" || return  | tee -a /tmp/taphostprep.log
-    git clone "$1" | tee -a /tmp/taphostprep.log
-    reponame=$(echo ${1##*/}) | tee -a /tmp/taphostprep.log
-    chown -R "/home/${user}/${reponame}" | tee -a /tmp/taphostprep.log
-    echo "##################################################" | tee -a /tmp/taphostprep.log
-    echo "# Finished Cloning Repository: $1 " | tee -a /tmp/taphostprep.log
-    echo "##################################################" | tee -a /tmp/taphostprep.log
+    echo "##################################################" | tee - a /tmp/taphostprep.log
+    echo "# Cloning Repository: $1 " | tee - a /tmp/taphostprep.log
+    echo "##################################################" | tee - a /tmp/taphostprep.log
+    cd "/home/${user}" || return  | tee - a /tmp/taphostprep.log
+    git clone "$1" | tee - a /tmp/taphostprep.log
+    reponame=$(echo ${1##*/}) | tee - a /tmp/taphostprep.log
+    chown -R "/home/${user}/${reponame}" | tee - a /tmp/taphostprep.log
+    echo "##################################################" | tee - a /tmp/taphostprep.log
+    echo "# Finished Cloning Repository: $1 " | tee - a /tmp/taphostprep.log
+    echo "##################################################" | tee - a /tmp/taphostprep.log
 }
 
 # Main
@@ -95,10 +95,10 @@ then
     func_install_script "age-v1_0_0.sh"
 fi
 
-read -p "Clone the afewell/ovathetap repo? (y/n):" install
+read -p "Clone the afewell/taphostprep-type1 repo? (y/n):" install
 if [ "$install" = "y" ] || [ "$install" = "Y" ]
 then
-    func_clone_repo "https://github.com/afewell/ovathetap.git"
+    func_clone_repo "https://github.com/afewell/taphostprep-type1.git"
 fi
 
 read -p "Install Docker CE? (y/n):" install

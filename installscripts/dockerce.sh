@@ -25,9 +25,13 @@ mkdir -p /etc/apt/keyrings
  apt-get install docker-ce docker-ce-cli containerd.io docker-compose-plugin -y
 
 ## Post install steps and sudoless for user https://docs.docker.com/engine/install/linux-postinstall/
+### Gather username since script is usually run with sudo/root
+
 
 groupadd docker -f
-usermod -aG docker "$user"
+usermod -aG docker $user
+
+sudo -u $user newgrp docker
 
 ## User will need to manually enter command after script completes:
 echo 'You will need to manually enter the command "newgrp docker" to complete docker configuration' >> /tmp/postactions.txt

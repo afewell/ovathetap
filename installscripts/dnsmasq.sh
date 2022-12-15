@@ -8,7 +8,7 @@ echo nameserver 8.8.8.8 | tee /etc/resolv.conf
 apt update
 apt install dnsmasq -y
 ## Disable NetworkManager DNS Resolution
-wget -O /tmp/NetworkManager.conf https://raw.githubusercontent.com/afewell/ovathetap/main/assets/NetworkManager.conf
+wget -O /tmp/NetworkManager.conf https://raw.githubusercontent.com/afewell/taphostprep-type1/main/assets/NetworkManager.conf
 chown "root:" /tmp/NetworkManager.conf
 chmod 644 /tmp/NetworkManager.conf
 mv /etc/NetworkManager/NetworkManager.conf /etc/NetworkManager/NetworkManager.old

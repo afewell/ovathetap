@@ -1,0 +1,59 @@
+shared:
+  ingress_domain: "tanzu.demo"
+  image_registry: 
+    project_path: "http://192.168.49.2:31642/tap"
+    username: "admin"
+    password: "Harbor12345"
+  ca_cert_data: |
+    -----BEGIN CERTIFICATE-----
+    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
+    -----END CERTIFICATE-----
+  
+ceip_policy_disclosed: true
+
+buildservice:
+  exclude_dependencies: true
+
+tap_gui:
+  service_type: ClusterIP
+  app_config:
+    app:
+      baseUrl: http://tap-gui.tanzu.demo
+    backend:
+      baseUrl: http://tap-gui.tanzu.demo 
+      cors:
+        origin: http://tap-gui.tanzu.demo
+
