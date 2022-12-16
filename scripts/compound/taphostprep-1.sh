@@ -20,40 +20,40 @@ echo "user value is: ${user}"
 ### 3. func_clone_repo clones a repo from the users home directory
 
 func_apt_install () {
-    echo "##################################################" | tee - a /tmp/taphostprep.log
-    echo "# Installing: $1 " | tee - a /tmp/taphostprep.log
-    echo "##################################################" | tee - a /tmp/taphostprep.log
-    apt-get update | tee - a /tmp/taphostprep.log
-    apt install "$1" -y | tee - a /tmp/taphostprep.log
-    echo "##################################################" | tee - a /tmp/taphostprep.log
-    echo "# Finished Installing: $1 " | tee - a /tmp/taphostprep.log
-    echo "##################################################" | tee - a /tmp/taphostprep.log
+    echo "##################################################" | tee -a /tmp/taphostprep.log
+    echo "# Installing: $1 " | tee -a /tmp/taphostprep.log
+    echo "##################################################" | tee -a /tmp/taphostprep.log
+    apt-get update | tee -a /tmp/taphostprep.log
+    apt install "$1" -y | tee -a /tmp/taphostprep.log
+    echo "##################################################" | tee -a /tmp/taphostprep.log
+    echo "# Finished Installing: $1 " | tee -a /tmp/taphostprep.log
+    echo "##################################################" | tee -a /tmp/taphostprep.log
 }
 
 func_install_script () {
-    echo "##################################################" | tee - a /tmp/taphostprep.log
-    echo "# Installing: $1 " | tee - a /tmp/taphostprep.log
-    echo "##################################################" | tee - a /tmp/taphostprep.log
-    wget https://raw.githubusercontent.com/afewell/ovathetap/main/scripts/$1 -O /tmp/$1 | tee - a /tmp/taphostprep.log
-    chmod +x "/tmp/$1" | tee - a /tmp/taphostprep.log
-    source "/tmp/$1" | tee - a /tmp/taphostprep.log
-    rm "/tmp/$1" | tee - a /tmp/taphostprep.log
-    echo "##################################################" | tee - a /tmp/taphostprep.log
-    echo "# Finished Installing: $1 " | tee - a /tmp/taphostprep.log
-    echo "##################################################" | tee - a /tmp/taphostprep.log
+    echo "##################################################" | tee -a /tmp/taphostprep.log
+    echo "# Installing: $1 " | tee -a /tmp/taphostprep.log
+    echo "##################################################" | tee -a /tmp/taphostprep.log
+    wget https://raw.githubusercontent.com/afewell/ovathetap/main/scripts/$1 -O /tmp/$1 | tee -a /tmp/taphostprep.log
+    chmod +x "/tmp/$1" | tee -a /tmp/taphostprep.log
+    source "/tmp/$1" | tee -a /tmp/taphostprep.log
+    rm "/tmp/$1" | tee -a /tmp/taphostprep.log
+    echo "##################################################" | tee -a /tmp/taphostprep.log
+    echo "# Finished Installing: $1 " | tee -a /tmp/taphostprep.log
+    echo "##################################################" | tee -a /tmp/taphostprep.log
 }
 
 func_clone_repo () {
-    echo "##################################################" | tee - a /tmp/taphostprep.log
-    echo "# Cloning Repository: $1 " | tee - a /tmp/taphostprep.log
-    echo "##################################################" | tee - a /tmp/taphostprep.log
-    cd "/home/${user}" || return  | tee - a /tmp/taphostprep.log
-    git clone "$1" | tee - a /tmp/taphostprep.log
-    reponame=$(echo ${1##*/}) | tee - a /tmp/taphostprep.log
-    chown -R "/home/${user}/${reponame}" | tee - a /tmp/taphostprep.log
-    echo "##################################################" | tee - a /tmp/taphostprep.log
-    echo "# Finished Cloning Repository: $1 " | tee - a /tmp/taphostprep.log
-    echo "##################################################" | tee - a /tmp/taphostprep.log
+    echo "##################################################" | tee -a /tmp/taphostprep.log
+    echo "# Cloning Repository: $1 " | tee -a /tmp/taphostprep.log
+    echo "##################################################" | tee -a /tmp/taphostprep.log
+    cd "/home/${user}" || return  | tee -a /tmp/taphostprep.log
+    git clone "$1" | tee -a /tmp/taphostprep.log
+    reponame=$(echo ${1##*/}) | tee -a /tmp/taphostprep.log
+    chown -R "/home/${user}/${reponame}" | tee -a /tmp/taphostprep.log
+    echo "##################################################" | tee -a /tmp/taphostprep.log
+    echo "# Finished Cloning Repository: $1 " | tee -a /tmp/taphostprep.log
+    echo "##################################################" | tee -a /tmp/taphostprep.log
 }
 
 # Main
