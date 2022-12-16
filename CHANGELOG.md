@@ -1,5 +1,13 @@
 # Semantic Versioning Changelog
 
+# [1.4.0](https://github.com/afewell/ovathetap/compare/v1.3.1...v1.4.0) (2022-12-16)
+
+
+### Features
+
+* update repo directory naming to better support multi-step workflows to fix [#8](https://github.com/afewell/ovathetap/issues/8) ([ca29288](https://github.com/afewell/ovathetap/commit/ca29288d4002598dd9bbdf35b2b4be9a6d0ccd33))
+* update repo directory naming to better support multi-step workflows to fix [#8](https://github.com/afewell/ovathetap/issues/8) ([f17c2d0](https://github.com/afewell/ovathetap/commit/f17c2d02102710645bf5fc7877ec7c71c14c0d75))
+
 ## [1.3.1](https://github.com/afewell/ovathetap/compare/v1.3.0...v1.3.1) (2022-12-15)
 
 
