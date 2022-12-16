@@ -7,54 +7,31 @@
 
 ## Note: if any manual steps will be required after any install script, you can append instructions to >> /tmp/postactions.txt from the install script, and these will be displayed to the user at the end of this script  
 
+## Import Functions
+export raw_git_url="https://raw.githubusercontent.com/afewell/ovathetap/main"
+export functions_path="scripts"
+export functions_filename="functions.sh"
+export script_tmp_dir="/tmp/taphostprep-1/"
+mkdir /tmp/taphostprep-1
+wget "${raw_git_url}/${functions_path}/${functions_filename}" -O "/tmp/taphostprep-1/${functions_filename}"
+source "${script_tmp_dir}${functions_filename}"
+rm "/tmp/taphostprep-1/${functions_filename}"
+
 ## Global variables
-### note that scripts executed by this script cannot gather user inputs
-read -p "Enter your exact username for this host - default value is viadmin: " user
-user=${user:-viadmin}
-echo "user value is: ${user}"
+### Inject envars from input file
+export inputs_path="scripts/inputs"
+export envars_filename="vars-1.env.sh"
+#### Call func_github_file_download function to have it save the input envars file to the script temporary directory
+func_github_file_download "${inputs_path}/${envars_filename}" "${script_tmp_dir}"
 
-## Define Functions
-### There are currently 3 forms of install command sequences used in this script
-### 1. func_apt_install updates apt and then executes apt install {installkeyword} -y
-### 2. func_install_script downloads an install script from this repo and sources it for execution from this env
-### 3. func_clone_repo clones a repo from the users home directory
-
-func_apt_install () {
-    echo "##################################################" | tee -a /tmp/taphostprep.log
-    echo "# Installing: $1 " | tee -a /tmp/taphostprep.log
-    echo "##################################################" | tee -a /tmp/taphostprep.log
-    apt-get update | tee -a /tmp/taphostprep.log
-    apt install "$1" -y | tee -a /tmp/taphostprep.log
-    echo "##################################################" | tee -a /tmp/taphostprep.log
-    echo "# Finished Installing: $1 " | tee -a /tmp/taphostprep.log
-    echo "##################################################" | tee -a /tmp/taphostprep.log
-}
-
-func_install_script () {
-    echo "##################################################" | tee -a /tmp/taphostprep.log
-    echo "# Installing: $1 " | tee -a /tmp/taphostprep.log
-    echo "##################################################" | tee -a /tmp/taphostprep.log
-    wget https://raw.githubusercontent.com/afewell/ovathetap/main/scripts/$1 -O /tmp/$1 | tee -a /tmp/taphostprep.log
-    chmod +x "/tmp/$1" | tee -a /tmp/taphostprep.log
-    source "/tmp/$1" | tee -a /tmp/taphostprep.log
-    rm "/tmp/$1" | tee -a /tmp/taphostprep.log
-    echo "##################################################" | tee -a /tmp/taphostprep.log
-    echo "# Finished Installing: $1 " | tee -a /tmp/taphostprep.log
-    echo "##################################################" | tee -a /tmp/taphostprep.log
-}
-
-func_clone_repo () {
-    echo "##################################################" | tee -a /tmp/taphostprep.log
-    echo "# Cloning Repository: $1 " | tee -a /tmp/taphostprep.log
-    echo "##################################################" | tee -a /tmp/taphostprep.log
-    cd "/home/${user}" || return  | tee -a /tmp/taphostprep.log
-    git clone "$1" | tee -a /tmp/taphostprep.log
-    reponame=$(echo ${1##*/}) | tee -a /tmp/taphostprep.log
-    chown -R "/home/${user}/${reponame}" | tee -a /tmp/taphostprep.log
-    echo "##################################################" | tee -a /tmp/taphostprep.log
-    echo "# Finished Cloning Repository: $1 " | tee -a /tmp/taphostprep.log
-    echo "##################################################" | tee -a /tmp/taphostprep.log
-}
+### Inject Secret variables from input file 
+### There are no secrets to inject in this script so section is commented out for reference
+# export secrets_filename_encrypted="secrets-1.env.sh.age"
+### Gather secrets file decryption passphrase 
+# read -p "Enter the decryption passphrase for the secrets-1.env.sh.age file" secret_decryption_passphrase
+### TODO add lines here to decrypt secrets-1.env.sh.age file and save decrypted file in the variable secrets_filename as ${script_tmp_dir}secrets-1.env.sh
+# source "${script_tmp_dir}${secrets_filename}"
+# rm "${script_tmp_dir}${secrets_filename}"
 
 # Main
 

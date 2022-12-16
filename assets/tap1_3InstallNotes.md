@@ -25,7 +25,23 @@ The project is currently focused on a single environment topology, using a singl
   - Storage: 200GB HDD
   - OS: Ubuntu 20.04 Desktop (Minimal)
 - After provisioning the host I just went through the standard installation wizard with standard/minimum options defined
-- At this point I save a copy/template in my virtualization manager so when I need to provision a new VM I can load one up without needing to redo basic installation or maintain some other script to automate it, but I will probably make a cloudconfig later for provisioning systems that support that
+- At this point I save a copy/template in my virtualization manager so when I need to provision a new VM I can load one up without needing to redo basic installation or maintain some other script to automate it
+
+
+- If you are using vCloud director and want to configure the same as the test environment:
+  - 
+  - Create a vApp network named vapp-net
+  - Connect vapp-net to an external network
+  - Enable firewall service and set default rule to permit any any
+  - Enable NAT service with the following settings:
+    - port forwarding
+    - ip masquerade
+    - create rule permitting any to any port forwarding to taphost
+  - Create a vApp with a single VM named `taphost` with the specs listed above, plus the following nic configuration:
+    - Network Adapter Type: VMXNET3
+    - Network: vapp-net
+    - IP Mode: Static - Manual
+    - IP Address: 192.168.0.2
 
 ### Setup IP Address on Ubuntu Host
 
@@ -40,18 +56,19 @@ network:
   ethernets:
     ens160:
       addresses:
-      - 10.10.10.10/24
+      - 192.168.0.2/24
       nameservers:
         addresses:
+        - 10.128.242.90
         - 8.8.8.8
-        - 8.8.4.4
       routes:
         - to: 0.0.0.0/0
-          via: 10.10.10.253
+          via: 192.168.0.1
 ```
 
 - `sudo netplan apply`
 
+**Note:** It is a good practice to save your base vm or vapp template at this point.
 
 ### Install all items in taphostprep-1.sh
 #### Note you will need to run this script twice per the instructions below
