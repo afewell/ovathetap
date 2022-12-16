@@ -1,4 +1,4 @@
-# taphostprep-type1
+# ovathetap
 
 # Notes on this document
 for testv4 of this document, started on a fresh ubuntu host tempate
@@ -16,7 +16,7 @@ for testv4 of this document, started on a fresh ubuntu host tempate
 ### [8] https://computingforgeeks.com/install-and-configure-dnsmasq-on-ubuntu/
 ### [9] https://goharbor.io/docs/2.6.0/install-config/configure-https/
 
-## Install general Linux host prep with github.com/afewell/taphostprep-type1
+## Install general Linux host prep with github.com/afewell/ovathetap
 ### Setup IP Address on Ubuntu Host
 
 - Manually set IP to the address provided in vcloud director 
@@ -29,19 +29,19 @@ Enter text of netplan file here
 - `sudo netplan apply`
 
 
-### Install all items in devhost.sh
+### Install all items in taphostprep-1.sh
 #### Note you will need to run this script twice per the instructions below
 ```sh
-wget -O /tmp/devhost.sh https://raw.githubusercontent.com/afewell/taphostprep-type1/main/installscripts/compound/devhost.sh
-sudo chmod +x /tmp/devhost.sh 
-sudo /tmp/devhost.sh 
+wget -O /tmp/taphostprep-1.sh https://raw.githubusercontent.com/afewell/ovathetap/main/scripts/compound/taphostprep-1.sh
+sudo chmod +x /tmp/taphostprep-1.sh 
+sudo /tmp/taphostprep-1.sh 
 ```
 #### After the script installs docker, the current iteration of the script will exit and \
 #### you will need to enter the following command to finish docker setup:
 - `newgrp docker`
 #### Run the devhost script again, this time you can say no to each option until after \
 #### you select no to installing docker CE, and then say yes to every option afterward
-- `sudo /tmp/devhost.sh `
+- `sudo /tmp/taphostprep-1.sh `
 
 #### Install CA Cert in Firefox to trust local sites
 
@@ -82,7 +82,7 @@ export minikubeip=$(minikube ip)
 
 ```sh
 # this script depends on the $minikubip variable being populated in the sourcing env
-wget -O /tmp/dnsmasq.template https://raw.githubusercontent.com/afewell/taphostprep-type1/main/assets/dnsmasq.template
+wget -O /tmp/dnsmasq.template https://raw.githubusercontent.com/afewell/ovathetap/main/assets/dnsmasq.template
 chown "viadmin:" /tmp/dnsmasq.template
 chmod 777 /tmp/dnsmasq.template
 envsubst < /tmp/dnsmasq.template > /tmp/dnsmasq.conf
@@ -96,7 +96,7 @@ systemctl restart dnsmasq
 ### complete the dnsmasq configuration
 
 ```sh
-wget -O /tmp/NetworkManager.conf https://raw.githubusercontent.com/afewell/taphostprep-type1/main/assets/NetworkManager.conf
+wget -O /tmp/NetworkManager.conf https://raw.githubusercontent.com/afewell/ovathetap/main/assets/NetworkManager.conf
 chown "root:" /tmp/NetworkManager.conf
 chmod 644 /tmp/NetworkManager.conf
 mv /etc/NetworkManager/NetworkManager.conf /etc/NetworkManager/NetworkManager.old

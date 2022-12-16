@@ -56,7 +56,7 @@ network:
 
 ### Install all items in hostprep.sh
 ```sh
-wget -O /tmp/hostprep.sh https://raw.githubusercontent.com/afewell/ovathetap/main/installscripts/compound/hostprep.sh
+wget -O /tmp/hostprep.sh https://raw.githubusercontent.com/afewell/ovathetap/main/scripts/compound/hostprep.sh
 sudo chmod +x /tmp/hostprep.sh 
 sudo /tmp/hostprep.sh 
 ```

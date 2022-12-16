@@ -1,45 +1,67 @@
-# Notes on this document
-for testv4 of this document, started on a fresh ubuntu host tempate
+# OvaTheTap
+The purpose of this document is to create a complete Full Profile installation for Tanzu Application Platform on a single VM.
+
+The project is currently focused on a single environment topology, using a single, minimal ubuntu desktop VM to install kubernetes and TAP on a single host. The instructions and assets provided here should work on an ubuntu host with sufficient resources and performance, regardless of whether it is on bare metal or any virtualization platform, but the user may need to adjust some values for different environments.
 
 # TAP 1.3 Single-node Lab Install Flow
 
 ## References:
-### [1] https://docs-staging.vmware.com/en/draft/VMware-Tanzu-Application-Platform/1.3
-### [2] https://tanzu.vmware.com/developer/guides/cert-manager-gs/
-### [3] https://tanzu.vmware.com/developer/guides/tanzu-application-platform-local-devloper-install/
-### [4] https://tanzu.vmware.com/developer/guides/harbor-gs/#set-up-dns
-### [5] https://github.com/afewell/scripts/
-### [6] https://tanzu.vmware.com/developer/blog/securely-connect-with-your-local-kubernetes-environment/
-### [7] https://thesecmaster.com/how-to-set-up-a-certificate-authority-on-ubuntu-using-openssl/
-### [8] https://computingforgeeks.com/install-and-configure-dnsmasq-on-ubuntu/
-### [9] https://goharbor.io/docs/2.6.0/install-config/configure-https/
+#### [1] https://docs-staging.vmware.com/en/draft/VMware-Tanzu-Application-Platform/1.3
+#### [2] https://tanzu.vmware.com/developer/guides/cert-manager-gs/
+#### [3] https://tanzu.vmware.com/developer/guides/tanzu-application-platform-local-devloper-install/
+#### [4] https://tanzu.vmware.com/developer/guides/harbor-gs/#set-up-dns
+#### [5] https://github.com/afewell/scripts/
+#### [6] https://tanzu.vmware.com/developer/blog/securely-connect-with-your-local-kubernetes-environment/
+#### [7] https://thesecmaster.com/how-to-set-up-a-certificate-authority-on-ubuntu-using-openssl/
+#### [8] https://computingforgeeks.com/install-and-configure-dnsmasq-on-ubuntu/
+#### [9] https://goharbor.io/docs/2.6.0/install-config/configure-https/
 
-## Install general Linux host prep with github.com/afewell/taphostprep-type1
+## Linux Installation and Setup
+### Provision an Ubuntu host
+
+- In my initial tests I am using vCloud director to provision a VM (Running on vCenter) with the following specs:
+  - CPU's: 16 single core CPU's
+  - Memory: 64GB
+  - Storage: 200GB HDD
+  - OS: Ubuntu 20.04 Desktop (Minimal)
+- After provisioning the host I just went through the standard installation wizard with standard/minimum options defined
+- At this point I save a copy/template in my virtualization manager so when I need to provision a new VM I can load one up without needing to redo basic installation or maintain some other script to automate it, but I will probably make a cloudconfig later for provisioning systems that support that
+
 ### Setup IP Address on Ubuntu Host
 
-- Manually set IP to the address provided in vcloud director 
+- Note: The need for this step may depend on your environment, you can use your preferred method to set an IP address, but be aware that if your host IP address changes, it may cause problems in the environment so its best if you use a method that ensures your VM/host gets the same IP address for its lifespan
+- Manually set an IP address on your VM so that the VM has internet access. This address does not necessarily need to be reachable from your desktop, but you will need some method to access the UI of the VM. 
 - `sudo nano /etc/netplan/01-network-manager-all.yaml`
-
+- Below is an example netplan file, you may need to adjust the values depending on your system:
 ```
-Enter text of netplan file here
+network:
+  version: 2
+  renderer: NetworkManager
+  ethernets:
+    ens160:
+      addresses:
+      - 10.10.10.10/24
+      nameservers:
+        addresses:
+        - 8.8.8.8
+        - 8.8.4.4
+      routes:
+        - to: 0.0.0.0/0
+          via: 10.10.10.253
 ```
 
 - `sudo netplan apply`
 
 
-### Install all items in devhost.sh
+### Install all items in taphostprep-1.sh
 #### Note you will need to run this script twice per the instructions below
 ```sh
-wget -O /tmp/devhost.sh https://raw.githubusercontent.com/afewell/taphostprep-type1/main/installscripts/compound/devhost.sh
-sudo chmod +x /tmp/devhost.sh 
-sudo /tmp/devhost.sh 
+wget -O /tmp/taphostprep-1.sh https://raw.githubusercontent.com/afewell/ovathetap/main/scripts/compound/taphostprep-1.sh
+sudo chmod +x /tmp/taphostprep-1.sh 
+sudo /tmp/taphostprep-1.sh 
 ```
-#### After the script installs docker, the current iteration of the script will exit and \
-#### you will need to enter the following command to finish docker setup:
-- `newgrp docker`
-#### Run the devhost script again, this time you can say no to each option until after \
-#### you select no to installing docker CE, and then say yes to every option afterward
-- `sudo /tmp/devhost.sh `
+**IMPORTANT:** Reboot the host after the script completes to ensure sudoless docker permissions are applied, which is REQUIRED for the following steps to complete successfully. I have tried multiple methods to apply permissions without reboot including `newgrp`, login/logout, and several other methods and could not get anything to work with perfect consistency other than reboot. 
+
 
 #### Install CA Cert in Firefox to trust local sites
 
@@ -48,7 +70,7 @@ sudo /tmp/devhost.sh
 - Select "Import"
 - Right click on a blank area of the file selector window and select the option to show hidden files
 - Navigate to the /home/viadmin/.pki/ca/ directory and select the ca.pem file and click open to import the certificate
-- Select the options to Trust this CA for websites and email addresses and click ok to finish importingh the certificate
+- Select the options to Trust this CA for websites and email addresses and click ok to finish importing the certificate
 - Close firefox settings
 
 ### Run Minikube
@@ -80,7 +102,7 @@ export minikubeip=$(minikube ip)
 
 ```sh
 # this script depends on the $minikubip variable being populated in the sourcing env
-wget -O /tmp/dnsmasq.template https://raw.githubusercontent.com/afewell/taphostprep-type1/main/assets/dnsmasq.template
+wget -O /tmp/dnsmasq.template https://raw.githubusercontent.com/afewell/ovathetap/main/assets/dnsmasq.template
 chown "viadmin:" /tmp/dnsmasq.template
 chmod 777 /tmp/dnsmasq.template
 envsubst < /tmp/dnsmasq.template > /tmp/dnsmasq.conf
@@ -94,7 +116,7 @@ systemctl restart dnsmasq
 ### complete the dnsmasq configuration
 
 ```sh
-wget -O /tmp/NetworkManager.conf https://raw.githubusercontent.com/afewell/taphostprep-type1/main/assets/NetworkManager.conf
+wget -O /tmp/NetworkManager.conf https://raw.githubusercontent.com/afewell/ovathetap/main/assets/NetworkManager.conf
 chown "root:" /tmp/NetworkManager.conf
 chmod 644 /tmp/NetworkManager.conf
 mv /etc/NetworkManager/NetworkManager.conf /etc/NetworkManager/NetworkManager.old
