@@ -1,5 +1,12 @@
 # Semantic Versioning Changelog
 
+# [1.5.0](https://github.com/afewell/ovathetap/compare/v1.4.0...v1.5.0) (2022-12-16)
+
+
+### Features
+
+* Refactor taphostprep-1.sh to support multi-step workflows to resolve [#9](https://github.com/afewell/ovathetap/issues/9) ([fc151f6](https://github.com/afewell/ovathetap/commit/fc151f6d9cda7f41809b0a0976138b6c449e23b5))
+
 # [1.4.0](https://github.com/afewell/ovathetap/compare/v1.3.1...v1.4.0) (2022-12-16)
 
 
