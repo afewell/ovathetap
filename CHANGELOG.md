@@ -1,5 +1,12 @@
 # Semantic Versioning Changelog
 
+# [1.6.0](https://github.com/afewell/ovathetap/compare/v1.5.0...v1.6.0) (2022-12-17)
+
+
+### Features
+
+* create initial version of taphostprep-2.sh to resolve [#10](https://github.com/afewell/ovathetap/issues/10) ([e272132](https://github.com/afewell/ovathetap/commit/e272132de7ada85bd9b10f0dec2d0c01ea252553))
+
 # [1.5.0](https://github.com/afewell/ovathetap/compare/v1.4.0...v1.5.0) (2022-12-16)
 
 
