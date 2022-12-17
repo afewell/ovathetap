@@ -1,9 +1,9 @@
 #!/bin/bash
 
 ## Copy, uncomment and enter the following commands to execute this script 
-# wget -O /tmp/taphostprep-2.sh https://raw.githubusercontent.com/afewell/ovathetap/main/scripts/compound/taphostprep-2.sh
-# sudo chmod +x /tmp/taphostprep-2.sh 
-# sudo /tmp/taphostprep-2.sh
+# wget -O /tmp/taphostprep-3.sh https://raw.githubusercontent.com/afewell/ovathetap/main/scripts/compound/taphostprep-3.sh
+# sudo chmod +x /tmp/taphostprep-3.sh 
+# sudo /tmp/taphostprep-3.sh
 
 ## Note: if any manual steps will be required after any install script, you can append instructions to >> /tmp/postactions.txt from the install script, and these will be displayed to the user at the end of this script  
 
@@ -11,8 +11,8 @@
 export raw_git_url="https://raw.githubusercontent.com/afewell/ovathetap/main"
 export functions_path="scripts/modules"
 export functions_filename="functions.sh"
-export script_tmp_dir="/tmp/taphostprep-2/"
-mkdir /tmp/taphostprep-2
+export script_tmp_dir="/tmp/taphostprep-3/"
+mkdir /tmp/taphostprep-3
 wget "${raw_git_url}/${functions_path}/${functions_filename}" -O "${script_tmp_dir}${functions_filename}"
 source "${script_tmp_dir}${functions_filename}"
 rm "${script_tmp_dir}${functions_filename}"
@@ -20,7 +20,7 @@ rm "${script_tmp_dir}${functions_filename}"
 ## Global variables
 ### Inject envars from input file
 export inputs_path="scripts/inputs"
-export envars_filename="vars-2.env.sh"
+export envars_filename="vars-3.env.sh"
 #### Call func_github_file_download function to have it save the input envars file to the script temporary directory
 func_github_file_download "${inputs_path}/${envars_filename}" "${script_tmp_dir}"
 source ${script_tmp_dir}${envars_filename}

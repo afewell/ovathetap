@@ -9,11 +9,11 @@
 
 ## Import Functions
 export raw_git_url="https://raw.githubusercontent.com/afewell/ovathetap/main"
-export functions_path="scripts"
+export functions_path="scripts/modules"
 export functions_filename="functions.sh"
 export script_tmp_dir="/tmp/taphostprep-1/"
 mkdir /tmp/taphostprep-1
-wget "${raw_git_url}/${functions_path}/${functions_filename}" -O "/tmp/taphostprep-1/${functions_filename}"
+wget "${raw_git_url}/${functions_path}/${functions_filename}" -O "${script_tmp_dir}${functions_filename}"
 source "${script_tmp_dir}${functions_filename}"
 rm "${script_tmp_dir}${functions_filename}"
 
@@ -23,6 +23,7 @@ export inputs_path="scripts/inputs"
 export envars_filename="vars-1.env.sh"
 #### Call func_github_file_download function to have it save the input envars file to the script temporary directory
 func_github_file_download "${inputs_path}/${envars_filename}" "${script_tmp_dir}"
+source ${script_tmp_dir}${envars_filename}
 
 ### Inject Secret variables from input file 
 ### There are no secrets to inject in this script so section is commented out for reference

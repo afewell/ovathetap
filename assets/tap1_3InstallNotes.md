@@ -16,7 +16,7 @@ The project is currently focused on a single environment topology, using a singl
 #### [8] https://computingforgeeks.com/install-and-configure-dnsmasq-on-ubuntu/
 #### [9] https://goharbor.io/docs/2.6.0/install-config/configure-https/
 
-## Linux Installation and Setup
+## Host Preparation and Setup
 ### Provision an Ubuntu host
 
 - In my initial tests I am using vCloud director to provision a VM (Running on vCenter) with the following specs:
@@ -30,7 +30,6 @@ The project is currently focused on a single environment topology, using a singl
 
 
 - If you are using vCloud director and want to configure the same as the test environment:
-  - 
   - Create a vApp network named vapp-net
   - Connect vapp-net to an external network
   - Enable firewall service and set default rule to permit any any
@@ -80,7 +79,7 @@ sudo chmod +x /tmp/taphostprep-1.sh
 sudo /tmp/taphostprep-1.sh 
 ```
 - **IMPORTANT:** Reboot the host after the script completes to ensure sudoless docker permissions are applied, which is REQUIRED for the following steps to complete successfully. 
-  - I have tried multiple methods to apply permissions without reboot including `newgrp`, login/logout, and several other methods and could not get anything to work with perfect consistency other than reboot. 
+  - I have tried multiple methods to apply permissions without reboot including `newgrp`, login/logout, and several other methods and could not get anything to work with consistency other than reboot. 
 - After rebooting your host, verify you can execute docker commands without sudo by executing the command `docker run hello-world`
 
 ### Install CA Cert in Firefox to trust local sites
@@ -94,9 +93,15 @@ sudo /tmp/taphostprep-1.sh
 - Select the options to Trust this CA for websites and email addresses and click ok to finish importing the certificate
 - Close firefox settings
 
-### Launch Minikube and Configure dnsmasq
+### Launch Minikube, Configure dnsmasq & Install Harbor
+- **IMPORTANT** before you execute the commands below, note they will be configured for the default host username `viadmin`, if you would like this script to use a different host username, you must update the value in the /scripts/inputs/vars-2.env.sh file
+- do a `docker login` before proceeding as its on docker registry so you may exceed download limit if not logged in
 - from a terminal, execute the [taphostprep-2.sh script](./scripts/compound/taphostprep-2.sh) to launch minikube and configure dnsmasq. 
-`sudo /home/viadmin/ovathetap/scripts/compound/taphostprep-2.sh`
+  - `sudo /home/viadmin/ovathetap/scripts/compound/taphostprep-2.sh`
+- **IMPORTANT:** After the script completes, verify all harbor components are running before proceeding. This usually works very quickly, but can commonly be delayed due to docker hub rate limiting. This can sometimes cause harbor deployment to be delayed significantly. If you see your harbor containers arent downloading due to rate limiting, this will usually resolve eventually by itself, but it can take several hours. To avoid this, its best to have a paid docker account or use a docker caching server if one is available in your environment.
+ - To verify your harbor installation is running: 
+   - enter the command `kubectl get all -n harbor` and verify the state of components
+   - TODO: add instructions to login to harbor web gui for additional verification
 
 
 
@@ -140,23 +145,7 @@ kubectl apply -f ca-issuer.yaml
 kubectl get ClusterIssuer
 ``` -->
 
-<!-- I did not install harbor in test 6, leaving this text commented for reference
-### Install Harbor
-
-- `docker login` before proceeding as its on docker registry so you may exceed download limit if not logged in
-
-```sh
-# Gather the harbors.yml file
-wget -O harborvalues.yaml https://raw.githubusercontent.com/afewell/scripts/main/assets/tap/1_3/test_v3/resolv.conf
-# Add the harbor repo to helm
-helm repo add harbor https://helm.goharbor.io
-# create namespace for harbor
-kubectl create ns harbor
-# install harbor
-helm install harbor harbor/harbor -f harborvalues.yaml -n harbor
-``` -->
-
-### Install TAP
+## Install TAP Prerequisites
 
 #### Download & Install Tanzu CLI Bundle
 
