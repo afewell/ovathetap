@@ -26,6 +26,7 @@ The project is currently focused on a single environment topology, using a singl
   - OS: Ubuntu 20.04 Desktop (Minimal)
 - After provisioning the host I just went through the standard installation wizard with standard/minimum options defined
 - At this point I save a copy/template in my virtualization manager so when I need to provision a new VM I can load one up without needing to redo basic installation or maintain some other script to automate it
+- The demo environment uses the default username viadmin. Note that if you want to use a different username in your ubuntu host, please follow the instructions wherever prompted in the instructions below to ensure your preferred linux host username is used. 
 
 
 - If you are using vCloud director and want to configure the same as the test environment:
@@ -71,74 +72,42 @@ network:
 **Note:** It is a good practice to save your base vm or vapp template at this point.
 
 ### Install all items in taphostprep-1.sh
-#### Note you will need to run this script twice per the instructions below
+- **IMPORTANT** before you execute the commands below, note they will be configured for the default host username `viadmin`, if you would like this script to use a different host username, you must update the value in the /scripts/inputs/vars-1.env.sh file
+- when you execute the commands below you will be prompted to select yes to install several different packages, install all of them
 ```sh
 wget -O /tmp/taphostprep-1.sh https://raw.githubusercontent.com/afewell/ovathetap/main/scripts/compound/taphostprep-1.sh
 sudo chmod +x /tmp/taphostprep-1.sh 
 sudo /tmp/taphostprep-1.sh 
 ```
-**IMPORTANT:** Reboot the host after the script completes to ensure sudoless docker permissions are applied, which is REQUIRED for the following steps to complete successfully. I have tried multiple methods to apply permissions without reboot including `newgrp`, login/logout, and several other methods and could not get anything to work with perfect consistency other than reboot. 
+- **IMPORTANT:** Reboot the host after the script completes to ensure sudoless docker permissions are applied, which is REQUIRED for the following steps to complete successfully. 
+  - I have tried multiple methods to apply permissions without reboot including `newgrp`, login/logout, and several other methods and could not get anything to work with perfect consistency other than reboot. 
+- After rebooting your host, verify you can execute docker commands without sudo by executing the command `docker run hello-world`
 
-
-#### Install CA Cert in Firefox to trust local sites
+### Install CA Cert in Firefox to trust local sites
 
 - Open firefox, navigate to settings and in the settings search window, search for "certificates"
 - Select "View Certificates"
 - Select "Import"
 - Right click on a blank area of the file selector window and select the option to show hidden files
 - Navigate to the /home/viadmin/.pki/ca/ directory and select the ca.pem file and click open to import the certificate
+  - in the line above, "viadmin" is the default user account, if you have configured a nondefault username, use that value
 - Select the options to Trust this CA for websites and email addresses and click ok to finish importing the certificate
 - Close firefox settings
 
-### Run Minikube
+### Launch Minikube and Configure dnsmasq
+- from a terminal, execute the [taphostprep-2.sh script](./scripts/compound/taphostprep-2.sh) to launch minikube and configure dnsmasq. 
+`sudo /home/viadmin/ovathetap/scripts/compound/taphostprep-2.sh`
 
-```sh
-minikube start --kubernetes-version='1.23.10' --memory='48g' --cpus='12' --embed-certs --insecure-registry=192.168.49.0/24
-# wait for minikube to finish starting before executing the following command
-# minikube addons enable ingress
-# wait for minikube to finish enabling ingress before executing the following command
-# minikube addons enable ingress-dns
-```
 
+
+<!-- I dont know if we need minikube tunnel so testing without it this round. 
 ### Start Minikube tunnel
 
 - `minikube tunnel`
 - it may ask you to enter your password
-- the process will take over the terminal session, so you will need to open a new terminal window to continue, leave the minikube tunnel terminal session open
+- the process will take over the terminal session, so you will need to open a new terminal window to continue, leave the minikube tunnel terminal session open -->
 
-### Gather minikube IP
 
-```sh
-minikube ip
-export minikubeip=$(minikube ip)
-
-```
-
-### Configure host to forward NS requests to minikube dns
-#### in v4 change this to download and replace the dnsmasq.conf file
-
-```sh
-# this script depends on the $minikubip variable being populated in the sourcing env
-wget -O /tmp/dnsmasq.template https://raw.githubusercontent.com/afewell/ovathetap/main/assets/dnsmasq.template
-chown "viadmin:" /tmp/dnsmasq.template
-chmod 777 /tmp/dnsmasq.template
-envsubst < /tmp/dnsmasq.template > /tmp/dnsmasq.conf
-chown "root:" /tmp/dnsmasq.conf
-chmod 644 /tmp/dnsmasq.conf
-mv /etc/dnsmasq.conf /etc/dnsmasq.old
-cp /tmp/dnsmasq.conf /etc/dnsmasq.conf
-systemctl restart dnsmasq
-```
-
-### complete the dnsmasq configuration
-
-```sh
-wget -O /tmp/NetworkManager.conf https://raw.githubusercontent.com/afewell/ovathetap/main/assets/NetworkManager.conf
-chown "root:" /tmp/NetworkManager.conf
-chmod 644 /tmp/NetworkManager.conf
-mv /etc/NetworkManager/NetworkManager.conf /etc/NetworkManager/NetworkManager.old
-cp /tmp/NetworkManager.conf /etc/NetworkManager/NetworkManager.conf 
-```
 
 <!-- ### Install Cert-Manager
 

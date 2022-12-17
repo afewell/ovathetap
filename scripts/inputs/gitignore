@@ -1,0 +1,6 @@
+# Ignore all filenames that include the word secret
+*secret*
+
+# Except for files with the .template or .age extensions
+!*.template
+!*.age

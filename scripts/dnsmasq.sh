@@ -1,19 +1,20 @@
 #!/bin/bash
+## abstract the hosts currently configured dns servers
+eth_int_name="ens160"
+init_dns_addresses=$(nmcli device show ${eth_int_name} | grep IP4.DNS | awk '{print $2}')
+init_primary_dns=$(echo ${init_dns_addresses} | head -n 1)
+dns_resolv_content=$(echo ${init_dns_addresses} | sed 's/^/nameserver /;1i nameserver 127.0.0.1')
 ## Disable systemd-resolved
 systemctl disable systemd-resolved
 systemctl stop systemd-resolved
 unlink /etc/resolv.conf
 ## create temporary resolv.conf
-echo nameserver 8.8.8.8 | tee /etc/resolv.conf
+echo "nameserver ${init_primary_dns}" | tee /etc/resolv.conf
 apt update
 apt install dnsmasq -y
 ## Disable NetworkManager DNS Resolution
-wget -O /tmp/NetworkManager.conf https://raw.githubusercontent.com/afewell/ovathetap/main/assets/NetworkManager.conf
-chown "root:" /tmp/NetworkManager.conf
-chmod 644 /tmp/NetworkManager.conf
-mv /etc/NetworkManager/NetworkManager.conf /etc/NetworkManager/NetworkManager.old
-cp /tmp/NetworkManager.conf /etc/NetworkManager/NetworkManager.conf
+cp /etc/NetworkManager/NetworkManager.conf /etc/NetworkManager/NetworkManager.old
+sed -i '/plugins/a dns=none' /etc/NetworkManager/NetworkManager.conf
 ## Update resolv.conf to use dnsmasq for local resolution
-echo "nameserver 127.0.0.1" | tee /etc/resolv.conf
-echo "nameserver 8.8.8.8" | tee -a /etc/resolv.conf
-echo "nameserver 8.8.4.4" | tee -a /etc/resolv.conf
+mv /etc/resolv.conf /etc/resolv.old
+echo ${dns_resolv_content} | tee /etc/resolv.conf

@@ -15,7 +15,7 @@ export script_tmp_dir="/tmp/taphostprep-1/"
 mkdir /tmp/taphostprep-1
 wget "${raw_git_url}/${functions_path}/${functions_filename}" -O "/tmp/taphostprep-1/${functions_filename}"
 source "${script_tmp_dir}${functions_filename}"
-rm "/tmp/taphostprep-1/${functions_filename}"
+rm "${script_tmp_dir}${functions_filename}"
 
 ## Global variables
 ### Inject envars from input file
