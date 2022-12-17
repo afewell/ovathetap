@@ -1,5 +1,12 @@
 # Semantic Versioning Changelog
 
+## [1.6.1](https://github.com/afewell/ovathetap/compare/v1.6.0...v1.6.1) (2022-12-17)
+
+
+### Bug Fixes
+
+* Add harbor to taphostprep-2 to resolve [#11](https://github.com/afewell/ovathetap/issues/11) ([010e026](https://github.com/afewell/ovathetap/commit/010e0260d2e04cf868abd3154657469f781a5c11))
+
 # [1.6.0](https://github.com/afewell/ovathetap/compare/v1.5.0...v1.6.0) (2022-12-17)
 
 
