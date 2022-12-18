@@ -1,5 +1,12 @@
 # Semantic Versioning Changelog
 
+# [1.7.0](https://github.com/afewell/ovathetap/compare/v1.6.1...v1.7.0) (2022-12-18)
+
+
+### Features
+
+* multiple updates to resolve [#12](https://github.com/afewell/ovathetap/issues/12), [#13](https://github.com/afewell/ovathetap/issues/13), [#14](https://github.com/afewell/ovathetap/issues/14), [#15](https://github.com/afewell/ovathetap/issues/15) and [#16](https://github.com/afewell/ovathetap/issues/16) ([c5ea25b](https://github.com/afewell/ovathetap/commit/c5ea25b338b7030859db5fdee47828c58b1b7fee))
+
 ## [1.6.1](https://github.com/afewell/ovathetap/compare/v1.6.0...v1.6.1) (2022-12-17)
 
 
