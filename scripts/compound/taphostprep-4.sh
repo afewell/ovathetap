@@ -36,37 +36,12 @@ source "/${script_tmp_dir}/${envars_filename}"
 
 # Main
 
-## Install Tanzu CLI
-cd "/${home_dir}/Downloads" || return
-# create a directory to unzip the tanzu CLI files to
-mkdir "/${home_dir}/tanzu"
-# unzip the file and install Tanzu CLI
-tar -xvf "${tanzu_cli_bundle_filename}" -C "/${home_dir}/tanzu"
-export TANZU_CLI_NO_INIT=true
-cd "/${home_dir}/tanzu" || return
-export VERSION=${tanzu_cli_version}
-sudo install "cli/core/$VERSION/tanzu-core-linux_amd64" /usr/local/bin/tanzu
-tanzu plugin install --local cli all
-
-## Install Cluster Essentials
-cd "/${home_dir}/Downloads" || return
-# create a directory to unzip the tap installer files to
-mkdir "/${home_dir}/tanzu-cluster-essentials" 
-# unzip the file and install cluster essentials
-tar -xvf "${cluster_essentials_bundle_filename}" -C "/${home_dir}/tanzu-cluster-essentials"
-kubectl create namespace kapp-controller
-kubectl create secret generic kapp-controller-config \
-   --namespace kapp-controller \
-   --from-file caCerts=/home/viadmin/.pki/myca/myca.pem
-export INSTALL_BUNDLE="${cluster_essentials_bundle_url}"
-export INSTALL_REGISTRY_HOSTNAME="${tanzunet_hostname}"
-export INSTALL_REGISTRY_USERNAME="${tanzunet_username}"
-export INSTALL_REGISTRY_PASSWORD="${tanzunet_password}"
-cd "/${home_dir}/tanzu-cluster-essentials" || return
-./install.sh --yes
-# add carvel apps to path
-sudo cp $HOME/tanzu-cluster-essentials/kapp /usr/local/bin/kapp
-sudo cp $HOME/tanzu-cluster-essentials/imgpkg /usr/local/bin/imgpkg
-sudo cp $HOME/tanzu-cluster-essentials/kbld /usr/local/bin/kbld
-sudo cp $HOME/tanzu-cluster-essentials/ytt /usr/local/bin/ytt
-
+## Relocate TAP Images to your install registry
+export INSTALL_REGISTRY_USERNAME=admin
+export INSTALL_REGISTRY_PASSWORD=Harbor12345
+export INSTALL_REGISTRY_HOSTNAME=192.168.49.2:31642
+export TAP_VERSION="${tap_version}"
+export INSTALL_REPO="${tap_install_repo}"
+docker login $INSTALL_REGISTRY_HOSTNAME -u $INSTALL_REGISTRY_USERNAME -p $INSTALL_REGISTRY_PASSWORD
+docker login "${tanzunet_hostname}" -u "${tanzunet_username}" -p "${tanzunet_password}"
+imgpkg copy -b registry.tanzu.vmware.com/tanzu-application-platform/tap-packages:${TAP_VERSION} --to-repo ${INSTALL_REGISTRY_HOSTNAME}/${INSTALL_REPO}/tap-packages
