@@ -16,7 +16,11 @@ The project is currently focused on a single environment topology, using a singl
 #### [8] https://computingforgeeks.com/install-and-configure-dnsmasq-on-ubuntu/
 #### [9] https://goharbor.io/docs/2.6.0/install-config/configure-https/
 
-TODO: Add a step to describe planning and to ensure people complete the envars and secrets files before beginning
+## Prepare Variables Needed to execute this script
+
+To execute the scripts and instructions on this page, you will need to verify the default environmental variables provided and update if needed. You will also need to complete the secrets file with your docker and tanzunet account details - this information is only used within the local scripts in your local environment. 
+
+- Verify the [default environmental variables](./), and modify if needed
 
 ## Host Preparation and Setup
 ### Provision an Ubuntu host
