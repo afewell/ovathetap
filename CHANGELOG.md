@@ -1,5 +1,12 @@
 # Semantic Versioning Changelog
 
+## [1.8.7](https://github.com/afewell/ovathetap/compare/v1.8.6...v1.8.7) (2022-12-19)
+
+
+### Bug Fixes
+
+* secrets handling solution to resolve [#29](https://github.com/afewell/ovathetap/issues/29) ([ef480b8](https://github.com/afewell/ovathetap/commit/ef480b89a81f60c38d4771aea761f377259423db))
+
 ## [1.8.6](https://github.com/afewell/ovathetap/compare/v1.8.5...v1.8.6) (2022-12-19)
 
 
