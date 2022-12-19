@@ -1,5 +1,12 @@
 # Semantic Versioning Changelog
 
+## [1.8.1](https://github.com/afewell/ovathetap/compare/v1.8.0...v1.8.1) (2022-12-19)
+
+
+### Bug Fixes
+
+* refactor taphostprep-1.sh to include an install-all optionto resolve [#20](https://github.com/afewell/ovathetap/issues/20) ([3c867a8](https://github.com/afewell/ovathetap/commit/3c867a806b8a2ac7186cc5b66fcfc329df171f2c))
+
 # [1.8.0](https://github.com/afewell/ovathetap/compare/v1.7.0...v1.8.0) (2022-12-19)
 
 
