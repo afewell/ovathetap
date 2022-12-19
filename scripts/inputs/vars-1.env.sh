@@ -11,7 +11,7 @@
 # hostusername should be the linux username of the account the host should be prepped for. For example, the script will install and assign files to this user's home directory and ensure they have the permissions needed to complete the installation and subsequent exercises
 export hostusername="viadmin"
 # the kubernetes version defines both what k8s version the minikube cluster will run, and also the version of kubectl that will be installed
-export kubernetes_version="1.23.10"
+export kubernetes_version="1.24.8"
 export tanzu_cli_version="v0.25.0"
 export tap_version="1.3.0"
 # tap_install_repo is used to populate the INSTALL_REPO var per the tap install docs. It is used to provide the namespace for saving tap files in the registry so tap install images would be saved at {registry}/{tap_install_repo}/{images}
