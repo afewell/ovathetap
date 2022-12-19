@@ -1,5 +1,12 @@
 # Semantic Versioning Changelog
 
+## [1.8.2](https://github.com/afewell/ovathetap/compare/v1.8.1...v1.8.2) (2022-12-19)
+
+
+### Bug Fixes
+
+* move current instructions from tap1_3install_notes file to main readme to resolve [#21](https://github.com/afewell/ovathetap/issues/21) ([d76ad4a](https://github.com/afewell/ovathetap/commit/d76ad4ad35a1d406aea90a6c8752ff155c1b400c))
+
 ## [1.8.1](https://github.com/afewell/ovathetap/compare/v1.8.0...v1.8.1) (2022-12-19)
 
 
