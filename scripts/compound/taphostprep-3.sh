@@ -10,7 +10,7 @@ source "./scripts/inputs/secrets.env.sh"
 source "./scripts/modules/functions.sh"
 
 # Main
-
+mkdir ${script_tmp_dir}
 ## Install Tanzu CLI
 source "/${ovathetap_scripts}/tanzu_cli.sh"
 

@@ -1,0 +1,24 @@
+shared:
+  ingress_domain: "tanzu.demo"
+  image_registry: 
+    project_path: "http://192.168.49.2:31642/tap"
+    username: "admin"
+    password: "Harbor12345"
+  ca_cert_data: |
+
+  
+ceip_policy_disclosed: true
+
+buildservice:
+  exclude_dependencies: true
+
+tap_gui:
+  service_type: ClusterIP
+  app_config:
+    app:
+      baseUrl: http://tap-gui.tanzu.demo
+    backend:
+      baseUrl: http://tap-gui.tanzu.demo 
+      cors:
+        origin: http://tap-gui.tanzu.demo
+

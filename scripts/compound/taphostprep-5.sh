@@ -10,6 +10,13 @@ source "./scripts/inputs/secrets.env.sh"
 source "./scripts/modules/functions.sh"
 
 # Main
+mkdir ${script_tmp_dir}
+## Prepare and inject local ca cert into ca_cert_data key in tap-values.yaml file
+myca_path="${home_dir}/.pki/myca"
+sed 's/^/    /' "/${myca_path}/myca.pem" > "/${script_tmp_dir}/myca-indented.pem"
+sed "/ca_cert_data/ r /${script_tmp_dir}/myca-indented.pem" "/${ovathetap_assets}/tap-values.yaml.template" > "/${ovathetap_assets}/tap-values.yaml"
+rm "/${script_tmp_dir}/myca-indented.pem"
+
 export INSTALL_REGISTRY_USERNAME=admin
 export INSTALL_REGISTRY_PASSWORD=Harbor12345
 export INSTALL_REGISTRY_HOSTNAME=192.168.49.2:31642
@@ -27,7 +34,7 @@ tanzu package repository add tanzu-tap-repository \
 # TODO: I need to add some step here to automate waiting until reconciliation is complete before proceeding
 read -p "The Tanzu Package Repository should reconcile before proceeding, before you press enter to continue, please open a new terminal window and follow the steps in the instructions to manually verify reconcilliation has completed - and then press enter in this window to continue the tap installation script"
 # Install profile
-tanzu package install tap -p tap.tanzu.vmware.com -v $TAP_VERSION --values-file tap-values.yaml -n tap-install
+tanzu package install tap -p tap.tanzu.vmware.com -v $TAP_VERSION --values-file "/${ovathetap_assets}/tap-values.yaml" -n tap-install
 # Install Full Dependencies Package
 ## Get buildservice version number
 tanzu package available list buildservice.tanzu.vmware.com --namespace tap-install

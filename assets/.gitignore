@@ -1,0 +1,5 @@
+# Ignore the tap-values.yaml file
+tap-values.yaml
+
+# Do not ignore the tap-values.yaml.template file
+!tap-values.yaml.template
