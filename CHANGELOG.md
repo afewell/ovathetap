@@ -1,5 +1,12 @@
 # Semantic Versioning Changelog
 
+## [1.9.2](https://github.com/afewell/ovathetap/compare/v1.9.1...v1.9.2) (2022-12-19)
+
+
+### Bug Fixes
+
+* adding function definitions to taphostprep-1.sh as problem workaround ([d80431d](https://github.com/afewell/ovathetap/commit/d80431d6ad9958dd234e19dbe9e8a9dc84a3c849))
+
 ## [1.9.1](https://github.com/afewell/ovathetap/compare/v1.9.0...v1.9.1) (2022-12-19)
 
 
