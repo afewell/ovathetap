@@ -17,10 +17,6 @@ func_msg_block () {
             # code to execute if $1 is equal to "post"
             message="Finished Installing: ${2} "
             ;;
-        [-z "$1"])
-            # code to execute if $1 is an empty string
-            message="Error - no input provided"
-            ;;
         *)
             # code to execute if $1 is any other non-empty string
             message="${1}"

@@ -5,12 +5,65 @@
 ## Script variables
 ### Inject envars from input file
 hostusername="${hostusername:-viadmin}"
+echo 'source "/home/${hostusername}/ovathetap/scripts/inputs/vars-1.env.sh"'
 source "/home/${hostusername}/ovathetap/scripts/inputs/vars-1.env.sh"
+env
 ### Inject Secret variables from input file 
-source "/home/${hostusername}/ovathetap/scripts/inputs/secrets.env.sh"
+# commented because no secrets needed in this file
+# source "/home/${hostusername}/ovathetap/scripts/inputs/secrets.env.sh"
 
 ## Import Functions
-source "/home/${hostusername}/ovathetap/scripts/modules/functions.sh"
+# source "/home/${hostusername}/ovathetap/scripts/modules/functions.sh"
+# function import currently not working so defining in-file below
+# func_msg_block echos a provided message in a block of hashtags and tees it to the install log
+# Required Input ${1}: can be one of:
+##  "pre": will use default pre message, func call must include package name OR script filename as ${2}
+##  "post": will use default post message, func call must include package name OR script filename as ${2}
+##  any string other than "pre" or "post" will be treated as a custom message and displayed in place of a default message. 
+# Optional Input ${2}: name of apt package or filename of install script. Only used if ${1} =  "pre" or "post"
+# Stub: func_msg_block "${1}" "${2}"
+func_msg_block () {
+    case "$1" in
+        "pre")
+            # code to execute if $1 is equal to "pre"
+            message="Installing: ${2} "
+            ;;
+        "post")
+            # code to execute if $1 is equal to "post"
+            message="Finished Installing: ${2} "
+            ;;
+        *)
+            # code to execute if $1 is any other non-empty string
+            message="${1}"
+            ;;
+    esac
+    echo "##################################################" | tee -a /tmp/taphostprep.log
+    echo "# ${message}" | tee -a /tmp/taphostprep.log
+    echo "##################################################" | tee -a /tmp/taphostprep.log
+}
+
+# func_apt_install updates apt and then executes apt install ${1} -y
+# if a more complicates apt install syntax is required, use func_install_script
+# Required input ${1}: name of apt package as used in the command `apt-get install <apt package> -y`
+# Stub: func_apt_install "${1}"
+function func_apt_install () {
+    apt_package="${1}"
+    func_msg_block "pre" "${apt_package}"
+    apt-get update | tee -a /tmp/taphostprep.log
+    apt install "${apt_package}" -y | tee -a /tmp/taphostprep.log
+    func_msg_block "post" "${apt_package}"
+}
+
+# func_install_script downloads an install script from ${script_dir_url}/${1} and sources it for execution from this env
+# Required Input 1: name of script file - must include path/filename as appended to script directory url
+# Stub: func_install_script "<script filename>"
+function func_install_script () {
+    script_filename=${1}
+    func_msg_block "pre" "${script_filename}"
+    source "/${ovathetap_scripts}/${script_filename}" | tee -a /tmp/taphostprep.log
+    post_install_msg="# Finished Installing: ${script_filename} "
+    func_msg_block "post" "${script_filename}"
+}
 
 # Main
 mkdir ${script_tmp_dir}
