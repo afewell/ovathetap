@@ -1,5 +1,12 @@
 # Semantic Versioning Changelog
 
+# [1.8.0](https://github.com/afewell/ovathetap/compare/v1.7.0...v1.8.0) (2022-12-19)
+
+
+### Features
+
+* reafactoring ... multiple updates to resolve [#18](https://github.com/afewell/ovathetap/issues/18) and [#19](https://github.com/afewell/ovathetap/issues/19) ([bbd4030](https://github.com/afewell/ovathetap/commit/bbd403080c5dfb9c798efcfd30594069d5cbea20))
+
 # [1.7.0](https://github.com/afewell/ovathetap/compare/v1.6.1...v1.7.0) (2022-12-18)
 
 
