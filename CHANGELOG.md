@@ -1,5 +1,12 @@
 # Semantic Versioning Changelog
 
+## [1.8.5](https://github.com/afewell/ovathetap/compare/v1.8.4...v1.8.5) (2022-12-19)
+
+
+### Bug Fixes
+
+* add kubectl completion to persist, with support for k alias to resolve [#26](https://github.com/afewell/ovathetap/issues/26) ([ac6d7ee](https://github.com/afewell/ovathetap/commit/ac6d7eef6b8030b20aaa955d18f7009387077da6))
+
 ## [1.8.4](https://github.com/afewell/ovathetap/compare/v1.8.3...v1.8.4) (2022-12-19)
 
 
