@@ -1,5 +1,12 @@
 # Semantic Versioning Changelog
 
+## [1.8.6](https://github.com/afewell/ovathetap/compare/v1.8.5...v1.8.6) (2022-12-19)
+
+
+### Bug Fixes
+
+* add commands to automatically add correct ca_cert_data: value to tap-values.yaml to resolve [#28](https://github.com/afewell/ovathetap/issues/28) and added yq to resolve [#27](https://github.com/afewell/ovathetap/issues/27) ([f0e08d5](https://github.com/afewell/ovathetap/commit/f0e08d5e8cd8b83e639acaf54c356c7d7694c4e4))
+
 ## [1.8.5](https://github.com/afewell/ovathetap/compare/v1.8.4...v1.8.5) (2022-12-19)
 
 
