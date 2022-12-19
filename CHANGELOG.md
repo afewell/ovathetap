@@ -1,5 +1,12 @@
 # Semantic Versioning Changelog
 
+## [1.9.3](https://github.com/afewell/ovathetap/compare/v1.9.2...v1.9.3) (2022-12-19)
+
+
+### Bug Fixes
+
+* adding leading slash to mkdir "/${script_tmp_dir}" statement in each taphostprep-#.sh file to fix ([465456f](https://github.com/afewell/ovathetap/commit/465456ff79cd9b3135ff6911bea44190c374c398))
+
 ## [1.9.2](https://github.com/afewell/ovathetap/compare/v1.9.1...v1.9.2) (2022-12-19)
 
 
