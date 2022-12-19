@@ -35,7 +35,7 @@ func_msg_block () {
 # if a more complicates apt install syntax is required, use func_install_script
 # Required input ${1}: name of apt package as used in the command `apt-get install <apt package> -y`
 # Stub: func_apt_install "${1}"
-func_apt_install () {
+function func_apt_install () {
     apt_package="${1}"
     func_msg_block "pre" "${apt_package}"
     apt-get update | tee -a /tmp/taphostprep.log
@@ -47,7 +47,7 @@ export -f func_apt_install
 # func_install_script downloads an install script from ${script_dir_url}/${1} and sources it for execution from this env
 # Required Input 1: name of script file - must include path/filename as appended to script directory url
 # Stub: func_install_script "<script filename>"
-func_install_script () {
+function func_install_script () {
     script_filename=${1}
     func_msg_block "pre" "${script_filename}"
     source "/${ovathetap_scripts}/${script_filename}" | tee -a /tmp/taphostprep.log
