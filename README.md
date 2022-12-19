@@ -99,6 +99,7 @@ To execute the scripts and instructions on this page, you will need to verify th
 - Edit the copy of the secrets file and populate all listed variables
   - **Note:** You should never upload your populated secrets file to github. A gitignore file is included in the inputs directory to help prevent your secrets from being uploaded. 
   - You can access your secrets file at [~/ovathetap/scripts/inputs/secrets.env.sh](~/ovathetap/scripts/inputs/secrets.env.sh)
+- **VMWARE EMPLOYEES:** IF your lab environment is on a vmware internal network, please include the line `export vmware_int_net="true"` in the vars-1.env.sh file. This sets up the docker_proxy_cache, which can help bypass the crippling docker hub rate limits, but it only works from vmware internal networks. 
 
 ### Download  Tanzu CLI Bundle
 

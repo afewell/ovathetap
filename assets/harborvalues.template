@@ -420,7 +420,7 @@ enableMigrateHelmHook: false
 # If service exposed via "ingress", the Nginx will not be used
 nginx:
   image:
-    repository: goharbor/nginx-photon
+    repository: ${docker_proxy_cache}goharbor/nginx-photon
     tag: v2.6.0
   # set the service account to be used, default if left empty
   serviceAccountName: ""
@@ -442,7 +442,7 @@ nginx:
 
 portal:
   image:
-    repository: goharbor/harbor-portal
+    repository: ${docker_proxy_cache}goharbor/harbor-portal
     tag: v2.6.0
   # set the service account to be used, default if left empty
   serviceAccountName: ""
@@ -464,7 +464,7 @@ portal:
 
 core:
   image:
-    repository: goharbor/harbor-core
+    repository: ${docker_proxy_cache}goharbor/harbor-core
     tag: v2.6.0
   # set the service account to be used, default if left empty
   serviceAccountName: ""
@@ -509,7 +509,7 @@ core:
 
 jobservice:
   image:
-    repository: goharbor/harbor-jobservice
+    repository: ${docker_proxy_cache}goharbor/harbor-jobservice
     tag: v2.6.0
   replicas: 1
   revisionHistoryLimit: 10
@@ -549,7 +549,7 @@ registry:
   automountServiceAccountToken: false
   registry:
     image:
-      repository: goharbor/registry-photon
+      repository: ${docker_proxy_cache}goharbor/registry-photon
       tag: v2.6.0
     # resources:
     #  requests:
@@ -557,7 +557,7 @@ registry:
     #    cpu: 100m
   controller:
     image:
-      repository: goharbor/harbor-registryctl
+      repository: ${docker_proxy_cache}goharbor/harbor-registryctl
       tag: v2.6.0
 
     # resources:
@@ -617,7 +617,7 @@ chartmuseum:
   # Harbor defaults ChartMuseum to returning relative urls, if you want using absolute url you should enable it by change the following value to 'true'
   absoluteUrl: false
   image:
-    repository: goharbor/chartmuseum-photon
+    repository: ${docker_proxy_cache}goharbor/chartmuseum-photon
     tag: v2.6.0
   replicas: 1
   revisionHistoryLimit: 10
@@ -640,7 +640,7 @@ trivy:
   enabled: true
   image:
     # repository the repository for Trivy adapter image
-    repository: goharbor/trivy-adapter-photon
+    repository: ${docker_proxy_cache}goharbor/trivy-adapter-photon
     # tag the tag for Trivy adapter image
     tag: v2.6.0
   # set the service account to be used, default if left empty
@@ -714,7 +714,7 @@ notary:
     # mount the service account token
     automountServiceAccountToken: false
     image:
-      repository: goharbor/notary-server-photon
+      repository: ${docker_proxy_cache}goharbor/notary-server-photon
       tag: v2.6.0
     replicas: 1
     # resources:
@@ -734,7 +734,7 @@ notary:
     # mount the service account token
     automountServiceAccountToken: false
     image:
-      repository: goharbor/notary-signer-photon
+      repository: ${docker_proxy_cache}goharbor/notary-signer-photon
       tag: v2.6.0
     replicas: 1
     # resources:
@@ -766,7 +766,7 @@ database:
     # mount the service account token
     automountServiceAccountToken: false
     image:
-      repository: goharbor/harbor-db
+      repository: ${docker_proxy_cache}goharbor/harbor-db
       tag: v2.6.0
     # The initial superuser password for internal database
     password: "changeit"
@@ -832,7 +832,7 @@ redis:
     # mount the service account token
     automountServiceAccountToken: false
     image:
-      repository: goharbor/redis-photon
+      repository: ${docker_proxy_cache}goharbor/redis-photon
       tag: v2.6.0
     # resources:
     #  requests:
@@ -875,7 +875,7 @@ exporter:
   # mount the service account token
   automountServiceAccountToken: false
   image:
-    repository: goharbor/harbor-exporter
+    repository: ${docker_proxy_cache}goharbor/harbor-exporter
     tag: v2.6.0
   nodeSelector: {}
   tolerations: []

@@ -6,6 +6,10 @@ docker_account_password="${docker_account_password}"
 ovathetap_assets="${ovathetap_assets}"
 hostusername="${hostusername}"
 
+# stub harborvalues file with docker_proxy_cache value if on vmware_int_net (a vmware internal network)
+if [ "${vmware_int_net}" = "true" ]; then export docker_proxy_cache="harbor-repo.vmware.com/dockerhub-proxy-cache/"; fi
+envsubst < "${ovathetap_assets}/harborvalues.template" > "${ovathetap_assets}/harborvalues.yaml"
+
 ## Install Harbor
 # Login to docker to assist with docker hub rate limiting
 docker login -u "${docker_account_username}" -p "${docker_account_password}"

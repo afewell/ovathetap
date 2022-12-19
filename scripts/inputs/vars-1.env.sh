@@ -12,6 +12,8 @@
 export hostusername="viadmin"
 # the kubernetes version defines both what k8s version the minikube cluster will run, and also the version of kubectl that will be installed
 export kubernetes_version="1.24.8"
+# vmware_int_net is unset by default and should be set to "true" if the lab environment is on a vmware internal network
+#export vmware_int_net=
 export tanzu_cli_version="v0.25.0"
 export tap_version="1.3.0"
 # tap_install_repo is used to populate the INSTALL_REPO var per the tap install docs. It is used to provide the namespace for saving tap files in the registry so tap install images would be saved at {registry}/{tap_install_repo}/{images}
