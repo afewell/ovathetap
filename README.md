@@ -1,8 +1,7 @@
 # OvaTheTap
+The purpose of this document is to create a complete Full Profile installation for Tanzu Application Platform on a single VM.
 
-The purpose of this document is to create a complete Full Profile installation for Tanzu Application Platform on a single VM. 
-
-The project is currently focused on a single environment topology, using a single, minimal ubuntu desktop VM to install kubernetes and TAP on a single host. The instructions and assets provided here should work on an ubuntu host with sufficient resources and performance, regardless of whether it is on bare metal or any virtualization platform, but the user may need to adjust some values for different environments. 
+The project is currently focused on a single environment topology, using a single, minimal ubuntu desktop VM to install kubernetes and TAP on a single host. The instructions and assets provided here should work on an ubuntu host with sufficient resources and performance, regardless of whether it is on bare metal or any virtualization platform, but the user may need to adjust some values for different environments.
 
 # TAP 1.3 Single-node Lab Install Flow
 
@@ -17,7 +16,10 @@ The project is currently focused on a single environment topology, using a singl
 - [8] https://computingforgeeks.com/install-and-configure-dnsmasq-on-ubuntu/
 - [9] https://goharbor.io/docs/2.6.0/install-config/configure-https/
 
-## Linux Installation and Setup
+
+
+
+## Host Preparation and Setup
 ### Provision an Ubuntu host
 
 - In my initial tests I am using vCloud director to provision a VM (Running on vCenter) with the following specs:
@@ -26,7 +28,23 @@ The project is currently focused on a single environment topology, using a singl
   - Storage: 200GB HDD
   - OS: Ubuntu 20.04 Desktop (Minimal)
 - After provisioning the host I just went through the standard installation wizard with standard/minimum options defined
-- At this point I save a copy/template in my virtualization manager so when I need to provision a new VM I can load one up without needing to redo basic installation or maintain some other script to automate it, but I will probably make a cloudconfig later for provisioning systems that support that
+- At this point I save a copy/template in my virtualization manager so when I need to provision a new VM I can load one up without needing to redo basic installation or maintain some other script to automate it
+- **The demo environment uses the default username `viadmin`**. Note that if you want to use a different username in your ubuntu host, please follow the instructions wherever prompted to ensure your preferred linux host username is used. 
+
+
+- If you are using vCloud director and want to configure the same as the test environment:
+  - Create a vApp network named vapp-net
+  - Connect vapp-net to an external network
+  - Enable firewall service and set default rule to permit any any
+  - Enable NAT service with the following settings:
+    - port forwarding
+    - ip masquerade
+    - create rule permitting any to any port forwarding to taphost
+  - Create a vApp with a single VM named `taphost` with the specs listed above, plus the following nic configuration:
+    - Network Adapter Type: VMXNET3
+    - Network: vapp-net
+    - IP Mode: Static - Manual
+    - IP Address: 192.168.0.2
 
 ### Setup IP Address on Ubuntu Host
 
@@ -41,208 +59,119 @@ network:
   ethernets:
     ens160:
       addresses:
-      - 10.10.10.10/24
+      - 192.168.0.2/24
       nameservers:
         addresses:
+        - 10.128.242.90
         - 8.8.8.8
-        - 8.8.4.4
       routes:
         - to: 0.0.0.0/0
-          via: 10.10.10.253
+          via: 192.168.0.1
 ```
 
 - `sudo netplan apply`
 
+**Note:** It is a good practice to save your base vm or vapp template at this point.
 
-### Install all items in hostprep.sh
+## Download required files and prepare vars
+
+- Login to your Ubuntu VM environment, all subsequent steps in these instructions should be completed from your ubuntu desktop environment.
+- Unless otherwise instructed, all commands should be executed from the user's home directory
+
+## Clone the ovathetap repo
+
+- Execute the following commands:
 ```sh
-wget -O /tmp/hostprep.sh https://raw.githubusercontent.com/afewell/ovathetap/main/scripts/compound/hostprep.sh
-sudo chmod +x /tmp/hostprep.sh 
-sudo /tmp/hostprep.sh 
+# Install git, which is needed to clone the ovathetap repo
+sudo apt update
+sudo apt install git -y
+# Navigate to the home directory
+cd ~
+git clone https://github.com/afewell/ovathetap.git
 ```
-#### After the script installs docker, the current iteration of the script will exit and \
-#### you will need to enter the following command to finish docker setup:
-- `newgrp docker`
-#### Run the devhost script again, this time you can say no to each option until after \
-#### you select no to installing docker CE, and then say yes to every option afterward
-- `sudo /tmp/hostprep.sh `
 
-#### Install CA Cert in Firefox to trust local sites
+### Prepare Install Variables & Secrets 
+
+To execute the scripts and instructions on this page, you will need to verify the default environmental variables provided and update if needed. You will also need to complete the secrets file with your docker and tanzunet account details - this information is only used within the local scripts in your local environment. 
+
+- Verify the [default environmental variables](./scripts/inputs/vars-1.env.sh), and modify if needed
+- Make a copy of the secrets template with the command `cp ~/ovathetap/scripts/inputs/secrets.env.template ~/ovathetap/scripts/inputs/secrets.env.sh`
+- Edit the copy of the secrets file and populate all listed variables
+  - **Note:** You should never upload your populated secrets file to github. A gitignore file is included in the inputs directory to help prevent your secrets from being uploaded. 
+  - You can access your secrets file at [~/ovathetap/scripts/inputs/secrets.env.sh](~/ovathetap/scripts/inputs/secrets.env.sh)
+
+### Download  Tanzu CLI Bundle
+
+- go to https://network.tanzu.vmware.com/products/tanzu-application-platform
+- login
+- download the tanzu CLI bundle for linux
+- **IMPORTANT** the tanzu CLI bundle must be downloaded to the /home/{hostusername}/Downloads. By default the {hostusername} is set to `viadmin`, make sure to change this value in the inputs file if you are using a different host username.
+
+
+### Download & Install Cluster Essentials
+
+- go to https://network.tanzu.vmware.com/products/tanzu-cluster-essentials/
+- login
+- download the cluster essentials bundle for linux
+- **IMPORTANT** the tanzu CLI bundle must be downloaded to the /home/{hostusername}/Downloads. By default the {hostusername} is set to `viadmin`, make sure to change this value in the inputs file if you are using a different host username.
+
+
+### Install all items in taphostprep-1.sh to setup/configure linux environment
+- **IMPORTANT** before you execute the commands below, note they will be configured for the default host username `viadmin`, if you would like this script to use a different host username, you must update the value in the /scripts/inputs/vars-1.env.sh file
+- when you execute the commands below you will be prompted to select yes to install several different packages, install all of them
+```sh
+wget -O /tmp/taphostprep-1.sh https://raw.githubusercontent.com/afewell/ovathetap/main/scripts/compound/taphostprep-1.sh
+sudo chmod +x /tmp/taphostprep-1.sh 
+sudo /tmp/taphostprep-1.sh 
+```
+- **IMPORTANT:** Reboot the host after the script completes to ensure sudoless docker permissions are applied, which is REQUIRED for the following steps to complete successfully. 
+  - I have tried multiple methods to apply permissions without reboot including `newgrp`, login/logout, and several other methods and could not get anything to work with consistency other than reboot. 
+- After rebooting your host, verify you can execute docker commands without sudo by executing the command `docker run hello-world`
+
+### Install CA Cert in Firefox to trust local sites
 
 - Open firefox, navigate to settings and in the settings search window, search for "certificates"
 - Select "View Certificates"
 - Select "Import"
 - Right click on a blank area of the file selector window and select the option to show hidden files
 - Navigate to the /home/viadmin/.pki/ca/ directory and select the ca.pem file and click open to import the certificate
-- Select the options to Trust this CA for websites and email addresses and click ok to finish importingh the certificate
+  - in the line above, "viadmin" is the default user account, if you have configured a nondefault username, use that value
+- Select the options to Trust this CA for websites and email addresses and click ok to finish importing the certificate
 - Close firefox settings
 
-### Run Minikube
+### Execute taphostprep-2.sh to configure base kubernetes environment
+- **IMPORTANT** before you execute the commands below, note they will be configured for the default host username `viadmin`, if you would like this script to use a different host username, you must update the value in the /scripts/inputs/vars-1.env.sh file
+- from a terminal, execute the [taphostprep-2.sh script](./scripts/compound/taphostprep-2.sh) to launch minikube and configure dnsmasq. 
+  - `sudo /home/viadmin/ovathetap/scripts/compound/taphostprep-2.sh`
+- **IMPORTANT:** After the script completes, verify all harbor components are running before proceeding. This usually works very quickly, but can commonly be delayed due to docker hub rate limiting. This can sometimes cause harbor deployment to be delayed significantly. If you see your harbor containers arent downloading due to rate limiting, this will usually resolve eventually by itself, but it can take several hours. To avoid this, its best to have a paid docker account or use a docker caching server if one is available in your environment.
+ - To verify your harbor installation is running: 
+   - enter the command `kubectl get all -n harbor` and verify the state of components
+   - TODO: add instructions to login to harbor web gui for additional verification
 
-```sh
-minikube start --kubernetes-version='1.23.10' --memory='48g' --cpus='12' --embed-certs --insecure-registry=192.168.49.0/24
-```
 
+
+<!-- I dont know if we need minikube tunnel so testing without it this round. 
 ### Start Minikube tunnel
 
 - `minikube tunnel`
 - it may ask you to enter your password
-- the process will take over the terminal session, so you will need to open a new terminal window to continue, leave the minikube tunnel terminal session open
+- the process will take over the terminal session, so you will need to open a new terminal window to continue, leave the minikube tunnel terminal session open -->
 
-### Gather minikube IP
 
-```sh
-minikube ip
-export minikubeip=$(minikube ip)
 
-```
-
-### Configure host to forward NS requests to minikube dns
-#### in v4 change this to download and replace the dnsmasq.conf file
+<!-- ### Install Cert-Manager
 
 ```sh
-# this script depends on the $minikubip variable being populated in the sourcing env
-wget -O /tmp/dnsmasq.template https://raw.githubusercontent.com/afewell/ovathetap/main/assets/dnsmasq.template
-chown "viadmin:" /tmp/dnsmasq.template
-chmod 777 /tmp/dnsmasq.template
-envsubst < /tmp/dnsmasq.template > /tmp/dnsmasq.conf
-chown "root:" /tmp/dnsmasq.conf
-chmod 644 /tmp/dnsmasq.conf
-mv /etc/dnsmasq.conf /etc/dnsmasq.old
-cp /tmp/dnsmasq.conf /etc/dnsmasq.conf
-systemctl restart dnsmasq
-```
+kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.9.1/cert-manager.yaml
+``` -->
 
-### complete the dnsmasq configuration
-
-```sh
-wget -O /tmp/NetworkManager.conf https://raw.githubusercontent.com/afewell/ovathetap/main/assets/NetworkManager.conf
-chown "root:" /tmp/NetworkManager.conf
-chmod 644 /tmp/NetworkManager.conf
-mv /etc/NetworkManager/NetworkManager.conf /etc/NetworkManager/NetworkManager.old
-cp /tmp/NetworkManager.conf /etc/NetworkManager/NetworkManager.conf 
-```
-
-### Install Harbor
-
-- `docker login` before proceeding as its on docker registry so you may exceed download limit if not logged in
-- In the current revision, you will need to create your own harbor values yaml file, with parameters set to use a loadBalancer and not use TLS. You will need to deploy harbor, allow minikube to assign a loadBalancer for harbor, then update the harbor values file and helm upgrade the deployment with the updated values. 
-- Detailed, step-by-step instructions will be added very soon.  
-```sh
-# Gather the harbors.yml file
-# Add the harbor repo to helm
-helm repo add harbor https://helm.goharbor.io
-# create namespace for harbor
-kubectl create ns harbor
-# install harbor
-helm install harbor harbor/harbor -f harborvalues.yaml -n harbor
-```
-
-### Install TAP
-
-#### Download & Install Tanzu CLI Bundle
-
-- go to https://network.tanzu.vmware.com/products/tanzu-application-platform
-- login
-- download the tanzu CLI bundle for your OS
-```sh
-# from your terminal, navigate to the directory where you downloaded the file
-cd ~/Downloads
-# create a directory to unzip the tanzu CLI files to
-mkdir ~/tanzu
-# unzip the file and install Tanzu CLI
-tar -xvf tanzu-framework-linux-amd64.tar -C ~/tanzu
-export TANZU_CLI_NO_INIT=true
-cd ~/tanzu
-export VERSION=v0.25.0
-sudo install cli/core/$VERSION/tanzu-core-linux_amd64 /usr/local/bin/tanzu
-tanzu plugin install --local cli all
-```
-
-#### Download & Install Cluster Essentials
-
-- go to https://network.tanzu.vmware.com/products/tanzu-cluster-essentials/
-- login
-- download the cluster essentials bundle for your OS
-```sh
-# from your terminal, navigate to the directory where you downloaded the file
-cd ~/Downloads
-# create a directory to unzip the tap installer files to
-mkdir ~/tanzu-cluster-essentials
-# unzip the file and install cluster essentials
-tar -xvf tanzu-cluster-essentials-linux-amd64-1.3.0.tgz -C ~/tanzu-cluster-essentials
-kubectl create namespace kapp-controller
-kubectl create secret generic kapp-controller-config \
-   --namespace kapp-controller \
-   --from-file caCerts=/home/viadmin/.pki/myca/myca.pem
-export INSTALL_BUNDLE=registry.tanzu.vmware.com/tanzu-cluster-essentials/cluster-essentials-bundle@sha256:54bf611711923dccd7c7f10603c846782b90644d48f1cb570b43a082d18e23b9
-export INSTALL_REGISTRY_HOSTNAME=registry.tanzu.vmware.com
-export INSTALL_REGISTRY_USERNAME=user@email.com
-export INSTALL_REGISTRY_PASSWORD=$PASSWORD
-cd $HOME/tanzu-cluster-essentials
-./install.sh --yes
-``` 
-
-##### add imgpkg and kapp to path
-
-```sh
-sudo cp $HOME/tanzu-cluster-essentials/kapp /usr/local/bin/kapp
-sudo cp $HOME/tanzu-cluster-essentials/imgpkg /usr/local/bin/imgpkg
-```
-
-### Relocate TAP Images to your install registry
-
-```sh
-export INSTALL_REGISTRY_USERNAME=admin
-export INSTALL_REGISTRY_PASSWORD=Harbor12345
-export INSTALL_REGISTRY_HOSTNAME=192.168.49.2:31642
-export TAP_VERSION=1.3.0
-export INSTALL_REPO=tap
-docker login $INSTALL_REGISTRY_HOSTNAME
-# Enter login info
-docker login registry.tanzu.vmware.com
-# Enter login info
-imgpkg copy -b registry.tanzu.vmware.com/tanzu-application-platform/tap-packages:${TAP_VERSION} --to-repo ${INSTALL_REGISTRY_HOSTNAME}/${INSTALL_REPO}/tap-packages
-kubectl create ns tap-install
-tanzu secret registry add tap-registry \
-  --username ${INSTALL_REGISTRY_USERNAME} --password ${INSTALL_REGISTRY_PASSWORD} \
-  --server ${INSTALL_REGISTRY_HOSTNAME} \
-  --export-to-all-namespaces --yes --namespace tap-install
-tanzu package repository add tanzu-tap-repository \
-  --url ${INSTALL_REGISTRY_HOSTNAME}/${INSTALL_REPO}/tap-packages:$TAP_VERSION \
-  --namespace tap-install
-# manual verification step:
-tanzu package repository get tanzu-tap-repository -n tap-install
-# manual verification step:
-tanzu package available list -n tap-install
-# manual verification step:
-tanzu package available list tap.tanzu.vmware.com -n tap-install
-# Create tap profile manually - in next revision update to download the customized file
-code tap-values.yaml
-# Install profile
-tanzu package install tap -p tap.tanzu.vmware.com -v $TAP_VERSION --values-file tap-values.yaml -n tap-install
-# Install Full Dependencies Package
-## Get buildservice version number
-tanzu package available list buildservice.tanzu.vmware.com --namespace tap-install
-export BSVersion=$(tanzu package available list buildservice.tanzu.vmware.com --namespace tap-install | awk '{print $2}' | tail -n 1)
-## Relocate full dependencies packages to your install repo
-imgpkg copy -b registry.tanzu.vmware.com/tanzu-application-platform/full-tbs-deps-package-repo:$BSVersion \
-  --to-repo ${INSTALL_REGISTRY_HOSTNAME}/${INSTALL_REPO}/tbs-full-deps
-## Add the full dependencies package
-tanzu package repository add tbs-full-deps-repository \
-  --url ${INSTALL_REGISTRY_HOSTNAME}/${INSTALL_REPO}/tbs-full-deps:$BSVersion \
-  --namespace tap-install
-```
-
-
-<!-- This is commented out as I plan to add cert-manager installation and setup in the future
-### Create a kubernetes secret with your CA certificates
+<!-- ### Create a kubernetes secret with your CA certificates
 
 ```sh
 kubectl create secret tls my-ca-secret --key /home/viadmin/.pki/myca/myca.key --cert /home/viadmin/.pki/myca/myca.pem -n cert-manager
-```
+``` -->
 
-### Create a cert-manager ClusterIssuer using your CA secret
+<!-- ### Create a cert-manager ClusterIssuer using your CA secret
 
 - create a file ca-issuer.yaml with the following text:
 ```sh
@@ -261,6 +190,25 @@ kubectl apply -f ca-issuer.yaml
 kubectl get ClusterIssuer
 ``` -->
 
+### Execute taphostprep-3.sh to install Tanzu Cli and Cluster Essentials
 
+### Execute taphostprep-4.sh to transfer TAP images to the local harbor registry
+
+### Execute taphostprep-5.sh to install TAP
+- run the script, when prompted to verify tap reconciliation, open a NEW terminal and run the following commands:
+  - tanzu package repository get tanzu-tap-repository -n tap-install
+  - tanzu package available list -n tap-install
+  - tanzu package available list tap.tanzu.vmware.com -n tap-install
+- After verifying reconciliation has completed, return to the original 
+
+
+TODO: Modify the learningcenter-portal ingress object to get cert from cert-manager
+- need to add annotations and tls sections
+- file saved to v4 branch in scripts/assets/tap/1_3/test_v3/learningcenter-portal-ingress.yaml
+
+<!-- this should already be addressed in the initial install steps, once verified, delete this commented step
+#### Setup Ingress for tap-gui
+
+tanzu package installed update tap -p tap.tanzu.vmware.com -v $TAP_VERSION  --values-file tap-values.yaml -n tap-install -->
 
 
