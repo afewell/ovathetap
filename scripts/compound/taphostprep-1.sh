@@ -66,7 +66,7 @@ function func_install_script () {
 }
 
 # Main
-mkdir ${script_tmp_dir}
+mkdir "/${script_tmp_dir}"
 # Setup passwordless sudo
 echo "${hostusername} ALL=(ALL) NOPASSWD:ALL" > "/etc/sudoers.d/${hostusername}"
 

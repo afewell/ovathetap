@@ -11,7 +11,7 @@ source "/home/${hostusername}/ovathetap/scripts/inputs/secrets.env.sh"
 source "/home/${hostusername}/ovathetap/scripts/modules/functions.sh"
 
 # Main
-mkdir ${script_tmp_dir}
+mkdir "/${script_tmp_dir}"
 ## Install Tanzu CLI
 source "/${ovathetap_scripts}/tanzu_cli.sh"
 

@@ -11,7 +11,7 @@ source "/home/${hostusername}/ovathetap/scripts/inputs/secrets.env.sh"
 source "/home/${hostusername}/ovathetap/scripts/modules/functions.sh"
 
 # Main
-mkdir ${script_tmp_dir}
+mkdir "/${script_tmp_dir}"
 ## Prepare and inject local ca cert into ca_cert_data key in tap-values.yaml file
 myca_path="${home_dir}/.pki/myca"
 sed 's/^/    /' "/${myca_path}/myca.pem" > "/${script_tmp_dir}/myca-indented.pem"

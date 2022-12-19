@@ -11,7 +11,7 @@ source "/home/${hostusername}/ovathetap/scripts/inputs/secrets.env.sh"
 source "/home/${hostusername}/ovathetap/scripts/modules/functions.sh"
 
 # Main
-mkdir ${script_tmp_dir}
+mkdir "/${script_tmp_dir}"
 ## Start Minikube
 minikube start --kubernetes-version="${kubernetes_version}" --memory="${minikube_memory}" --cpus="${minikube_cpus}" --embed-certs --insecure-registry=192.168.49.0/24
 # the following line pauses script execution for 5 seconds to ensure minikube is fully loaded, it may not be necessary and if it is, its probably better in the future to use a different method to dynamically verify minikube readiness before proceeding

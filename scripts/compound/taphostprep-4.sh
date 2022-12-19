@@ -11,7 +11,7 @@ source "/home/${hostusername}/ovathetap/scripts/inputs/secrets.env.sh"
 source "/home/${hostusername}/ovathetap/scripts/modules/functions.sh"
 
 # Main
-mkdir ${script_tmp_dir}
+mkdir "/${script_tmp_dir}"
 ## Relocate TAP Images to your install registry
 export INSTALL_REGISTRY_USERNAME=admin
 export INSTALL_REGISTRY_PASSWORD=Harbor12345
