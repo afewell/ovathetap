@@ -1,5 +1,12 @@
 # Semantic Versioning Changelog
 
+## [1.8.4](https://github.com/afewell/ovathetap/compare/v1.8.3...v1.8.4) (2022-12-19)
+
+
+### Bug Fixes
+
+* Update default kubernetes version to 1.24.8 to resolve [#23](https://github.com/afewell/ovathetap/issues/23) ([89035d3](https://github.com/afewell/ovathetap/commit/89035d3119978726f5a533c71286c766dd75f896))
+
 ## [1.8.3](https://github.com/afewell/ovathetap/compare/v1.8.2...v1.8.3) (2022-12-19)
 
 
