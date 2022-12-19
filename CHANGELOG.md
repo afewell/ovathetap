@@ -1,5 +1,12 @@
 # Semantic Versioning Changelog
 
+# [1.9.0](https://github.com/afewell/ovathetap/compare/v1.8.7...v1.9.0) (2022-12-19)
+
+
+### Features
+
+* add docker proxy config to fix rate limiting issue to resolve [#30](https://github.com/afewell/ovathetap/issues/30) ([0e2675d](https://github.com/afewell/ovathetap/commit/0e2675daa0bf639aa603d8ea670bb39fe0330a62))
+
 ## [1.8.7](https://github.com/afewell/ovathetap/compare/v1.8.6...v1.8.7) (2022-12-19)
 
 
