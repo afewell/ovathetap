@@ -42,6 +42,7 @@ func_apt_install () {
     apt install "${apt_package}" -y | tee -a /tmp/taphostprep.log
     func_msg_block "post" "${apt_package}"
 }
+export -f func_apt_install
 
 # func_install_script downloads an install script from ${script_dir_url}/${1} and sources it for execution from this env
 # Required Input 1: name of script file - must include path/filename as appended to script directory url
@@ -53,6 +54,7 @@ func_install_script () {
     post_install_msg="# Finished Installing: ${script_filename} "
     func_msg_block "post" "${script_filename}"
 }
+export -f func_install_script
 
 # ## func_slasher is commented out because it became unused due to refactoring. At some point if remains unused should just delete it but for now I will leave it commented for reference
 # # func_slasher accepts a string and appends both a leading and trailing forward slash to the string
