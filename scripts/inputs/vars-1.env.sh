@@ -19,12 +19,9 @@ export tap_install_repo="tap"
 export tanzu_cli_bundle_filename="tanzu-framework-linux-amd64.tar"
 export cluster_essentials_bundle_url="registry.tanzu.vmware.com/tanzu-cluster-essentials/cluster-essentials-bundle@sha256:54bf611711923dccd7c7f10603c846782b90644d48f1cb570b43a082d18e23b9"
 export cluster_essentials_bundle_filename="tanzu-cluster-essentials-linux-amd64-1.3.0.tgz"
-export tanzunet_hostname="registry.tanzu.vmware.com"
-
-
-
 export minikube_memory="48g"
 export minikube_cpus="12"
+export script_tmp_dir="tmp/taphostprep"
 
 ## Section 2: things that are less likely to be customized which you probably shouldnt customize
 export home_dir="home/${hostusername}"
@@ -32,10 +29,11 @@ export ovathetap_home="${home_dir}/ovathetap"
 export ovathetap_assets="${ovathetap_home}/assets"
 export ovathetap_scripts="${ovathetap_home}/scripts"
 export ovathetap_modules="${ovathetap_home}/modules"
-export 
+export tanzu_cli_dir="${home_dir}/tanzu"
+export tanzu_cluster_essentials_dir="${home_dir}/tanzu-cluster-essentials"
+export tanzunet_hostname="registry.tanzu.vmware.com"
 export raw_git_url="https://raw.githubusercontent.com/afewell/ovathetap/main"
 export modules_path="scripts/modules"
 export functions_filename="functions.sh"
-export script_tmp_dir="tmp/taphostprep"
 export inputs_path="scripts/inputs"
 export envars_filename="vars-1.env.sh"

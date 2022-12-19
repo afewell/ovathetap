@@ -1,6 +1,7 @@
 #!/bin/bash
 ## Install steps from https://docs.docker.com/engine/install/ubuntu/
 ## Install Prerequisites
+user=${hostusername}
 apt-get update
 apt-get install \
     ca-certificates \
@@ -34,7 +35,7 @@ usermod -aG docker $user
 sudo -u $user newgrp docker
 
 ## User will need to manually enter command after script completes:
-echo 'You will need to manually enter the command "newgrp docker" to complete docker configuration' >> /tmp/postactions.txt
+echo 'You will need to manually enter the command "newgrp docker" to complete docker configuration' | tee -a /tmp/postactions.txt
 
 systemctl enable docker.service
 systemctl enable containerd.service
