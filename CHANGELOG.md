@@ -1,5 +1,12 @@
 # Semantic Versioning Changelog
 
+## [1.9.1](https://github.com/afewell/ovathetap/compare/v1.9.0...v1.9.1) (2022-12-19)
+
+
+### Bug Fixes
+
+* add export -f <function name> statement to all functions [#33](https://github.com/afewell/ovathetap/issues/33) ([f6a90f2](https://github.com/afewell/ovathetap/commit/f6a90f2faa8d70862dd2a2917f1ab5af8b1bf30d))
+
 # [1.9.0](https://github.com/afewell/ovathetap/compare/v1.8.7...v1.9.0) (2022-12-19)
 
 
