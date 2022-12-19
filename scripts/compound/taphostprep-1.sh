@@ -12,6 +12,9 @@ source "./scripts/inputs/secrets.env.sh"
 source "./scripts/modules/functions.sh"
 
 # Main
+
+# Setup passwordless sudo
+sudo echo "sed '/root/a ${hostusername} ALL=(ALL:ALL) ALL'" | tee -a /etc/sudoers
 # The following line check to see if this script was called with the -u flag, which sets the {install_all} variable to y, which provides an unattended/noninteractive execution
 if [ "${1}" = "-u" ]; then install_all=y; fi
 
