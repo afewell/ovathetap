@@ -18,11 +18,17 @@ sudo echo "sed '/root/a ${hostusername} ALL=(ALL:ALL) ALL'" | tee -a /etc/sudoer
 # The following line check to see if this script was called with the -u flag, which sets the {install_all} variable to y, which provides an unattended/noninteractive execution
 if [ "${1}" = "-u" ]; then install_all=y; fi
 
-if [ "${install_all}"  ]; then install=y; else read -p  "Refresh snap to prevent Ubuntu error? (y/n):" install; fi
+if [ "${install_all}"  ]; then install=y; else read -p  "Refresh snap to prevent sporadic Ubuntu error? (y/n):" install; fi
 if [ "$install" = "y" ] || [ "$install" = "Y" ]
 then
     killall snap-store
     snap refresh
+fi
+
+if [ "${install_all}"  ]; then install=y; else read -p  "Install Open SSH Server to Allow Remote SSH Connections to this host? (y/n):" install; fi
+if [ "$install" = "y" ] || [ "$install" = "Y" ]
+then
+    func_apt_install "openssh-server"
 fi
 
 if [ "${install_all}"  ]; then install=y; else read -p  "Install ntp? (y/n):" install; fi
