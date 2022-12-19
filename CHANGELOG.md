@@ -1,5 +1,12 @@
 # Semantic Versioning Changelog
 
+## [1.9.4](https://github.com/afewell/ovathetap/compare/v1.9.3...v1.9.4) (2022-12-19)
+
+
+### Bug Fixes
+
+* fixing typo in file causing bug ([b68a2b8](https://github.com/afewell/ovathetap/commit/b68a2b8c44ccef664a82d7306b33adb3306f1f9a))
+
 ## [1.9.3](https://github.com/afewell/ovathetap/compare/v1.9.2...v1.9.3) (2022-12-19)
 
 
