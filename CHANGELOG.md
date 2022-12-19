@@ -1,5 +1,12 @@
 # Semantic Versioning Changelog
 
+## [1.8.3](https://github.com/afewell/ovathetap/compare/v1.8.2...v1.8.3) (2022-12-19)
+
+
+### Bug Fixes
+
+* Update script to configure hostusername account with passwordless sudo to resolve [#22](https://github.com/afewell/ovathetap/issues/22) ([d4fdcf8](https://github.com/afewell/ovathetap/commit/d4fdcf831e78f534f6d9eaa766774c9cb6b10ec6))
+
 ## [1.8.2](https://github.com/afewell/ovathetap/compare/v1.8.1...v1.8.2) (2022-12-19)
 
 
