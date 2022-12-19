@@ -2,12 +2,13 @@
 
 ## Script variables
 ### Inject envars from input file
-source "./scripts/inputs/vars-1.env.sh"
+hostusername="${hostusername:-viadmin}"
+source "/home/${hostusername}/ovathetap/scripts/inputs/vars-1.env.sh"
 ### Inject Secret variables from input file 
-source "./scripts/inputs/secrets.env.sh"
+source "/home/${hostusername}/ovathetap/scripts/inputs/secrets.env.sh"
 
 ## Import Functions
-source "./scripts/modules/functions.sh"
+source "/home/${hostusername}/ovathetap/scripts/modules/functions.sh"
 
 # Main
 mkdir ${script_tmp_dir}

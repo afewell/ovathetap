@@ -4,17 +4,18 @@
 
 ## Script variables
 ### Inject envars from input file
-source "./scripts/inputs/vars-1.env.sh"
+hostusername="${hostusername:-viadmin}"
+source "/home/${hostusername}/ovathetap/scripts/inputs/vars-1.env.sh"
 ### Inject Secret variables from input file 
-source "./scripts/inputs/secrets.env.sh"
+source "/home/${hostusername}/ovathetap/scripts/inputs/secrets.env.sh"
 
 ## Import Functions
-source "./scripts/modules/functions.sh"
+source "/home/${hostusername}/ovathetap/scripts/modules/functions.sh"
 
 # Main
 mkdir ${script_tmp_dir}
 # Setup passwordless sudo
-echo "${hostusername} ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/${hostusername}
+echo "${hostusername} ALL=(ALL) NOPASSWD:ALL" > "/etc/sudoers.d/${hostusername}"
 
 # The following line check to see if this script was called with the -u flag, which sets the {install_all} variable to y, which provides an unattended/noninteractive execution
 if [ "${1}" = "-u" ]; then install_all=y; fi
