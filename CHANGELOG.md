@@ -1,5 +1,12 @@
 # Semantic Versioning Changelog
 
+## [1.9.8](https://github.com/afewell/ovathetap/compare/v1.9.7...v1.9.8) (2022-12-20)
+
+
+### Bug Fixes
+
+* error in dnsmasq config, result is /etc/resolv.conf entries are all squished on one line and one is missing nameserver statement[#41](https://github.com/afewell/ovathetap/issues/41) ([c108354](https://github.com/afewell/ovathetap/commit/c1083547353292d3f6fc8c7cbb9629dff8e59afe))
+
 ## [1.9.7](https://github.com/afewell/ovathetap/compare/v1.9.6...v1.9.7) (2022-12-20)
 
 
