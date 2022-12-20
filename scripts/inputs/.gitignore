@@ -1,5 +1,7 @@
 # Ignore all filenames that include the word secret
 *secret*
+# Ignore the vars.env.sh file
+vars.env.sh
 
 # Except for files with the .template or .age extensions
 !*.template

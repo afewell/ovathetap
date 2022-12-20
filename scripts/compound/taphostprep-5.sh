@@ -3,7 +3,7 @@
 ## Script variables
 ### Inject envars from input file
 hostusername="${hostusername:-viadmin}"
-source "/home/${hostusername}/ovathetap/scripts/inputs/vars-1.env.sh"
+source "/home/${hostusername}/ovathetap/scripts/inputs/vars.env.sh"
 ### Inject Secret variables from input file 
 source "/home/${hostusername}/ovathetap/scripts/inputs/secrets.env.sh"
 

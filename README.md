@@ -69,7 +69,7 @@ network:
           via: 192.168.0.1
 ```
 
-- `sudo netplan apply`
+- Enter `sudo netplan apply` to apply network settings
 
 **Note:** It is a good practice to save your base vm or vapp template at this point.
 
@@ -94,19 +94,33 @@ git clone https://github.com/afewell/ovathetap.git
 
 To execute the scripts and instructions on this page, you will need to verify the default environmental variables provided and update if needed. You will also need to complete the secrets file with your docker and tanzunet account details - this information is only used within the local scripts in your local environment. 
 
-- Verify the [default environmental variables](./scripts/inputs/vars-1.env.sh), and modify if needed
-- Make a copy of the secrets template with the command `cp ~/ovathetap/scripts/inputs/secrets.env.template ~/ovathetap/scripts/inputs/secrets.env.sh`
-- Edit the copy of the secrets file and populate all listed variables
-  - **Note:** You should never upload your populated secrets file to github. A gitignore file is included in the inputs directory to help prevent your secrets from being uploaded. 
-  - You can access your secrets file at [~/ovathetap/scripts/inputs/secrets.env.sh](~/ovathetap/scripts/inputs/secrets.env.sh)
-- **VMWARE EMPLOYEES:** IF your lab environment is on a vmware internal network, please include the line `export vmware_int_net="true"` in the vars-1.env.sh file. This sets up the docker_proxy_cache, which can help bypass the crippling docker hub rate limits, but it only works from vmware internal networks. 
+- Verify the [default environmental variables](./scripts/inputs/vars.env.sh)
+- REQUIRED: you must make copies of the vars and secrets templates, using the path and filenames specified below, as these files will be used in instructions and scripts throughout this document.
+```sh
+# If not already set in your env, set the hostusername var before executing the following commands
+## Convention on this repo is to not use leading or trailing forward slashes in vars if possible
+hostusername="${hostusername}"
+home_dir="home/${hostusername}"
+ovathetap_home="${home_dir}/ovathetap"
+# REQUIRED: Make a copy of the cars template
+cp "/${ovathetap_home}/scripts/inputs/vars.env.sh.template" "/${ovathetap_home}/scripts/inputs/vars.env.sh"
+# Use nano or your preferred text editor to verify and, if needed, modify the default variables file
+nano "/${ovathetap_home}/scripts/inputs/vars.env.sh"
+# REQUIRED: Make a copy of the secrets template
+cp "/${ovathetap_home}/scripts/inputs/secrets.env.sh.template" "/${ovathetap_home}/scripts/inputs/secrets.env.sh"
+# REQUIRED: Use nano or your preferred text editor to populate the variables in the secrets.env.sh file
+nano "/${ovathetap_home}/scripts/inputs/secrets.env.sh"
+```
+- **Note:** You should never upload your populated secrets file to github. A gitignore file is included in the inputs directory to help prevent your secrets from being uploaded. 
+- **VMWARE EMPLOYEES:** IF your lab environment is on a vmware internal network, please include the line `export vmware_int_net="true"` in the vars.env.sh file. This sets up the docker_proxy_cache, which can help bypass the crippling docker hub rate limits, but it only works from vmware internal networks. 
 
 ### Download  Tanzu CLI Bundle
 
 - go to https://network.tanzu.vmware.com/products/tanzu-application-platform
 - login
 - download the tanzu CLI bundle for linux
-- **IMPORTANT** the tanzu CLI bundle must be downloaded to the /home/{hostusername}/Downloads. By default the {hostusername} is set to `viadmin`, make sure to change this value in the inputs file if you are using a different host username.
+- **IMPORTANT** the tanzu CLI bundle must be downloaded to /home/{hostusername}/Downloads. By default the {hostusername} is set to `viadmin`, make sure to change this value in the inputs file if you are using a different host username.
+- Ensure that the [default environmental variables](./scripts/inputs/vars.env.sh) align with the Tanzu ClI version you plan to install. 
 
 
 ### Download Cluster Essentials
@@ -114,17 +128,32 @@ To execute the scripts and instructions on this page, you will need to verify th
 - go to https://network.tanzu.vmware.com/products/tanzu-cluster-essentials/
 - login
 - download the cluster essentials bundle for linux
-- **IMPORTANT** the tanzu CLI bundle must be downloaded to the /home/{hostusername}/Downloads. By default the {hostusername} is set to `viadmin`, make sure to change this value in the inputs file if you are using a different host username.
+- **IMPORTANT** The cluster essentials bundle must be downloaded to the /home/{hostusername}/Downloads. By default the {hostusername} is set to `viadmin`, make sure to change this value in the inputs file if you are using a different host username.
+- Ensure that the [default environmental variables](./scripts/inputs/vars.env.sh) align with the cluster essentials version you plan to install.
 
 
 ### Install all items in taphostprep-1.sh to setup/configure linux environment
-- **IMPORTANT** before you execute the commands below, note they will be configured for the default host username `viadmin`, if you would like this script to use a different host username, you must update the value in the /scripts/inputs/vars-1.env.sh file
+- Ensure that the [default environmental variables](./scripts/inputs/vars.env.sh) are verified before proceeding.
 - when you execute the commands below you will be prompted to select yes to install several different packages, install all of them
+- if you prefer to install all packages without being prompted for input, you can add the "-u" flag, but its good to go through the interactive mode at least the first time so you can better understand what the script does.
 ```sh
-wget -O /tmp/taphostprep-1.sh https://raw.githubusercontent.com/afewell/ovathetap/main/scripts/compound/taphostprep-1.sh
-sudo chmod +x /tmp/taphostprep-1.sh 
-sudo /tmp/taphostprep-1.sh 
+# If you are using a custom hostusername, you should ensure the {hostusername} variable set in your environment and in the vars.env.sh file before proceeding
+# The following statement sets the {hostusername} variable to whatever it is already set to, if it has already been set. If the hostusername variable is not already set, it sets it to the value that is to the right of the ":-" characters, which is "viadmin"
+hostusername="${hostusername:-viadmin}"
+# source the vars files to ensure they are available in your env
+source "/home/${hostusername}/ovathetap/scripts/inputs/vars.env.sh"
+# source the secrets files to ensure they are available in your env. Note that since we sourced the vars file above, we can start using project variables to simplify and clarify ongoing commands
+source "/${ovathetap_inputs}/vars.env.sh"
+# make the taphostprep-1.sh script executable
+sudo chmod +x /${ovathetap_scripts}/compound/taphostprep-1.sh
+# execute the taphostprep-1.sh file. Optionally append "-u" to install all packages in non-interactive mode
+sudo /tmp/taphostprep-1.sh # "-u"
 ```
+- **IMPORTANT:** After the script completes, enter the following commands to enable sudoless docker calls. This is not just for user experience, it is required for subsequent steps to complete successfully.
+```sh
+
+```
+
 - **IMPORTANT:** Reboot the host after the script completes to ensure sudoless docker permissions are applied, which is REQUIRED for the following steps to complete successfully. 
   - I have tried multiple methods to apply permissions without reboot including `newgrp`, login/logout, and several other methods and could not get anything to work with consistency other than reboot. 
 - After rebooting your host, verify you can execute docker commands without sudo by executing the command `docker run hello-world`
@@ -141,7 +170,7 @@ sudo /tmp/taphostprep-1.sh
 - Close firefox settings
 
 ### Execute taphostprep-2.sh to configure base kubernetes environment
-- **IMPORTANT** before you execute the commands below, note they will be configured for the default host username `viadmin`, if you would like this script to use a different host username, you must update the value in the /scripts/inputs/vars-1.env.sh file
+- **IMPORTANT** before you execute the commands below, note they will be configured for the default host username `viadmin`, if you would like this script to use a different host username, you must update the value in the /scripts/inputs/vars.env.sh file
 - from a terminal, execute the [taphostprep-2.sh script](./scripts/compound/taphostprep-2.sh) to launch minikube and configure dnsmasq. 
   - `sudo /home/viadmin/ovathetap/scripts/compound/taphostprep-2.sh`
 - **IMPORTANT:** After the script completes, verify all harbor components are running before proceeding. This usually works very quickly, but can commonly be delayed due to docker hub rate limiting. This can sometimes cause harbor deployment to be delayed significantly. If you see your harbor containers arent downloading due to rate limiting, this will usually resolve eventually by itself, but it can take several hours. To avoid this, its best to have a paid docker account or use a docker caching server if one is available in your environment.

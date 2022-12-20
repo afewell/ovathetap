@@ -5,8 +5,8 @@
 ## Script variables
 ### Inject envars from input file
 hostusername="${hostusername:-viadmin}"
-echo 'source "/home/${hostusername}/ovathetap/scripts/inputs/vars-1.env.sh"'
-source "/home/${hostusername}/ovathetap/scripts/inputs/vars-1.env.sh"
+echo 'source "/home/${hostusername}/ovathetap/scripts/inputs/vars.env.sh"'
+source "/home/${hostusername}/ovathetap/scripts/inputs/vars.env.sh"
 env
 ### Inject Secret variables from input file 
 # commented because no secrets needed in this file
