@@ -1,5 +1,12 @@
 # Semantic Versioning Changelog
 
+## [1.9.5](https://github.com/afewell/ovathetap/compare/v1.9.4...v1.9.5) (2022-12-20)
+
+
+### Bug Fixes
+
+* docker install still causing taphostprep-1.sh to exit prematurely [#39](https://github.com/afewell/ovathetap/issues/39) ([5e611bd](https://github.com/afewell/ovathetap/commit/5e611bd19cf53163201fa10a07ee1ebabb97eb89))
+
 ## [1.9.4](https://github.com/afewell/ovathetap/compare/v1.9.3...v1.9.4) (2022-12-19)
 
 
