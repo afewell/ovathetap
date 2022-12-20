@@ -151,17 +151,15 @@ sudo /tmp/taphostprep-1.sh # "-u"
 ```
 - **IMPORTANT:** After the script completes, enter the following commands to enable sudoless docker calls. This is not just for user experience, it is required for subsequent steps to complete successfully.
 ```sh
-sudo groupadd docker -f
-sudo usermod -aG docker ${hostusername}
-newgrp docker
-# reboot your host!
+
 ```
-- **IMPORTANT:** Reboot the host after the script completes
+
+- **IMPORTANT:** Reboot the host after the script completes to ensure sudoless docker permissions are applied, which is REQUIRED for the following steps to complete successfully. 
+  - I have tried multiple methods to apply permissions without reboot including `newgrp`, login/logout, and several other methods and could not get anything to work with consistency other than reboot. 
 - After rebooting your host, verify you can execute docker commands without sudo by executing the command `docker run hello-world`
 
 ### Install CA Cert in Firefox to trust local sites
 
-- The taphostprep-1.sh script that was executed in the previous step installed a certificate authority which we can install in firefox so that it trusts
 - Open firefox, navigate to settings and in the settings search window, search for "certificates"
 - Select "View Certificates"
 - Select "Import"
