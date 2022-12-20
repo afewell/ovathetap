@@ -5,7 +5,7 @@ echo "${hostusername}"
 home_dir="${home_dir:-~}"
 echo "${home_dir}"
 ovathetap_assets="${ovathetap_assets}"
-"${ovathetap_assets}"
+echo "${ovathetap_assets}"
 
 ## Create Private Key for CA
 mkdir -p "/${home_dir}/.pki/myca"
@@ -15,7 +15,7 @@ openssl req -x509 -new -nodes -key "/${home_dir}/.pki/myca/myca.key" -reqexts v3
  -extensions v3_ca -config "/${ovathetap_assets}/opensslv3.cnf" -sha256 -days 1825 \
  -subj "/C=CN/ST=Washington/L=Seattle/O=VMware/OU=mamburger/CN=tanzu.demo" \
  -out "/${home_dir}/.pki/myca/myca.pem"
-## Set {user} as owner of cert files
+## Set {hostusername} as owner of cert files
 chown -R "${hostusername}:${hostusername}" "/${home_dir}/.pki/"
 ## Copy certs to minikube
 mkdir -p "/${home_dir}/.minikube/certs/"

@@ -109,7 +109,7 @@ To execute the scripts and instructions on this page, you will need to verify th
 - **IMPORTANT** the tanzu CLI bundle must be downloaded to the /home/{hostusername}/Downloads. By default the {hostusername} is set to `viadmin`, make sure to change this value in the inputs file if you are using a different host username.
 
 
-### Download & Install Cluster Essentials
+### Download Cluster Essentials
 
 - go to https://network.tanzu.vmware.com/products/tanzu-cluster-essentials/
 - login
