@@ -1,5 +1,12 @@
 # Semantic Versioning Changelog
 
+## [1.9.6](https://github.com/afewell/ovathetap/compare/v1.9.5...v1.9.6) (2022-12-20)
+
+
+### Bug Fixes
+
+* change the vars-1.env.sh to vars-1.env.sh.template and prep files [#31](https://github.com/afewell/ovathetap/issues/31) ([315a909](https://github.com/afewell/ovathetap/commit/315a90993fa6b699128eb5ff08e9115fe4c97024))
+
 ## [1.9.5](https://github.com/afewell/ovathetap/compare/v1.9.4...v1.9.5) (2022-12-20)
 
 
