@@ -1,5 +1,12 @@
 # Semantic Versioning Changelog
 
+## [1.9.7](https://github.com/afewell/ovathetap/compare/v1.9.6...v1.9.7) (2022-12-20)
+
+
+### Bug Fixes
+
+* add instruction for user to export hostusername=<host user name> manually before executing taphostprep-1 scripts[#40](https://github.com/afewell/ovathetap/issues/40) ([da1b0ca](https://github.com/afewell/ovathetap/commit/da1b0ca88609dbdc0e332511a87e31223206e4bf))
+
 ## [1.9.6](https://github.com/afewell/ovathetap/compare/v1.9.5...v1.9.6) (2022-12-20)
 
 
