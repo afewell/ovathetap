@@ -166,7 +166,7 @@ newgrp docker
 - Select "View Certificates"
 - Select "Import"
 - Right click on a blank area of the file selector window and select the option to show hidden files
-- Navigate to the /home/viadmin/.pki/ca/ directory and select the ca.pem file and click open to import the certificate
+- Navigate to the /home/viadmin/.pki/myca/ directory and select the myca.pem file and click open to import the certificate
   - in the line above, "viadmin" is the default user account, if you have configured a nondefault username, use that value
 - Select the options to Trust this CA for websites and email addresses and click ok to finish importing the certificate
 - Close firefox settings
@@ -197,7 +197,7 @@ echo "dnsmasq configuration complete"
 ### Install Harbor
 ```sh
 # REQUIRED: hydrate harborvalues file with docker_proxy_cache value if on a vmware internal network, if there is no {docker_proxy_cache} value, this simply makes the required copy of the harborvalues template in the correct location
-envsubst < "${ovathetap_assets}/harborvalues.template" > "${ovathetap_assets}/harborvalues.yaml"
+envsubst < "${ovathetap_assets}/harborvalues.yaml.template" > "${ovathetap_assets}/harborvalues.yaml"
 ## Install Harbor
 # Login to docker to assist with docker hub rate limiting
 docker login -u "${docker_account_username}" -p "${docker_account_password}"
@@ -269,7 +269,44 @@ docker login "${tanzunet_hostname}" -u "${tanzunet_username}" -p "${tanzunet_pas
 imgpkg copy -b registry.tanzu.vmware.com/tanzu-application-platform/tap-packages:${TAP_VERSION} --to-repo ${INSTALL_REGISTRY_HOSTNAME}/${INSTALL_REPO}/tap-packages
 ```
 
-
+### Install TAP
+```sh
+## Prepare and inject local ca cert into ca_cert_data key in tap-values.yaml file
+myca_path="${home_dir}/.pki/myca"
+sed 's/^/    /' "/${myca_path}/myca.pem" > "/${script_tmp_dir}/myca-indented.pem"
+sed "/ca_cert_data/ r /${script_tmp_dir}/myca-indented.pem" "/${ovathetap_assets}/tap-values.yaml.template" > "/${ovathetap_assets}/tap-values.yaml"
+rm "/${script_tmp_dir}/myca-indented.pem"
+## Install TAP
+export INSTALL_REGISTRY_USERNAME=admin
+export INSTALL_REGISTRY_PASSWORD=Harbor12345
+export INSTALL_REGISTRY_HOSTNAME=192.168.49.2:31642
+export TAP_VERSION="${tap_version}"
+export INSTALL_REPO="${tap_install_repo}"
+docker login $INSTALL_REGISTRY_HOSTNAME -u $INSTALL_REGISTRY_USERNAME -p $INSTALL_REGISTRY_PASSWORD
+kubectl create ns tap-install
+tanzu secret registry add tap-registry \
+  --username ${INSTALL_REGISTRY_USERNAME} --password ${INSTALL_REGISTRY_PASSWORD} \
+  --server ${INSTALL_REGISTRY_HOSTNAME} \
+  --export-to-all-namespaces --yes --namespace tap-install
+tanzu package repository add tanzu-tap-repository \
+  --url ${INSTALL_REGISTRY_HOSTNAME}/${INSTALL_REPO}/tap-packages:$TAP_VERSION \
+  --namespace tap-install
+# TODO: I need to add some step here to automate waiting until reconciliation is complete before proceeding
+- The Tanzu Package Repository should reconcile before proceeding, before you press enter to continue, please manually verify reconcilliation has completed
+# Install profile
+tanzu package install tap -p tap.tanzu.vmware.com -v $TAP_VERSION --values-file "/${ovathetap_assets}/tap-values.yaml" -n tap-install
+# Install Full Dependencies Package
+## Get buildservice version number
+tanzu package available list buildservice.tanzu.vmware.com --namespace tap-install
+export BSVersion=$(tanzu package available list buildservice.tanzu.vmware.com --namespace tap-install | awk '{print $2}' | tail -n 1)
+## Relocate full dependencies packages to your install repo
+imgpkg copy -b registry.tanzu.vmware.com/tanzu-application-platform/full-tbs-deps-package-repo:$BSVersion \
+  --to-repo ${INSTALL_REGISTRY_HOSTNAME}/${INSTALL_REPO}/tbs-full-deps
+## Add the full dependencies package
+tanzu package repository add tbs-full-deps-repository \
+  --url ${INSTALL_REGISTRY_HOSTNAME}/${INSTALL_REPO}/tbs-full-deps:$BSVersion \
+  --namespace tap-install
+```
 
 <!-- I dont know if we need minikube tunnel so testing without it this round. 
 ### Start Minikube tunnel
@@ -309,25 +346,14 @@ EOF
 kubectl apply -f ca-issuer.yaml
 # Verify the cluster issuer was created and is ready with the following command:
 kubectl get ClusterIssuer
-``` -->
-
-### Execute taphostprep-3.sh to install Tanzu Cli and Cluster Essentials
-
-### Execute taphostprep-4.sh to transfer TAP images to the local harbor registry
-
-### Execute taphostprep-5.sh to install TAP
-- run the script, when prompted to verify tap reconciliation, open a NEW terminal and run the following commands:
-  - tanzu package repository get tanzu-tap-repository -n tap-install
-  - tanzu package available list -n tap-install
-  - tanzu package available list tap.tanzu.vmware.com -n tap-install
-- After verifying reconciliation has completed, return to the original 
+```
 
 
 TODO: Modify the learningcenter-portal ingress object to get cert from cert-manager
 - need to add annotations and tls sections
 - file saved to v4 branch in scripts/assets/tap/1_3/test_v3/learningcenter-portal-ingress.yaml
 
-<!-- this should already be addressed in the initial install steps, once verified, delete this commented step
+ this should already be addressed in the initial install steps, once verified, delete this commented step
 #### Setup Ingress for tap-gui
 
 tanzu package installed update tap -p tap.tanzu.vmware.com -v $TAP_VERSION  --values-file tap-values.yaml -n tap-install -->

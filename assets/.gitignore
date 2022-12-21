@@ -1,5 +1,9 @@
 # Ignore the tap-values.yaml file
 tap-values.yaml
+# Ignore the harborvalues.yaml file
+harborvalues.yaml
 
 # Do not ignore the tap-values.yaml.template file
 !tap-values.yaml.template
+# Do not ignore the harborvalues.yaml.template file
+!harborvalues.yaml.template
