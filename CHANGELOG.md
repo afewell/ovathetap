@@ -1,5 +1,12 @@
 # Semantic Versioning Changelog
 
+# [1.12.0](https://github.com/afewell/ovathetap/compare/v1.11.2...v1.12.0) (2022-12-21)
+
+
+### Features
+
+* move taphostprep-5 to guided execution and update any references and instructions to resolve [#49](https://github.com/afewell/ovathetap/issues/49) and resolve [#48](https://github.com/afewell/ovathetap/issues/48) and resolve [#50](https://github.com/afewell/ovathetap/issues/50) and resolve [#51](https://github.com/afewell/ovathetap/issues/51) ([6474268](https://github.com/afewell/ovathetap/commit/6474268cbd219d2b34254e9452c7f85af7bc6e8b))
+
 ## [1.11.2](https://github.com/afewell/ovathetap/compare/v1.11.1...v1.11.2) (2022-12-21)
 
 
