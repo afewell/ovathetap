@@ -16,5 +16,5 @@ mkdir "/${script_tmp_dir}"
 source "/${ovathetap_scripts}/tanzu_cli.sh"
 
 ## Install Cluster Essentials
-source "/${ovathetap_scripts}/tanzu_cluster_essentials.sh"
+source "/${ovathetap_scripts}/cluster_essentials.sh"
 

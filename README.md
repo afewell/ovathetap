@@ -110,6 +110,8 @@ nano "/${ovathetap_home}/scripts/inputs/vars.env.sh"
 cp "/${ovathetap_home}/scripts/inputs/secrets.env.sh.template" "/${ovathetap_home}/scripts/inputs/secrets.env.sh"
 # REQUIRED: Use nano or your preferred text editor to populate the variables in the secrets.env.sh file
 nano "/${ovathetap_home}/scripts/inputs/secrets.env.sh"
+# initialize temporary directory to be used for setup
+mkdir "/${script_tmp_dir}"
 ```
 - **Note:** You should never upload your populated secrets file to github. A gitignore file is included in the inputs directory to help prevent your secrets from being uploaded. 
 - **VMWARE EMPLOYEES:** IF your lab environment is on a vmware internal network, please include the line `export vmware_int_net="true"` in the vars.env.sh file. This sets up the docker_proxy_cache, which can help bypass the crippling docker hub rate limits, but it only works from vmware internal networks. 
@@ -143,7 +145,7 @@ export hostusername="${hostusername:-viadmin}"
 # source the vars files to ensure they are available in your env
 source "/home/${hostusername}/ovathetap/scripts/inputs/vars.env.sh"
 # source the secrets files to ensure they are available in your env. Note that since we sourced the vars file above, we can start using project variables to simplify and clarify ongoing commands
-source "/${ovathetap_inputs}/vars.env.sh"
+source "/${ovathetap_inputs}/secrets.env.sh"
 # make the taphostprep-1.sh script executable
 sudo chmod +x /${ovathetap_scripts}/compound/taphostprep-1.sh
 # execute the taphostprep-1.sh file. Optionally append "-u" to install all packages in non-interactive mode
@@ -151,11 +153,11 @@ sudo /tmp/taphostprep-1.sh # "-u"
 ```
 - **IMPORTANT:** After the script completes, enter the following commands to enable sudoless docker calls. This is not just for user experience, it is required for subsequent steps to complete successfully.
 ```sh
-
+sudo groupadd docker -f
+sudo usermod -aG docker ${hostusername}
+newgrp docker
 ```
-
-- **IMPORTANT:** Reboot the host after the script completes to ensure sudoless docker permissions are applied, which is REQUIRED for the following steps to complete successfully. 
-  - I have tried multiple methods to apply permissions without reboot including `newgrp`, login/logout, and several other methods and could not get anything to work with consistency other than reboot. 
+- **IMPORTANT:** Reboot the host after the script completes
 - After rebooting your host, verify you can execute docker commands without sudo by executing the command `docker run hello-world`
 
 ### Install CA Cert in Firefox to trust local sites
@@ -169,14 +171,51 @@ sudo /tmp/taphostprep-1.sh # "-u"
 - Select the options to Trust this CA for websites and email addresses and click ok to finish importing the certificate
 - Close firefox settings
 
-### Execute taphostprep-2.sh to configure base kubernetes environment
-- **IMPORTANT** before you execute the commands below, note they will be configured for the default host username `viadmin`, if you would like this script to use a different host username, you must update the value in the /scripts/inputs/vars.env.sh file
-- from a terminal, execute the [taphostprep-2.sh script](./scripts/compound/taphostprep-2.sh) to launch minikube and configure dnsmasq. 
-  - `sudo /home/viadmin/ovathetap/scripts/compound/taphostprep-2.sh`
-- **IMPORTANT:** After the script completes, verify all harbor components are running before proceeding. This usually works very quickly, but can commonly be delayed due to docker hub rate limiting. This can sometimes cause harbor deployment to be delayed significantly. If you see your harbor containers arent downloading due to rate limiting, this will usually resolve eventually by itself, but it can take several hours. To avoid this, its best to have a paid docker account or use a docker caching server if one is available in your environment.
- - To verify your harbor installation is running: 
-   - enter the command `kubectl get all -n harbor` and verify the state of components
-   - TODO: add instructions to login to harbor web gui for additional verification
+### Deploy Minikube Cluster
+```sh
+export hostusername="${hostusername:-viadmin}"
+# source the vars files again since you should have rebooted after running taphostprep-1.sh
+source "/home/${hostusername}/ovathetap/scripts/inputs/vars.env.sh"
+# source the secrets files to ensure they are available in your env. Note that since we sourced the vars file above, we can start using project variables to simplify and clarify ongoing commands
+source "/${ovathetap_inputs}/secrets.env.sh"
+# Start Minikube
+minikube start --kubernetes-version="${kubernetes_version}" --memory="${minikube_memory}" --cpus="${minikube_cpus}" --driver=docker --embed-certs --insecure-registry=0.0.0.0/0
+# Gather minikube IP
+echo "the minikube ip is: $(minikube ip)"
+export minikubeip=$(minikube ip)
+```
+
+### Complete dnsmasq configuration
+```sh
+## Configure dnsmasq to resolve every request to *.tanzu.demo to the minikube IP
+sudo mv /etc/dnsmasq.conf /etc/dnsmasq.old
+sudo echo "address=/tanzu.demo/${minikubeip}" | tee /etc/dnsmasq.conf
+sudo systemctl restart dnsmasq
+echo "dnsmasq configuration complete"
+```
+
+### Install Harbor
+```sh
+# REQUIRED: hydrate harborvalues file with docker_proxy_cache value if on a vmware internal network, if there is no {docker_proxy_cache} value, this simply makes the required copy of the harborvalues template in the correct location
+envsubst < "${ovathetap_assets}/harborvalues.template" > "${ovathetap_assets}/harborvalues.yaml"
+## Install Harbor
+# Login to docker to assist with docker hub rate limiting
+docker login -u "${docker_account_username}" -p "${docker_account_password}"
+# Add the harbor repo to helm
+helm repo add harbor https://helm.goharbor.io
+# create namespace for harbor
+kubectl create ns harbor
+# install harbor
+helm install harbor harbor/harbor -f "/${ovathetap_assets}/harborvalues.yaml" -n harbor
+```
+- **IMPORTANT:** It may take several minutes before the harbor deployment completes. Please ensure the harbor deployment is fully running before proceeding with the following verification steps:
+  - enter the command `watch kubectl get deployments -n harbor` and wait for all of the deployments to be ready before proceeding
+  - Open a tab in firefox and navigate to the url `http://192.168.49.2:30002` and verify the harbor login page is displayed
+  - Login to the harbor web interface with the username `admin` and password `Harbor12345`
+  - Verify you can also login from your terminal with the command `docker login 192.168.49.2:30002` - enter the username `admin` and password `Harbor12345` when prompted.
+  - If any of these steps do not work, wait a few minutes and try again. Ensure these verification steps work before proceeding. 
+
+
 
 
 
