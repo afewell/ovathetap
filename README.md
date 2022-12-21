@@ -216,8 +216,45 @@ helm install harbor harbor/harbor -f "/${ovathetap_assets}/harborvalues.yaml" -n
   - If any of these steps do not work, wait a few minutes and try again. Ensure these verification steps work before proceeding. 
 
 
+### Install Tanzu CLI
+```sh
+## Install Tanzu CLI
+cd "/${home_dir}/Downloads"
+# create a directory to unzip the tanzu CLI files to
+mkdir "/${tanzu_cli_dir}"
+# unzip the file and install Tanzu CLI
+tar -xvf "${tanzu_cli_bundle_filename}" -C "/${tanzu_cli_dir}"
+export TANZU_CLI_NO_INIT=true
+cd "/${tanzu_cli_dir}" 
+export VERSION=${tanzu_cli_bundle_filename}
+sudo install "cli/core/$VERSION/tanzu-core-linux_amd64" /usr/local/bin/tanzu
+tanzu plugin install --local cli all
+```
 
-
+### Install Tanzu Cluster Essentials
+```sh
+## Install Cluster Essentials
+cd "/${home_dir}/Downloads" 
+# create a directory to unzip the tap installer files to
+mkdir "/${cluster_essentials_dir}" 
+# unzip the file and install cluster essentials
+tar -xvf "${cluster_essentials_bundle_filename}" -C "/${cluster_essentials_dir}" 
+kubectl create namespace kapp-controller
+kubectl create secret generic kapp-controller-config \
+   --namespace kapp-controller \
+   --from-file caCerts=/home/viadmin/.pki/myca/myca.pem
+export INSTALL_BUNDLE="${cluster_essentials_bundle_url}"
+export INSTALL_REGISTRY_HOSTNAME="${tanzunet_hostname}"
+export INSTALL_REGISTRY_USERNAME="${tanzunet_username}"
+export INSTALL_REGISTRY_PASSWORD="${tanzunet_password}"
+cd "/${cluster_essentials_dir}"
+./install.sh --yes
+# add carvel apps to path
+cp "/${home_dir}/tanzu-cluster-essentials/kapp" /usr/local/bin/kapp
+cp "/${home_dir}/tanzu-cluster-essentials/imgpkg" /usr/local/bin/imgpkg
+cp "/${home_dir}/tanzu-cluster-essentials/kbld" /usr/local/bin/kbld
+cp "/${home_dir}/tanzu-cluster-essentials/ytt" /usr/local/bin/ytt
+```
 
 <!-- I dont know if we need minikube tunnel so testing without it this round. 
 ### Start Minikube tunnel
