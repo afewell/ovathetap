@@ -1,5 +1,12 @@
 # Semantic Versioning Changelog
 
+# [1.10.0](https://github.com/afewell/ovathetap/compare/v1.9.8...v1.10.0) (2022-12-21)
+
+
+### Features
+
+* relocate content and remove taphost-2.sh and replace references and instructions [#42](https://github.com/afewell/ovathetap/issues/42) ([5686ca6](https://github.com/afewell/ovathetap/commit/5686ca626895b88d86c4dd536406cf36be94bafd))
+
 ## [1.9.8](https://github.com/afewell/ovathetap/compare/v1.9.7...v1.9.8) (2022-12-20)
 
 
