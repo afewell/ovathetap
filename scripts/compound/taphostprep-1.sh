@@ -5,16 +5,19 @@
 ## Script variables
 ### Inject envars from input file
 hostusername="${hostusername:-viadmin}"
+echo "hostusername: $(echo $hostusername)"
 echo 'source "/home/${hostusername}/ovathetap/scripts/inputs/vars.env.sh"'
 source "/home/${hostusername}/ovathetap/scripts/inputs/vars.env.sh"
+echo "Here is the env:"
 env
+echo "The above line is end of the env output"
+### Injected Vars that are used in this file:
+ 
 ### Inject Secret variables from input file 
 # commented because no secrets needed in this file
 # source "/home/${hostusername}/ovathetap/scripts/inputs/secrets.env.sh"
 
-## Import Functions
-# source "/home/${hostusername}/ovathetap/scripts/modules/functions.sh"
-# function import currently not working so defining in-file below
+## Define Functions
 # func_msg_block echos a provided message in a block of hashtags and tees it to the install log
 # Required Input ${1}: can be one of:
 ##  "pre": will use default pre message, func call must include package name OR script filename as ${2}
