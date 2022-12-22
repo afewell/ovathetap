@@ -1,5 +1,12 @@
 # Semantic Versioning Changelog
 
+## [1.12.1](https://github.com/afewell/ovathetap/compare/v1.12.0...v1.12.1) (2022-12-22)
+
+
+### Bug Fixes
+
+* refactor taphostprep-1 to remove extensive redundancy to resolve [#53](https://github.com/afewell/ovathetap/issues/53) and resolve [#54](https://github.com/afewell/ovathetap/issues/54) ([eb02ca1](https://github.com/afewell/ovathetap/commit/eb02ca15056e979a667991a8920fcdf0bbec57e1))
+
 # [1.12.0](https://github.com/afewell/ovathetap/compare/v1.11.2...v1.12.0) (2022-12-21)
 
 
