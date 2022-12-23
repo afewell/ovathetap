@@ -1,7 +1,11 @@
 #!/bin/bash
 
 ## This script can be called with an input variable ${1} of "-u" for unattended installation
-
+# Check if -u flag is passed as first argument
+if [ "$1" = "-u" ]; then
+  install_all=y
+fi
+ 
 ## Script variables
 ### Inject envars from input file
 hostusername="${hostusername:-viadmin}"
@@ -17,11 +21,6 @@ echo "The above line is end of the env output"
 ### Inject Secret variables from input file 
 # commented because no secrets needed in this file
 # source "/home/${hostusername}/ovathetap/scripts/inputs/secrets.env.sh"
-
-# Check if -u flag is passed as first argument
-if [ "$1" = "-u" ]; then
-  install_all=y
-fi
 
 # Define an array of packages to install
 packages=(
@@ -149,45 +148,3 @@ then
     cat /${script_tmp_dir}/postactions.txt
     rm /${script_tmp_dir}/postactions.txt
 fi
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# Refresh snap to prevent sporadic Ubuntu error
-if [ "$install_all" ] || [ "$install" = "y" ] || [ "$install" = "Y" ]; then
-  echo "Refreshing snap..."
-  killall snap-store
-  snap refresh
-fi
-
-# Install packages
-for package in "${packages[@]}"; do
-  if [ "$install_all" ]; then
-    install=y
-  else
-    read -p "Install $package? (y/n):" install
-  fi
-  func_apt_install $package
-done
-
-# Run scripts
-for script in "${scripts[@]}"; do
-  if [ "$install_all" ]; then
-    install=y
-  else
-    read -p "Run script $script? (y/n):" install
-  fi
-  func_install_script $script
-done
