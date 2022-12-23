@@ -1,5 +1,12 @@
 # Semantic Versioning Changelog
 
+# [1.13.0](https://github.com/afewell/ovathetap/compare/v1.12.1...v1.13.0) (2022-12-23)
+
+
+### Features
+
+* add a feature commit to demonstrate solution to resolve [#55](https://github.com/afewell/ovathetap/issues/55) ([67a2710](https://github.com/afewell/ovathetap/commit/67a27109a3ebd543255978822359ccd891c7845d))
+
 ## [1.12.1](https://github.com/afewell/ovathetap/compare/v1.12.0...v1.12.1) (2022-12-22)
 
 
