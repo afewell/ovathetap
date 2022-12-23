@@ -5,7 +5,7 @@
 if [ "$1" = "-u" ]; then
   install_all=y
 fi
- 
+
 ## Script variables
 ### Inject envars from input file
 hostusername="${hostusername:-viadmin}"
