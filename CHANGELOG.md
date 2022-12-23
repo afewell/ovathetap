@@ -1,5 +1,12 @@
 # Semantic Versioning Changelog
 
+## [1.13.1](https://github.com/afewell/ovathetap/compare/v1.13.0...v1.13.1) (2022-12-23)
+
+
+### Bug Fixes
+
+* update certificateauthority.sh to match process defined in harbor 2.6 docs to resolve [#56](https://github.com/afewell/ovathetap/issues/56) ([3ed0e61](https://github.com/afewell/ovathetap/commit/3ed0e6171ec5519e38781a0612d5b2cdf2ede317))
+
 # [1.13.0](https://github.com/afewell/ovathetap/compare/v1.12.1...v1.13.0) (2022-12-23)
 
 
