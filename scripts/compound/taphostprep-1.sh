@@ -40,7 +40,7 @@ scripts=(
   "minikube.sh"
   "kubectl.sh"
   "helm.sh"
-  "dnsutils.sh"
+  "dnsmasq.sh"
 )
 
 ## Define Functions
