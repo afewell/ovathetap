@@ -166,8 +166,7 @@ newgrp docker
 - Select "View Certificates"
 - Select "Import"
 - Right click on a blank area of the file selector window and select the option to show hidden files
-- Navigate to the /home/viadmin/.pki/myca/ directory and select the myca.pem file and click open to import the certificate
-  - in the line above, "viadmin" is the default user account, if you have configured a nondefault username, use that value
+- Navigate to the /etc/ssl/CA/ directory and select the myca.pem file and click open to import the certificate
 - Select the options to Trust this CA for websites and email addresses and click ok to finish importing the certificate
 - Close firefox settings
 
@@ -196,7 +195,7 @@ echo "dnsmasq configuration complete"
 
 ### Install Harbor
 ```sh
-# REQUIRED: hydrate harborvalues file with docker_proxy_cache value if on a vmware internal network, if there is no {docker_proxy_cache} value, this simply makes the required copy of the harborvalues template in the correct location
+# REQUIRED: hydrate harborvalues file with docker_proxy_cache value if on a vmware internal network, if there is no {docker_proxy_cache} value, this simply makes the required copy of the harborvalues template in the correct location. This also stubs the minikube harbor port value.
 envsubst < "${ovathetap_assets}/harborvalues.yaml.template" > "${ovathetap_assets}/harborvalues.yaml"
 ## Install Harbor
 # Login to docker to assist with docker hub rate limiting
@@ -205,14 +204,16 @@ docker login -u "${docker_account_username}" -p "${docker_account_password}"
 helm repo add harbor https://helm.goharbor.io
 # create namespace for harbor
 kubectl create ns harbor
+# create secret for harbor tls certificate
+kubectl create secret tls harbor-cert --key /etc/ssl/CA/harbor.tanzu.demo.key --cert /etc/ssl/CA/harbor.tanzu.demo.crt -n harbor
 # install harbor
 helm install harbor harbor/harbor -f "/${ovathetap_assets}/harborvalues.yaml" -n harbor
 ```
 - **IMPORTANT:** It may take several minutes before the harbor deployment completes. Please ensure the harbor deployment is fully running before proceeding with the following verification steps:
   - enter the command `watch kubectl get deployments -n harbor` and wait for all of the deployments to be ready before proceeding
-  - Open a tab in firefox and navigate to the url `http://192.168.49.2:30002` and verify the harbor login page is displayed
+  - Open a tab in firefox and navigate to the url `https://192.168.49.2:30003` and verify the harbor login page is displayed
   - Login to the harbor web interface with the username `admin` and password `Harbor12345`
-  - Verify you can also login from your terminal with the command `docker login 192.168.49.2:30002` - enter the username `admin` and password `Harbor12345` when prompted.
+  - Verify you can also login from your terminal with the command `docker login 192.168.49.2:30003` - enter the username `admin` and password `Harbor12345` when prompted.
   - If any of these steps do not work, wait a few minutes and try again. Ensure these verification steps work before proceeding. 
 
 
