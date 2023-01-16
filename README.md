@@ -151,7 +151,7 @@ mkdir "/${script_tmp_dir}"
 # make the taphostprep-1.sh script executable
 sudo chmod +x "/${ovathetap_scripts}/compound/taphostprep-1.sh"
 # execute the taphostprep-1.sh file. Optionally append "-u" to install all packages in non-interactive mode
-sudo "/${ovathetap_scripts}/compound/taphostprep-1.sh"  "-u"
+sudo "/${ovathetap_scripts}/compound/taphostprep-1.sh" # "-u"
 ```
 - **IMPORTANT:** After the script completes, enter the following commands to enable sudoless docker calls. This is not just for user experience, it is required for subsequent steps to complete successfully.
 ```sh
@@ -168,14 +168,14 @@ newgrp docker
 - Open firefox, navigate to settings and in the settings search window, search for "certificates"
 - Select "View Certificates"
 - Select "Import"
-- Right click on a blank area of the file selector window and select the option to show hidden files
-- Navigate to the /etc/ssl/CA/ directory and select the myca.pem file and click open to import the certificate
+- Select "Other Locations"
+- Navigate to the /etc/ssl/CA/ directory, select the myca.pem file and click open to import the certificate
 - Select the options to Trust this CA for websites and email addresses and click ok to finish importing the certificate
 - Close firefox settings
 
 ### Deploy Minikube Cluster
 ```sh
-export hostusername="${hostusername:-viadmin}"
+export hostusername="$(whoami)"
 # source the vars files again since you should have rebooted after running taphostprep-1.sh
 source "/home/${hostusername}/ovathetap/config/vars.env.sh"
 # source the secrets files to ensure they are available in your env. Note that since we sourced the vars file above, we can start using project variables to simplify and clarify ongoing commands
@@ -199,7 +199,7 @@ echo "dnsmasq configuration complete"
 ### Install Harbor
 ```sh
 # REQUIRED: hydrate harborvalues file with docker_proxy_cache value if on a vmware internal network, if there is no {docker_proxy_cache} value, this simply makes the required copy of the harborvalues template in the correct location. This also stubs the minikube harbor port value.
-envsubst < "${ovathetap_assets}/harborvalues.yaml.template" > "${ovathetap_home}/config/harborvalues.yaml"
+envsubst < "/${ovathetap_assets}/harborvalues.yaml.template" > "/${ovathetap_home}/config/harborvalues.yaml"
 ## Install Harbor
 # Login to docker to assist with docker hub rate limiting
 docker login -u "${docker_account_username}" -p "${docker_account_password}"
