@@ -41,6 +41,7 @@ scripts=(
   "kubectl.sh"
   "helm.sh"
   "dnsmasq.sh"
+  "certificateauthority.sh"
 )
 
 ## Define Functions

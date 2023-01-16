@@ -159,8 +159,9 @@ sudo groupadd docker -f
 sudo usermod -aG docker ${hostusername}
 newgrp docker
 ```
-- **IMPORTANT:** Reboot the host after the script completes
+- **IMPORTANT:** Reboot the host before proceeding
 - After rebooting your host, verify you can execute docker commands without sudo by executing the command `docker run hello-world`
+- verify vscode was installed and add it to the favorites bar
 
 ### Install CA Cert in Firefox to trust local sites
 
