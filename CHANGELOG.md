@@ -1,5 +1,12 @@
 # Semantic Versioning Changelog
 
+# [1.14.0](https://github.com/afewell/ovathetap/compare/v1.13.3...v1.14.0) (2023-01-16)
+
+
+### Features
+
+* updating versions for tap 1.4 to resolve [#65](https://github.com/afewell/ovathetap/issues/65) ([376e5da](https://github.com/afewell/ovathetap/commit/376e5da6d5e0e6d883a16b8c39d3c0f1473113b0))
+
 ## [1.13.3](https://github.com/afewell/ovathetap/compare/v1.13.2...v1.13.3) (2023-01-16)
 
 
