@@ -11,8 +11,8 @@ fi
 hostusername="${hostusername:-viadmin}"
 script_tmp_dir=${script_tmp_dir:-tmp/taphostprep}
 echo "hostusername: $(echo $hostusername)"
-echo 'source "/home/${hostusername}/ovathetap/scripts/inputs/vars.env.sh"'
-source "/home/${hostusername}/ovathetap/scripts/inputs/vars.env.sh"
+echo 'source "/home/${hostusername}/ovathetap/config/vars.env.sh"'
+source "/home/${hostusername}/ovathetap/config/vars.env.sh"
 echo "Here is the env command output:"
 env
 echo "The above line is end of the env output"
@@ -20,7 +20,7 @@ echo "The above line is end of the env output"
  
 ### Inject Secret variables from input file 
 # commented because no secrets needed in this file
-# source "/home/${hostusername}/ovathetap/scripts/inputs/secrets.env.sh"
+# source "/home/${hostusername}/ovathetap/config/secrets.env.sh"
 
 # Define an array of packages to install
 packages=(

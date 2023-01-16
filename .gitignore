@@ -1,5 +1,7 @@
 # Ignore all filenames that include the word secret
 *secret*
+# Ignore all files in the config folder
+/config/*
 
 # Except for files with the .template or .age extensions
 !*.template

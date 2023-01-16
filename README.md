@@ -78,7 +78,7 @@ network:
 - Login to your Ubuntu VM environment, all subsequent steps in these instructions should be completed from your ubuntu desktop environment.
 - Unless otherwise instructed, all commands should be executed from the user's home directory
 
-## Clone the ovathetap repo
+### Clone the ovathetap repo
 
 - Execute the following commands:
 ```sh
@@ -94,22 +94,22 @@ git clone https://github.com/afewell/ovathetap.git
 
 To execute the scripts and instructions on this page, you will need to verify the default environmental variables provided and update if needed. You will also need to complete the secrets file with your docker and tanzunet account details - this information is only used within the local scripts in your local environment. 
 
-- Verify the [default environmental variables](./scripts/inputs/vars.env.sh)
+- Verify the [default environmental variables](${ovathetap_home}/config/vars.env.sh)
 - REQUIRED: you must make copies of the vars and secrets templates, using the path and filenames specified below, as these files will be used in instructions and scripts throughout this document.
 ```sh
 # If not already set in your env, set the hostusername var before executing the following commands
 ## Convention on this repo is to not use leading or trailing forward slashes in vars if possible
-hostusername="${hostusername}"
+hostusername="$(whoami)"
 home_dir="home/${hostusername}"
 ovathetap_home="${home_dir}/ovathetap"
 # REQUIRED: Make a copy of the cars template
-cp "/${ovathetap_home}/scripts/inputs/vars.env.sh.template" "/${ovathetap_home}/scripts/inputs/vars.env.sh"
+cp "/${ovathetap_home}/scripts/inputs/vars.env.sh.template" "/${ovathetap_home}/config/vars.env.sh"
 # Use nano or your preferred text editor to verify and, if needed, modify the default variables file
-nano "/${ovathetap_home}/scripts/inputs/vars.env.sh"
+nano "/${ovathetap_home}/config/vars.env.sh"
 # REQUIRED: Make a copy of the secrets template
-cp "/${ovathetap_home}/scripts/inputs/secrets.env.sh.template" "/${ovathetap_home}/scripts/inputs/secrets.env.sh"
+cp "/${ovathetap_home}/scripts/inputs/secrets.env.sh.template" "/${ovathetap_home}/config/secrets.env.sh"
 # REQUIRED: Use nano or your preferred text editor to populate the variables in the secrets.env.sh file
-nano "/${ovathetap_home}/scripts/inputs/secrets.env.sh"
+nano "/${ovathetap_home}/config/secrets.env.sh"
 # initialize temporary directory to be used for setup
 mkdir "/${script_tmp_dir}"
 ```
@@ -122,7 +122,7 @@ mkdir "/${script_tmp_dir}"
 - login
 - download the tanzu CLI bundle for linux
 - **IMPORTANT** the tanzu CLI bundle must be downloaded to /home/{hostusername}/Downloads. By default the {hostusername} is set to `viadmin`, make sure to change this value in the inputs file if you are using a different host username.
-- Ensure that the [default environmental variables](./scripts/inputs/vars.env.sh) align with the Tanzu ClI version you plan to install. 
+- Ensure that the [default environmental variables](${ovathetap_home}/config/vars.env.sh) align with the Tanzu ClI version you plan to install. 
 
 
 ### Download Cluster Essentials
@@ -131,11 +131,11 @@ mkdir "/${script_tmp_dir}"
 - login
 - download the cluster essentials bundle for linux
 - **IMPORTANT** The cluster essentials bundle must be downloaded to the /home/{hostusername}/Downloads. By default the {hostusername} is set to `viadmin`, make sure to change this value in the inputs file if you are using a different host username.
-- Ensure that the [default environmental variables](./scripts/inputs/vars.env.sh) align with the cluster essentials version you plan to install.
+- Ensure that the [default environmental variables](${ovathetap_home}/config/vars.env.sh) align with the cluster essentials version you plan to install.
 
 
 ### Install all items in taphostprep-1.sh to setup/configure linux environment
-- Ensure that the [default environmental variables](./scripts/inputs/vars.env.sh) are verified before proceeding.
+- Ensure that the [default environmental variables](${ovathetap_home}/config/vars.env.sh) are verified before proceeding.
 - when you execute the commands below you will be prompted to select yes to install several different packages, install all of them
 - if you prefer to install all packages without being prompted for input, you can add the "-u" flag, but its good to go through the interactive mode at least the first time so you can better understand what the script does.
 ```sh
@@ -143,9 +143,9 @@ mkdir "/${script_tmp_dir}"
 # The following statement sets the {hostusername} variable to whatever it is already set to, if it has already been set. If the hostusername variable is not already set, it sets it to the value that is to the right of the ":-" characters, which is "viadmin"
 export hostusername="${hostusername:-viadmin}"
 # source the vars files to ensure they are available in your env
-source "/home/${hostusername}/ovathetap/scripts/inputs/vars.env.sh"
+source "/home/${hostusername}/ovathetap/config/vars.env.sh"
 # source the secrets files to ensure they are available in your env. Note that since we sourced the vars file above, we can start using project variables to simplify and clarify ongoing commands
-source "/${ovathetap_inputs}/secrets.env.sh"
+source "/${ovathetap_home}/config/secrets.env.sh"
 # make the taphostprep-1.sh script executable
 sudo chmod +x /${ovathetap_scripts}/compound/taphostprep-1.sh
 # execute the taphostprep-1.sh file. Optionally append "-u" to install all packages in non-interactive mode
@@ -174,9 +174,9 @@ newgrp docker
 ```sh
 export hostusername="${hostusername:-viadmin}"
 # source the vars files again since you should have rebooted after running taphostprep-1.sh
-source "/home/${hostusername}/ovathetap/scripts/inputs/vars.env.sh"
+source "/home/${hostusername}/ovathetap/config/vars.env.sh"
 # source the secrets files to ensure they are available in your env. Note that since we sourced the vars file above, we can start using project variables to simplify and clarify ongoing commands
-source "/${ovathetap_inputs}/secrets.env.sh"
+source "/${ovathetap_home}/config/secrets.env.sh"
 # Start Minikube
 minikube start --kubernetes-version="${kubernetes_version}" --memory="${minikube_memory}" --cpus="${minikube_cpus}" --driver=docker --embed-certs --insecure-registry=0.0.0.0/0
 # Gather minikube IP
@@ -196,7 +196,7 @@ echo "dnsmasq configuration complete"
 ### Install Harbor
 ```sh
 # REQUIRED: hydrate harborvalues file with docker_proxy_cache value if on a vmware internal network, if there is no {docker_proxy_cache} value, this simply makes the required copy of the harborvalues template in the correct location. This also stubs the minikube harbor port value.
-envsubst < "${ovathetap_assets}/harborvalues.yaml.template" > "${ovathetap_assets}/harborvalues.yaml"
+envsubst < "${ovathetap_assets}/harborvalues.yaml.template" > "${ovathetap_home}/config/harborvalues.yaml"
 ## Install Harbor
 # Login to docker to assist with docker hub rate limiting
 docker login -u "${docker_account_username}" -p "${docker_account_password}"
@@ -207,7 +207,7 @@ kubectl create ns harbor
 # create secret for harbor tls certificate
 kubectl create secret tls harbor-cert --key /etc/ssl/CA/harbor.tanzu.demo.key --cert /etc/ssl/CA/harbor.tanzu.demo.crt -n harbor
 # install harbor
-helm install harbor harbor/harbor -f "/${ovathetap_assets}/harborvalues.yaml" -n harbor
+helm install harbor harbor/harbor -f "/${ovathetap_home}/config/harborvalues.yaml" -n harbor
 ```
 - **IMPORTANT:** It may take several minutes before the harbor deployment completes. Please ensure the harbor deployment is fully running before proceeding with the following verification steps:
   - enter the command `watch kubectl get deployments -n harbor` and wait for all of the deployments to be ready before proceeding
@@ -248,7 +248,8 @@ kubectl apply -f ca-issuer.yaml
 kubectl get ClusterIssuer
 ```
 
-### Install Gitlab
+### (Optional) Install Gitlab
+- If you are going to use github, you dont need to install gitlab
 
 ### Install Tanzu CLI
 ```sh
@@ -303,12 +304,34 @@ docker login "${tanzunet_hostname}" -u "${tanzunet_username}" -p "${tanzunet_pas
 imgpkg copy -b registry.tanzu.vmware.com/tanzu-application-platform/tap-packages:${TAP_VERSION} --to-repo ${INSTALL_REGISTRY_HOSTNAME}/${INSTALL_REPO}/tap-packages
 ```
 
+### Prepare Overlay for Tap Install
+- because this installation is using minikube, we have to inject an `externalIPs` key into the envoy proxy service configuration for it to work correctly. This secret must also be referenced in the tap values file during installation, as you can see in the assets/tap-values.yaml.template file for your reference.
+- enter the following commands to create a kubernetes secret with the ytt overlay values
+```sh
+cat <<EOF > /${ovathetap_home}/config/contour-external-ips-overlay-secret.yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: contour-external-ips-overlay-secret
+  namespace: tap-install
+stringData:
+  patch.yaml: |
+    #@ load("@ytt:overlay", "overlay")
+    #@overlay/match by=overlay.subset({"kind":"Service","metadata":{"namespace":"tanzu-system-ingress", "name":"envoy"}})
+    ---
+    spec:
+      #@overlay/match missing_ok=True
+      externalIPs: ["192.168.49.2"]
+EOF
+kubectl create -f contour-external-ips-overlay-secret.yaml
+```
+
 ### Install TAP
 ```sh
 ## Prepare and inject local ca cert into ca_cert_data key in tap-values.yaml file
 myca_path="${home_dir}/.pki/myca"
 sed 's/^/    /' "/${myca_path}/myca.pem" > "/${script_tmp_dir}/myca-indented.pem"
-sed "/ca_cert_data/ r /${script_tmp_dir}/myca-indented.pem" "/${ovathetap_assets}/tap-values.yaml.template" > "/${ovathetap_assets}/tap-values.yaml"
+sed "/ca_cert_data/ r /${script_tmp_dir}/myca-indented.pem" "/${ovathetap_assets}/tap-values.yaml.template" > "/${ovathetap_home}/config/tap-values.yaml"
 rm "/${script_tmp_dir}/myca-indented.pem"
 ## Install TAP
 export INSTALL_REGISTRY_USERNAME=admin
@@ -327,7 +350,7 @@ tanzu package repository add tanzu-tap-repository \
   --namespace tap-install
 - The Tanzu Package Repository should reconcile before proceeding, before you press enter to continue, please manually verify reconcilliation has completed
 # Install profile
-tanzu package install tap -p tap.tanzu.vmware.com -v $TAP_VERSION --values-file "/${ovathetap_assets}/tap-values.yaml" -n tap-install
+tanzu package install tap -p tap.tanzu.vmware.com -v $TAP_VERSION --values-file "/${ovathetap_home}/config/tap-values.yaml" -n tap-install
 # Install Full Dependencies Package
 ## Get buildservice version number
 tanzu package available list buildservice.tanzu.vmware.com --namespace tap-install
@@ -361,6 +384,6 @@ Modify the learningcenter-portal ingress object to get cert from cert-manager
  this should already be addressed in the initial install steps, once verified, delete this commented step
 #### Setup Ingress for tap-gui
 
-tanzu package installed update tap -p tap.tanzu.vmware.com -v $TAP_VERSION  --values-file tap-values.yaml -n tap-install -->
+tanzu package installed update tap -p tap.tanzu.vmware.com -v $TAP_VERSION  --values-file /${ovathetap_home}/config/tap-values.yaml -n tap-install -->
 
 
