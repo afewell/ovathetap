@@ -92,4 +92,4 @@ cp "/etc/ssl/CA/harbor.tanzu.demo.crt" /etc/ssl/certs
 cp "/etc/ssl/CA/harbor.tanzu.demo.key" /etc/ssl/private
 cp "/etc/ssl/CA/myca.pem" /usr/local/share/ca-certificates
 update-ca-certificates
-sudo chown viadmin:viadmin -R /etc/ssl/
+chown viadmin:viadmin -R /etc/ssl/
