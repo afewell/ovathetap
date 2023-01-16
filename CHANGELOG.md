@@ -1,5 +1,12 @@
 # Semantic Versioning Changelog
 
+## [1.14.6](https://github.com/afewell/ovathetap/compare/v1.14.5...v1.14.6) (2023-01-16)
+
+
+### Bug Fixes
+
+* updating ownership of /etc/ssl/ to resolve [#72](https://github.com/afewell/ovathetap/issues/72) ([b82dd70](https://github.com/afewell/ovathetap/commit/b82dd70d15d6283ac7cb9eec352d3a8cb97db30a))
+
 ## [1.14.5](https://github.com/afewell/ovathetap/compare/v1.14.4...v1.14.5) (2023-01-16)
 
 
