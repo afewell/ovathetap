@@ -1,5 +1,12 @@
 # Semantic Versioning Changelog
 
+## [1.14.1](https://github.com/afewell/ovathetap/compare/v1.14.0...v1.14.1) (2023-01-16)
+
+
+### Bug Fixes
+
+* Adding step for user to create config dir to resolve [#67](https://github.com/afewell/ovathetap/issues/67) ([3e07f3a](https://github.com/afewell/ovathetap/commit/3e07f3abce733e00316fbc62d7f026d3668da0b3))
+
 # [1.14.0](https://github.com/afewell/ovathetap/compare/v1.13.3...v1.14.0) (2023-01-16)
 
 
