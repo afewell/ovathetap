@@ -1,5 +1,12 @@
 # Semantic Versioning Changelog
 
+## [1.14.2](https://github.com/afewell/ovathetap/compare/v1.14.1...v1.14.2) (2023-01-16)
+
+
+### Bug Fixes
+
+* moved init of script_tmp_dir to after var sourcing to resolve [#68](https://github.com/afewell/ovathetap/issues/68) ([3a27521](https://github.com/afewell/ovathetap/commit/3a275219604e0f3c384bd1473a28cda65e5d2d25))
+
 ## [1.14.1](https://github.com/afewell/ovathetap/compare/v1.14.0...v1.14.1) (2023-01-16)
 
 
