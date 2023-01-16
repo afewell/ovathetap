@@ -112,11 +112,9 @@ nano "/${ovathetap_home}/config/vars.env.sh"
 cp "/${ovathetap_home}/scripts/inputs/secrets.env.sh.template" "/${ovathetap_home}/config/secrets.env.sh"
 # REQUIRED: Use nano or your preferred text editor to populate the variables in the secrets.env.sh file
 nano "/${ovathetap_home}/config/secrets.env.sh"
-# initialize temporary directory to be used for setup
-mkdir "/${script_tmp_dir}"
 ```
 - **Note:** You should never upload your populated secrets file to github. A gitignore file is included in the inputs directory to help prevent your secrets from being uploaded. 
-- **VMWARE EMPLOYEES:** IF your lab environment is on a vmware internal network, please include the line `export vmware_int_net="true"` in the vars.env.sh file. This sets up the docker_proxy_cache, which can help bypass the crippling docker hub rate limits, but it only works from vmware internal networks. 
+- **VMWARE EMPLOYEES:** If your lab environment is on a vmware internal network, you can uncomment the docker_proxy_cache var, which will inject the docker proxy cache url for container downloads and can help bypass the crippling docker hub rate limits, but it only works from vmware internal networks. 
 
 ### Download  Tanzu CLI Bundle
 
@@ -133,11 +131,11 @@ mkdir "/${script_tmp_dir}"
 - login
 - download the cluster essentials bundle for linux
 - **IMPORTANT** The cluster essentials bundle must be downloaded to the /home/{hostusername}/Downloads. By default the {hostusername} is set to `viadmin`, make sure to change this value in the inputs file if you are using a different host username.
-- Ensure that the [default environmental variables](${ovathetap_home}/config/vars.env.sh) align with the cluster essentials version you plan to install.
+- Ensure that the [environmental variables](${ovathetap_home}/config/vars.env.sh) align with the cluster essentials version you plan to install.
 
 
 ### Install all items in taphostprep-1.sh to setup/configure linux environment
-- Ensure that the [default environmental variables](${ovathetap_home}/config/vars.env.sh) are verified before proceeding.
+- Ensure that the [environmental variables](${ovathetap_home}/config/vars.env.sh) are verified before proceeding.
 - when you execute the commands below you will be prompted to select yes to install several different packages, install all of them
 - if you prefer to install all packages without being prompted for input, you can add the "-u" flag, but its good to go through the interactive mode at least the first time so you can better understand what the script does.
 ```sh
@@ -148,10 +146,12 @@ export hostusername="${hostusername:-viadmin}"
 source "/home/${hostusername}/ovathetap/config/vars.env.sh"
 # source the secrets files to ensure they are available in your env. Note that since we sourced the vars file above, we can start using project variables to simplify and clarify ongoing commands
 source "/${ovathetap_home}/config/secrets.env.sh"
+# initialize temporary directory to be used for setup
+mkdir "/${script_tmp_dir}"
 # make the taphostprep-1.sh script executable
-sudo chmod +x /${ovathetap_scripts}/compound/taphostprep-1.sh
+sudo chmod +x "/${ovathetap_scripts}/compound/taphostprep-1.sh"
 # execute the taphostprep-1.sh file. Optionally append "-u" to install all packages in non-interactive mode
-sudo /tmp/taphostprep-1.sh # "-u"
+sudo "/${ovathetap_scripts}/compound/taphostprep-1.sh"  "-u"
 ```
 - **IMPORTANT:** After the script completes, enter the following commands to enable sudoless docker calls. This is not just for user experience, it is required for subsequent steps to complete successfully.
 ```sh
