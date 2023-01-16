@@ -1,5 +1,12 @@
 # Semantic Versioning Changelog
 
+## [1.14.3](https://github.com/afewell/ovathetap/compare/v1.14.2...v1.14.3) (2023-01-16)
+
+
+### Bug Fixes
+
+* adding certificateauthority.sh to taphostprep-1.sh to resolve [#69](https://github.com/afewell/ovathetap/issues/69) ([ad46a03](https://github.com/afewell/ovathetap/commit/ad46a031b63e367c9ef6c260f4240e69b409d33d))
+
 ## [1.14.2](https://github.com/afewell/ovathetap/compare/v1.14.1...v1.14.2) (2023-01-16)
 
 
