@@ -216,6 +216,39 @@ helm install harbor harbor/harbor -f "/${ovathetap_assets}/harborvalues.yaml" -n
   - Verify you can also login from your terminal with the command `docker login 192.168.49.2:30003` - enter the username `admin` and password `Harbor12345` when prompted.
   - If any of these steps do not work, wait a few minutes and try again. Ensure these verification steps work before proceeding. 
 
+### Install Cert-Manager
+
+```sh
+kubectl create ns cert-manager
+kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.9.1/cert-manager.yaml
+```
+
+### Create a kubernetes secret with your CA certificates
+
+```sh
+kubectl create secret tls my-ca-secret --key /etc/ssl/CA/myca.key --cert /etc/ssl/CA/myca.pem -n cert-manager
+``` 
+
+### Create a cert-manager ClusterIssuer using your CA secret
+
+- create a file ca-issuer.yaml with the following text:
+```sh
+cat << EOF > ca-issuer.yaml
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: ca-issuer
+spec:
+  ca:
+    secretName: my-ca-secret
+EOF
+# Create the ClusterIssuer with the following command
+kubectl apply -f ca-issuer.yaml
+# Verify the cluster issuer was created and is ready with the following command:
+kubectl get ClusterIssuer
+```
+
+### Install Gitlab
 
 ### Install Tanzu CLI
 ```sh
@@ -292,7 +325,6 @@ tanzu secret registry add tap-registry \
 tanzu package repository add tanzu-tap-repository \
   --url ${INSTALL_REGISTRY_HOSTNAME}/${INSTALL_REPO}/tap-packages:$TAP_VERSION \
   --namespace tap-install
-# TODO: I need to add some step here to automate waiting until reconciliation is complete before proceeding
 - The Tanzu Package Repository should reconcile before proceeding, before you press enter to continue, please manually verify reconcilliation has completed
 # Install profile
 tanzu package install tap -p tap.tanzu.vmware.com -v $TAP_VERSION --values-file "/${ovathetap_assets}/tap-values.yaml" -n tap-install
@@ -315,42 +347,14 @@ tanzu package repository add tbs-full-deps-repository \
 - `minikube tunnel`
 - it may ask you to enter your password
 - the process will take over the terminal session, so you will need to open a new terminal window to continue, leave the minikube tunnel terminal session open -->
+### Configure Ingress for Harbor
 
 
 
-<!-- ### Install Cert-Manager
-
-```sh
-kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.9.1/cert-manager.yaml
-``` -->
-
-<!-- ### Create a kubernetes secret with your CA certificates
-
-```sh
-kubectl create secret tls my-ca-secret --key /home/viadmin/.pki/myca/myca.key --cert /home/viadmin/.pki/myca/myca.pem -n cert-manager
-``` -->
-
-<!-- ### Create a cert-manager ClusterIssuer using your CA secret
-
-- create a file ca-issuer.yaml with the following text:
-```sh
-cat << EOF > ca-issuer.yaml
-apiVersion: cert-manager.io/v1
-kind: ClusterIssuer
-metadata:
-  name: ca-issuer
-spec:
-  ca:
-    secretName: my-ca-secret
-EOF
-# Create the ClusterIssuer with the following command
-kubectl apply -f ca-issuer.yaml
-# Verify the cluster issuer was created and is ready with the following command:
-kubectl get ClusterIssuer
-```
 
 
-TODO: Modify the learningcenter-portal ingress object to get cert from cert-manager
+<!--
+Modify the learningcenter-portal ingress object to get cert from cert-manager
 - need to add annotations and tls sections
 - file saved to v4 branch in scripts/assets/tap/1_3/test_v3/learningcenter-portal-ingress.yaml
 
