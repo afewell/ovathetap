@@ -1,5 +1,12 @@
 # Semantic Versioning Changelog
 
+## [1.14.5](https://github.com/afewell/ovathetap/compare/v1.14.4...v1.14.5) (2023-01-16)
+
+
+### Bug Fixes
+
+* updating externalURL in harborvalues.yaml.template to resolve [#71](https://github.com/afewell/ovathetap/issues/71) ([81afe10](https://github.com/afewell/ovathetap/commit/81afe1036ef1d3b322712cc3a4f4d73791ab2ce4))
+
 ## [1.14.4](https://github.com/afewell/ovathetap/compare/v1.14.3...v1.14.4) (2023-01-16)
 
 
