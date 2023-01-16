@@ -3,10 +3,10 @@ The purpose of this document is to create a complete Full Profile installation f
 
 The project is currently focused on a single environment topology, using a single, minimal ubuntu desktop VM to install kubernetes and TAP on a single host. The instructions and assets provided here should work on an ubuntu host with sufficient resources and performance, regardless of whether it is on bare metal or any virtualization platform, but the user may need to adjust some values for different environments.
 
-# TAP 1.3 Single-node Lab Install Flow
+# TAP 1.4 Single-node Lab Install Flow
 
 ## References:
-- [1] https://docs.vmware.com/en/VMware-Tanzu-Application-Platform/1.3
+- [1] https://docs.vmware.com/en/VMware-Tanzu-Application-Platform/1.4
 - [2] https://tanzu.vmware.com/developer/guides/cert-manager-gs/
 - [3] https://tanzu.vmware.com/developer/guides/tanzu-application-platform-local-devloper-install/
 - [4] https://tanzu.vmware.com/developer/guides/harbor-gs/#set-up-dns
@@ -277,7 +277,7 @@ tar -xvf "${cluster_essentials_bundle_filename}" -C "/${cluster_essentials_dir}"
 kubectl create namespace kapp-controller
 kubectl create secret generic kapp-controller-config \
    --namespace kapp-controller \
-   --from-file caCerts=/home/viadmin/.pki/myca/myca.pem
+   --from-file caCerts=/etc/ssl/CA/myca.pem
 export INSTALL_BUNDLE="${cluster_essentials_bundle_url}"
 export INSTALL_REGISTRY_HOSTNAME="${tanzunet_hostname}"
 export INSTALL_REGISTRY_USERNAME="${tanzunet_username}"
@@ -329,7 +329,7 @@ kubectl create -f contour-external-ips-overlay-secret.yaml
 ### Install TAP
 ```sh
 ## Prepare and inject local ca cert into ca_cert_data key in tap-values.yaml file
-myca_path="${home_dir}/.pki/myca"
+myca_path="etc/ssl/CA"
 sed 's/^/    /' "/${myca_path}/myca.pem" > "/${script_tmp_dir}/myca-indented.pem"
 sed "/ca_cert_data/ r /${script_tmp_dir}/myca-indented.pem" "/${ovathetap_assets}/tap-values.yaml.template" > "/${ovathetap_home}/config/tap-values.yaml"
 rm "/${script_tmp_dir}/myca-indented.pem"
