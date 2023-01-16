@@ -102,6 +102,8 @@ To execute the scripts and instructions on this page, you will need to verify th
 hostusername="$(whoami)"
 home_dir="home/${hostusername}"
 ovathetap_home="${home_dir}/ovathetap"
+# create an ovathetap/config directory to hold customized local-only files - this dir is gitignored
+mkdir -p /${ovathetap_home}/config
 # REQUIRED: Make a copy of the cars template
 cp "/${ovathetap_home}/scripts/inputs/vars.env.sh.template" "/${ovathetap_home}/config/vars.env.sh"
 # Use nano or your preferred text editor to verify and, if needed, modify the default variables file
