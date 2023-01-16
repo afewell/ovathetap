@@ -1,5 +1,12 @@
 # Semantic Versioning Changelog
 
+## [1.13.2](https://github.com/afewell/ovathetap/compare/v1.13.1...v1.13.2) (2023-01-15)
+
+
+### Bug Fixes
+
+* updating ca and ssl settings to resolve [#58](https://github.com/afewell/ovathetap/issues/58) ([e67be35](https://github.com/afewell/ovathetap/commit/e67be3549e325d8b9ea5f85fa2d8ad2c89dc8b84))
+
 ## [1.13.1](https://github.com/afewell/ovathetap/compare/v1.13.0...v1.13.1) (2022-12-23)
 
 
