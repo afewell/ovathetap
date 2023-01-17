@@ -1,5 +1,12 @@
 # Semantic Versioning Changelog
 
+## [1.15.3](https://github.com/afewell/ovathetap/compare/v1.15.2...v1.15.3) (2023-01-17)
+
+
+### Bug Fixes
+
+* fixing indentation for in harbor values template to resolve [#77](https://github.com/afewell/ovathetap/issues/77) ([fcc417e](https://github.com/afewell/ovathetap/commit/fcc417e3fda7616aaced6af2ceaa687c6f21a4a9))
+
 ## [1.15.2](https://github.com/afewell/ovathetap/compare/v1.15.1...v1.15.2) (2023-01-17)
 
 
