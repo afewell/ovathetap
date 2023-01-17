@@ -175,6 +175,12 @@ newgrp docker
 - Select the options to Trust this CA for websites and email addresses and click ok to finish importing the certificate
 - Close firefox settings
 
+### Initialize Visual Studio Code
+- Open VS Code
+- Add to the Ubuntu favorites bar
+- exit the "Get Started with VS Code" wizard
+- Open Folder to the /home/viadmin directory
+
 ### Deploy Minikube Cluster
 ```sh
 export hostusername="$(whoami)"
