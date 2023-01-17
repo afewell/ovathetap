@@ -1,5 +1,12 @@
 # Semantic Versioning Changelog
 
+## [1.15.2](https://github.com/afewell/ovathetap/compare/v1.15.1...v1.15.2) (2023-01-17)
+
+
+### Bug Fixes
+
+* added missing key copys to certificateauthority.sh to resolve [#76](https://github.com/afewell/ovathetap/issues/76) ([e179c60](https://github.com/afewell/ovathetap/commit/e179c60ffa3141170a38557e44fc06b9f60fe6a9))
+
 ## [1.15.1](https://github.com/afewell/ovathetap/compare/v1.15.0...v1.15.1) (2023-01-17)
 
 
