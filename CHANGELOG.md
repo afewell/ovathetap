@@ -1,5 +1,12 @@
 # Semantic Versioning Changelog
 
+## [1.14.7](https://github.com/afewell/ovathetap/compare/v1.14.6...v1.14.7) (2023-01-17)
+
+
+### Bug Fixes
+
+* adding resolution for harbor nodeport issue to resolve [#73](https://github.com/afewell/ovathetap/issues/73) ([6c2eea4](https://github.com/afewell/ovathetap/commit/6c2eea469939695555f94062580dfe8032bca239))
+
 ## [1.14.6](https://github.com/afewell/ovathetap/compare/v1.14.5...v1.14.6) (2023-01-16)
 
 
