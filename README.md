@@ -3,6 +3,10 @@ The purpose of this document is to create a complete Full Profile installation f
 
 The project is currently focused on a single environment topology, using a single, minimal ubuntu desktop VM to install kubernetes and TAP on a single host. The instructions and assets provided here should work on an ubuntu host with sufficient resources and performance, regardless of whether it is on bare metal or any virtualization platform, but the user may need to adjust some values for different environments.
 
+This repository provides instructions and may include content with dependencies on licensed software. This repository does not provide any licensing or access to any licensed products that are referenced within. Should anyone attempt to use any information or content within this repository, it is that users responsibility to comply with all licensing requirements.
+
+The contents of this repository are intended for educational purposes only. Any software configuration references provided are intended for non-production environments and should not be used in any production environment or depended upon in any way. The configuration referenced within is explicitly not supported, and any contributor to this repository does not provide any assurance that any design, configuration or other information/content within should work or function properly in any way. 
+
 # TAP 1.4 Single-node Lab Install Flow
 
 ## References:
@@ -15,9 +19,6 @@ The project is currently focused on a single environment topology, using a singl
 - [7] https://thesecmaster.com/how-to-set-up-a-certificate-authority-on-ubuntu-using-openssl/
 - [8] https://computingforgeeks.com/install-and-configure-dnsmasq-on-ubuntu/
 - [9] https://goharbor.io/docs/2.6.0/install-config/configure-https/
-
-
-
 
 ## Host Preparation and Setup
 ### Provision an Ubuntu host
@@ -92,9 +93,8 @@ git clone https://github.com/afewell/ovathetap.git
 
 ### Prepare Install Variables & Secrets 
 
-To execute the scripts and instructions on this page, you will need to verify the default environmental variables provided and update if needed. You will also need to complete the secrets file with your docker and tanzunet account details - this information is only used within the local scripts in your local environment. 
+To execute the scripts and instructions on this page, you will need to verify the values in the environmental variables file and update if needed. You will also need to enter required values in the secrets file with your docker and tanzunet account details - secrets are only used in your local environment. 
 
-- Verify the [default environmental variables](${ovathetap_home}/config/vars.env.sh)
 - REQUIRED: you must make copies of the vars and secrets templates, using the path and filenames specified below, as these files will be used in instructions and scripts throughout this document.
 ```sh
 # If not already set in your env, set the hostusername var before executing the following commands
@@ -113,25 +113,27 @@ cp "/${ovathetap_home}/scripts/inputs/secrets.env.sh.template" "/${ovathetap_hom
 # REQUIRED: Use nano or your preferred text editor to populate the variables in the secrets.env.sh file
 nano "/${ovathetap_home}/config/secrets.env.sh"
 ```
-- **Note:** You should never upload your populated secrets file to github. A gitignore file is included in the inputs directory to help prevent your secrets from being uploaded. 
-- **VMWARE EMPLOYEES:** If your lab environment is on a vmware internal network, you can uncomment the docker_proxy_cache var, which will inject the docker proxy cache url for container downloads and can help bypass the crippling docker hub rate limits, but it only works from vmware internal networks. 
+- **VMWARE EMPLOYEES:** If your lab environment is on a vmware internal network, you can uncomment the docker_proxy_cache var and the default value provides the vmware docker proxy cache url for container downloads which can help bypass docker hub rate limits, but it only works from vmware internal networks. 
 
-### Download  Tanzu CLI Bundle
+### Download Tanzu Application Platform
 
 - go to https://network.tanzu.vmware.com/products/tanzu-application-platform
 - login
-- download the tanzu CLI bundle for linux
-- **IMPORTANT** the tanzu CLI bundle must be downloaded to /home/{hostusername}/Downloads. By default the {hostusername} is set to `viadmin`, make sure to change this value in the inputs file if you are using a different host username.
-- Ensure that the [default environmental variables](${ovathetap_home}/config/vars.env.sh) align with the Tanzu ClI version you plan to install. 
+- select version (This document was last updated for TAP 1.4.0)
+- download the following files to the `~/Downloads` directory
+  - Tanzu Developer Tools for Visual Studio Code 
+  - Tanzu App Accelerator Extension for Visual Studio Code
+  - learning-center-workshop-samples.zip file
+  - Tanzu Application Platform GUI Yelb Catalog
+  - tanzu-framework-bundle-linux
+
 
 
 ### Download Cluster Essentials
 
 - go to https://network.tanzu.vmware.com/products/tanzu-cluster-essentials/
 - login
-- download the cluster essentials bundle for linux
-- **IMPORTANT** The cluster essentials bundle must be downloaded to the /home/{hostusername}/Downloads. By default the {hostusername} is set to `viadmin`, make sure to change this value in the inputs file if you are using a different host username.
-- Ensure that the [environmental variables](${ovathetap_home}/config/vars.env.sh) align with the cluster essentials version you plan to install.
+- download the cluster essentials 1.4.0 bundle for linux to the `~/Downloads` directory
 
 
 ### Install all items in taphostprep-1.sh to setup/configure linux environment
