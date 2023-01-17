@@ -296,7 +296,7 @@ kubectl get ClusterIssuer
 ```
 
 ### (Optional) Install Gitlab
-- If you are going to use github, you dont need to install gitlab
+- This lab can support github or gitlab, if you are using github, you can skip this section
 
 ### Install Tanzu CLI
 ```sh

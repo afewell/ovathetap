@@ -23,7 +23,7 @@ chown root:root /etc/ssl/openssl.cnf
 sh -c "echo '01' > /etc/ssl/CA/serial"
 touch /etc/ssl/CA/index.txt
 ## Create Private Key for CA
-openssl genrsa -out /etc/ssl/CA/myca.key 4096
+openssl genrsa -out "/etc/ssl/CA/myca.key" 4096
 ## Create Private Key for Harbor server certificate
 openssl genrsa -out "/etc/ssl/CA/harbor.tanzu.demo.key" 4096
 ## Create CA Cert
@@ -70,8 +70,11 @@ openssl x509 -inform PEM -in "/etc/ssl/CA/harbor.tanzu.demo.crt" -out "/etc/ssl/
 mkdir -p "/etc/docker/certs.d/tanzu.demo"
 mkdir -p "/etc/docker/certs.d/harbor.tanzu.demo"
 cp "/etc/ssl/CA/myca.crt" "/etc/docker/certs.d/tanzu.demo/ca.crt"
+cp "/etc/ssl/CA/myca.key" "/etc/docker/certs.d/tanzu.demo/ca.key"
 cp "/etc/ssl/CA/myca.crt" "/etc/docker/certs.d/harbor.tanzu.demo/ca.crt"
+cp "/etc/ssl/CA/myca.key" "/etc/docker/certs.d/harbor.tanzu.demo/ca.key"
 cp "/etc/ssl/CA/harbor.tanzu.demo.cert" "/etc/docker/certs.d/harbor.tanzu.demo/harbor.tanzu.demo.cert"
+cp "/etc/ssl/CA/harbor.tanzu.demo.key" "/etc/docker/certs.d/harbor.tanzu.demo/harbor.tanzu.demo.key"
 ## Also copy the certs into a directory that includes the port number per harbor docs
 mkdir -p "/etc/docker/certs.d/harbor.tanzu.demo:${minikube_harbor_port}"
 cp "/etc/ssl/CA/myca.crt" "/etc/docker/certs.d/harbor.tanzu.demo:${minikube_harbor_port}/ca.crt"
@@ -79,11 +82,13 @@ cp "/etc/ssl/CA/harbor.tanzu.demo.cert" "/etc/docker/certs.d/harbor.tanzu.demo:$
 ## Set {hostusername} as owner of cert files
 chown -R "${hostusername}:docker" "/etc/docker/certs.d/tanzu.demo/"
 chown -R "${hostusername}:docker" "/etc/docker/certs.d/harbor.tanzu.demo/"
-chown -R "${hostusername}:${hostusername}" "/${home_dir}/.pki/"
+chown -R "${hostusername}:${hostusername}" "/etc/ssl"
 ## Copy certs to minikube
 mkdir -p "/${home_dir}/.minikube/certs/"
 cp "/etc/ssl/CA/myca.pem" "/${home_dir}/.minikube/certs/myca.pem"
 cp "/etc/ssl/CA/myca.crt" "/${home_dir}/.minikube/certs/myca.crt"
+cp "/etc/ssl/CA/myca.key" "/${home_dir}/.minikube/certs/myca.key"
+cp "/etc/ssl/CA/harbor.tanzu.demo.cert" "/${home_dir}/.minikube/certs/harbor.tanzu.demo.cert"
 cp "/etc/ssl/CA/harbor.tanzu.demo.cert" "/${home_dir}/.minikube/certs/harbor.tanzu.demo.cert"
 chown -R "${hostusername}:docker" "/${home_dir}/.minikube/"
 ## Install root CA cert in ubuntu trust store so localhost trusts CA
@@ -92,4 +97,3 @@ cp "/etc/ssl/CA/harbor.tanzu.demo.crt" /etc/ssl/certs
 cp "/etc/ssl/CA/harbor.tanzu.demo.key" /etc/ssl/private
 cp "/etc/ssl/CA/myca.pem" /usr/local/share/ca-certificates
 update-ca-certificates
-chown viadmin:viadmin -R /etc/ssl/
