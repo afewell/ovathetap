@@ -191,7 +191,7 @@ export minikubeip=$(minikube ip)
 ```sh
 ## Configure dnsmasq to resolve every request to *.tanzu.demo to the minikube IP
 sudo mv /etc/dnsmasq.conf /etc/dnsmasq.old
-sudo echo "address=/tanzu.demo/${minikubeip}" | tee /etc/dnsmasq.conf
+sudo echo "address=/tanzu.demo/${minikubeip}" | sudo tee /etc/dnsmasq.conf
 sudo systemctl restart dnsmasq
 echo "dnsmasq configuration complete"
 ```
@@ -215,9 +215,53 @@ helm install harbor harbor/harbor -f "/${ovathetap_home}/config/harborvalues.yam
 - **IMPORTANT:** It may take several minutes before the harbor deployment completes. Please ensure the harbor deployment is fully running before proceeding with the following verification steps:
   - enter the command `watch kubectl get deployments -n harbor` and wait for all of the deployments to be ready before proceeding
   - Open a tab in firefox and navigate to the url `https://192.168.49.2:30003` and verify the harbor login page is displayed
+    - If you cannot access the harbor interface, please see the [Troubleshooting Harbor Install](#troubleshooting-harbor-install) section below
   - Login to the harbor web interface with the username `admin` and password `Harbor12345`
   - Verify you can also login from your terminal with the command `docker login 192.168.49.2:30003` - enter the username `admin` and password `Harbor12345` when prompted.
   - If any of these steps do not work, wait a few minutes and try again. Ensure these verification steps work before proceeding. 
+
+#### Troubleshooting Harbor Install
+
+- If you were able to access harbor and login, you can skip this section
+- In some tests, the harbor helm deployment did not create a "harbor" service at all, this service should be configured for nodeport, and is required to be able to access harbor.
+- The resolution below should work in cases where BOTH the following conditions apply. If the problem you are experiencing does not meet these criteria, you may be experiencing a different problem.
+  - Condition 1:
+    - enter the command `minikube service list`
+    - The output should show that no nodeport services are available for harbor
+  - Condition 2:
+    - enter the command `kubectl get svc harbor -n harbor`
+    - You should the response `Error from server (NotFound): services "harbor" not found`
+  - Do not use the resolution below if you are not seeing both of these conditions
+- The following commands will manually create a harbor service with nodeport:
+```sh
+cat << EOF > "/${ovathetap_home}/config/harbor-svc.yaml"
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+  name: harbor
+  namespace: harbor
+spec:
+  ports:
+  - name: https
+    nodePort: 30003
+    port: 443
+    protocol: TCP
+    targetPort: 8443
+  - name: notary
+    nodePort: 30004
+    port: 4443
+    protocol: TCP
+    targetPort: 4443
+  selector:
+    app: harbor
+    component: nginx
+    release: harbor
+  sessionAffinity: None
+  type: NodePort
+EOF
+kubectl apply -f "/${ovathetap_home}/config/harbor-svc.yaml"
+```
 
 ### Install Cert-Manager
 
