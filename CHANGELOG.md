@@ -1,5 +1,12 @@
 # Semantic Versioning Changelog
 
+# [1.15.0](https://github.com/afewell/ovathetap/compare/v1.14.7...v1.15.0) (2023-01-17)
+
+
+### Features
+
+* adding harbor key for docker engine to resolve [#74](https://github.com/afewell/ovathetap/issues/74) ([778d6c1](https://github.com/afewell/ovathetap/commit/778d6c1efdc39cf5727add05cc6c255c3f910d8d))
+
 ## [1.14.7](https://github.com/afewell/ovathetap/compare/v1.14.6...v1.14.7) (2023-01-17)
 
 
