@@ -285,7 +285,7 @@ kubectl apply -f "/${ovathetap_home}/config/harbor-svc.yaml"
 
 ```sh
 kubectl create ns cert-manager
-kubectl apply -f kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.11.0/cert-manager.yaml
+kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.11.0/cert-manager.yaml
 ```
 
 ### Create a kubernetes secret with your CA certificates
@@ -308,7 +308,7 @@ spec:
     secretName: my-ca-secret
 EOF
 # Create the ClusterIssuer with the following command
-kubectl apply -f ca-issuer.yaml
+kubectl apply -f ca-issuer.yaml -n cert-manager
 # Verify the cluster issuer was created and is ready with the following command:
 kubectl get ClusterIssuer
 ```
