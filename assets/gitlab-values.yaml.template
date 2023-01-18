@@ -37,7 +37,8 @@ global:
     labels: {}
 
   ## https://docs.gitlab.com/charts/installation/deployment#deploy-the-community-edition
-  edition: ee
+  # defaultWas: ee
+  edition: ce
 
   ## https://docs.gitlab.com/charts/charts/globals#gitlab-version
   # gitlabVersion:
@@ -49,7 +50,8 @@ global:
     allowClusterRoles: true
   ## https://docs.gitlab.com/charts/charts/globals#configure-host-settings
   hosts:
-    domain: example.com
+    # defaultWas example.com
+    domain: tanzu.demo
     hostSuffix:
     https: true
     externalIP:
@@ -65,11 +67,11 @@ global:
   ## https://docs.gitlab.com/charts/charts/globals#configure-ingress-settings
   ingress:
     apiVersion: ""
-    configureCertmanager: true
+    configureCertmanager: false
     provider: nginx
     # class:
     annotations: {}
-    enabled: true
+    enabled: false
     tls: {}
     #   enabled: true
     #   secretName:
@@ -819,11 +821,13 @@ upgradeCheck:
 ## Installation & configuration of jetstack/cert-manager
 ## See requirements.yaml for current version
 certmanager:
-  installCRDs: true
+  # defaultWas: true
+  installCRDs: false
   nameOverride: certmanager
   # Install cert-manager chart. Set to false if you already have cert-manager
   # installed or if you are not using cert-manager.
-  install: true
+  # defaultWas: true
+  install: false
   # Other cert-manager configurations from upstream
   # See https://github.com/jetstack/cert-manager/blob/master/deploy/charts/cert-manager/README#configuration
   rbac:
@@ -833,7 +837,8 @@ certmanager:
 ## https://docs.gitlab.com/charts/architecture/decisions#nginx-ingress
 ## Installation & configuration of charts/ingress-nginx:
 nginx-ingress:
-  enabled: true
+  # defaultWas: true
+  enabled: false
   tcpExternalConfig: "true"
   controller:
     addHeaders:
@@ -890,7 +895,8 @@ nginx-ingress:
 ## Installation & configuration of stable/prometheus
 ## See requirements.yaml for current version
 prometheus:
-  install: true
+  # defaultWas: true
+  install: false
   rbac:
     create: true
   alertmanager:
@@ -1073,8 +1079,10 @@ postgresql:
 ## Installation & configuration charts/registry
 ## https://docs.gitlab.com/charts/architecture/decisions#registry
 ## https://docs.gitlab.com/charts/charts/registry/
-# registry:
-#   enabled: false
+# defaultWas: commentedOut
+registry:
+  # defaultWas: commentedOut
+  enabled: false
 
 ## Automatic shared secret generation
 ## https://docs.gitlab.com/charts/installation/secrets
@@ -1116,7 +1124,8 @@ shared-secrets:
 ## Installation & configuration of gitlab/gitlab-runner
 ## See requirements.yaml for current version
 gitlab-runner:
-  install: true
+  # defaultWas: true
+  install: false
   rbac:
     create: true
   runners:
