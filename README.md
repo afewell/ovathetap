@@ -222,11 +222,13 @@ helm install harbor harbor/harbor -f "/${ovathetap_home}/config/harborvalues.yam
 ```
 - **IMPORTANT:** It may take several minutes before the harbor deployment completes. Please ensure the harbor deployment is fully running before proceeding with the following verification steps:
   - enter the command `watch kubectl get deployments -n harbor` and wait for all of the deployments to be ready before proceeding
-  - Open a tab in firefox and navigate to the url `https://192.168.49.2:30003` and verify the harbor login page is displayed
-    - If you cannot access the harbor interface, please see the [Troubleshooting Harbor Install](#troubleshooting-harbor-install) section below
+  - Open a tab in firefox and navigate to the url `https://harbor.tanzu.demo:30003` and verify the harbor login page is displayed
+  - Add the harbor login screen to firefox bookmarks toolbar
+  - Navigate to manage bookmarks, and remove "Getting Started" from the bookmarks toolbar
   - Login to the harbor web interface with the username `admin` and password `Harbor12345`
-  - Verify you can also login from your terminal with the command `docker login 192.168.49.2:30003` - enter the username `admin` and password `Harbor12345` when prompted.
+  - Verify you can also login from your terminal with the command `docker login harbor.tanzu.demo:30003` - enter the username `admin` and password `Harbor12345` when prompted.
   - If any of these steps do not work, wait a few minutes and try again. Ensure these verification steps work before proceeding. 
+ - If you cannot access the harbor interface after several minutes, please see the [Troubleshooting Harbor Install](#troubleshooting-harbor-install) section below
 
 #### Troubleshooting Harbor Install
 
@@ -270,12 +272,20 @@ spec:
 EOF
 kubectl apply -f "/${ovathetap_home}/config/harbor-svc.yaml"
 ```
+- **IMPORTANT:** Verify the harbor deployment with the following actions before proceeding
+  - enter the command `minikube service list` to verify that the harbor service has been assigned a nodeport
+  - Open a tab in firefox and navigate to the url `https://harbor.tanzu.demo:30003` and verify the harbor login page is displayed
+  - Add the harbor login screen to firefox bookmarks toolbar
+  - Navigate to manage bookmarks, and remove "Getting Started" from the bookmarks toolbar
+  - Login to the harbor web interface with the username `admin` and password `Harbor12345`
+  - Verify you can also login from your terminal with the command `docker login harbor.tanzu.demo:30003` - enter the username `admin` and password `Harbor12345` when prompted.
+  - If any of these steps do not work, wait a few minutes and try again. Ensure these verification steps work before proceeding. 
 
 ### Install Cert-Manager
 
 ```sh
 kubectl create ns cert-manager
-kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.9.1/cert-manager.yaml
+kubectl apply -f kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.11.0/cert-manager.yaml
 ```
 
 ### Create a kubernetes secret with your CA certificates
