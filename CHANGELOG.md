@@ -1,5 +1,12 @@
 # Semantic Versioning Changelog
 
+## [1.15.4](https://github.com/afewell/ovathetap/compare/v1.15.3...v1.15.4) (2023-01-18)
+
+
+### Bug Fixes
+
+* updating harbor instructions to resolve [#78](https://github.com/afewell/ovathetap/issues/78) ([394016e](https://github.com/afewell/ovathetap/commit/394016ef9f040de686cfd2e0fb631e7ba10cf845))
+
 ## [1.15.3](https://github.com/afewell/ovathetap/compare/v1.15.2...v1.15.3) (2023-01-17)
 
 
