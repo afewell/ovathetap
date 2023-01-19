@@ -331,16 +331,19 @@ tanzu plugin install --local cli all
 
 ### Install Tanzu Cluster Essentials
 ```sh
+# Create kapp-controller-config secret manifest
+myca_path="etc/ssl/CA"
+sed 's/^/    /' "/${myca_path}/myca.pem" > "/${script_tmp_dir}/myca-indented.pem"
+sed "/caCerts/ r /${script_tmp_dir}/myca-indented.pem" "/${ovathetap_assets}/kapp-controller-config.yaml.template" > "/${ovathetap_home}/config/kapp-controller-config.yaml"
+rm "/${script_tmp_dir}/myca-indented.pem"
 ## Install Cluster Essentials
 cd "/${home_dir}/Downloads" 
 # create a directory to unzip the tap installer files to
-mkdir "/${cluster_essentials_dir}" 
+mkdir -p "/${cluster_essentials_dir}" 
 # unzip the file and install cluster essentials
 tar -xvf "${cluster_essentials_bundle_filename}" -C "/${cluster_essentials_dir}" 
 kubectl create namespace kapp-controller
-kubectl create secret generic kapp-controller-config \
-   --namespace kapp-controller \
-   --from-file caCerts=/etc/ssl/CA/myca.pem
+kubectl apply -f 
 export INSTALL_BUNDLE="${cluster_essentials_bundle_url}"
 export INSTALL_REGISTRY_HOSTNAME="${tanzunet_hostname}"
 export INSTALL_REGISTRY_USERNAME="${tanzunet_username}"
