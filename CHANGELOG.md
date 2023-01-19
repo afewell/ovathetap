@@ -1,5 +1,12 @@
 # Semantic Versioning Changelog
 
+## [1.15.9](https://github.com/afewell/ovathetap/compare/v1.15.8...v1.15.9) (2023-01-19)
+
+
+### Bug Fixes
+
+* add kapp-controller-config to resolve [#81](https://github.com/afewell/ovathetap/issues/81) ([6482d34](https://github.com/afewell/ovathetap/commit/6482d34b494f3d2a12d5c98eb73bf1b8308e8308))
+
 ## [1.15.8](https://github.com/afewell/ovathetap/compare/v1.15.7...v1.15.8) (2023-01-19)
 
 
