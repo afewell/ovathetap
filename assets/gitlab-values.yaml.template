@@ -1232,3 +1232,5 @@ gitlab:
   ## https://docs.gitlab.com/charts/charts/gitlab/praefect
   #   praefect:
 
+minio:
+  image: ${docker_proxy_cache}minio/minio 

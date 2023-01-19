@@ -313,8 +313,8 @@ kubectl apply -f ca-issuer.yaml -n cert-manager
 kubectl get ClusterIssuer
 ```
 
-### (Optional) Install Gitlab
-- This lab can support github or gitlab, if you are using github, you can skip this section
+
+
 
 ### Install Tanzu CLI
 ```sh
@@ -435,6 +435,21 @@ tanzu package repository add tbs-full-deps-repository \
 - `minikube tunnel`
 - it may ask you to enter your password
 - the process will take over the terminal session, so you will need to open a new terminal window to continue, leave the minikube tunnel terminal session open -->
+
+### (Optional) Install Gitlab
+- This lab can support github or gitlab, if you are using github, you can skip this section
+- Install Gitlab
+```sh
+# prep and post the gitlab values template to the config directory
+envsubst < "/${ovathetap_home}/assets/gitlab-values.yaml.template" > "/${ovathetap_home}/config/gitlab-values.yaml"
+# Install Gitlab 
+helm upgrade --install gitlab gitlab/gitlab -n gitlab -f "/${ovathetap_home}/config/gitlab-values.yaml"
+```
+- The values specified in the gitlab-values.yaml file disabled several default items from the gitlab helm chart. This is partially because we only need to access basic git repository features in gitlab, and do not need to install extended features. In addition, the ingress generation was disabled as the intent for this environment is to use the contour ingress controller included with the TAP installation for all ingress services. 
+
+
+
+
 ### Configure Ingress for Harbor
 
 
