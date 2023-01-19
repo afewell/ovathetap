@@ -1,7 +1,7 @@
 shared:
   ingress_domain: "tanzu.demo"
   image_registry: 
-    project_path: "http://192.168.49.2:30002/tap"
+    project_path: "https://harbor.tanzu.demo:30003/tap"
     username: "admin"
     password: "Harbor12345"
   ca_cert_data: |
@@ -22,3 +22,7 @@ tap_gui:
       cors:
         origin: http://tap-gui.tanzu.demo
 
+package_overlays:
+  - name: "contour"
+    secrets:
+    - name: "contour-external-ips-overlay-secret"

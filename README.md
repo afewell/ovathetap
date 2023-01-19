@@ -377,7 +377,7 @@ imgpkg copy -b registry.tanzu.vmware.com/tanzu-application-platform/tap-packages
 - because this installation is using minikube, we have to inject an `externalIPs` key into the envoy proxy service configuration for it to work correctly. This secret must also be referenced in the tap values file during installation, as you can see in the assets/tap-values.yaml.template file for your reference.
 - enter the following commands to create a kubernetes secret with the ytt overlay values
 ```sh
-cat <<EOF > /${ovathetap_home}/config/contour-external-ips-overlay-secret.yaml
+cat <<EOF > "/${ovathetap_home}/config/contour-external-ips-overlay-secret.yaml"
 apiVersion: v1
 kind: Secret
 metadata:
@@ -392,7 +392,8 @@ stringData:
       #@overlay/match missing_ok=True
       externalIPs: ["192.168.49.2"]
 EOF
-kubectl create -f contour-external-ips-overlay-secret.yaml
+kubectl create ns tap-install
+kubectl create -f "/${ovathetap_home}/config/contour-external-ips-overlay-secret.yaml"
 ```
 
 ### Install TAP
@@ -405,11 +406,10 @@ sudo rm "/${script_tmp_dir}/myca-indented.pem"
 ## Install TAP
 export INSTALL_REGISTRY_USERNAME=admin
 export INSTALL_REGISTRY_PASSWORD=Harbor12345
-export INSTALL_REGISTRY_HOSTNAME=192.168.49.2:31642
+export INSTALL_REGISTRY_HOSTNAME=harbor.tanzu.demo:30003
 export TAP_VERSION="${tap_version}"
 export INSTALL_REPO="${tap_install_repo}"
 docker login $INSTALL_REGISTRY_HOSTNAME -u $INSTALL_REGISTRY_USERNAME -p $INSTALL_REGISTRY_PASSWORD
-kubectl create ns tap-install
 tanzu secret registry add tap-registry \
   --username ${INSTALL_REGISTRY_USERNAME} --password ${INSTALL_REGISTRY_PASSWORD} \
   --server ${INSTALL_REGISTRY_HOSTNAME} \
@@ -417,7 +417,9 @@ tanzu secret registry add tap-registry \
 tanzu package repository add tanzu-tap-repository \
   --url ${INSTALL_REGISTRY_HOSTNAME}/${INSTALL_REPO}/tap-packages:$TAP_VERSION \
   --namespace tap-install
-- The Tanzu Package Repository should reconcile before proceeding, before you press enter to continue, please manually verify reconcilliation has completed
+```
+- The Tanzu Package Repository should reconcile before proceeding
+```sh
 # Install profile
 tanzu package install tap -p tap.tanzu.vmware.com -v $TAP_VERSION --values-file "/${ovathetap_home}/config/tap-values.yaml" -n tap-install
 # Install Full Dependencies Package
