@@ -351,19 +351,21 @@ export INSTALL_REGISTRY_PASSWORD="${tanzunet_password}"
 cd "/${cluster_essentials_dir}"
 ./install.sh --yes
 # add carvel apps to path
-cp "/${home_dir}/tanzu-cluster-essentials/kapp" /usr/local/bin/kapp
-cp "/${home_dir}/tanzu-cluster-essentials/imgpkg" /usr/local/bin/imgpkg
-cp "/${home_dir}/tanzu-cluster-essentials/kbld" /usr/local/bin/kbld
-cp "/${home_dir}/tanzu-cluster-essentials/ytt" /usr/local/bin/ytt
+sudo cp "/${home_dir}/tanzu-cluster-essentials/kapp" /usr/local/bin/kapp
+sudo cp "/${home_dir}/tanzu-cluster-essentials/imgpkg" /usr/local/bin/imgpkg
+sudo cp "/${home_dir}/tanzu-cluster-essentials/kbld" /usr/local/bin/kbld
+sudo cp "/${home_dir}/tanzu-cluster-essentials/ytt" /usr/local/bin/ytt
 ```
 
 
 ### Relocate TAP images to the local Harbor registry
+- **IMPORTANT** use firefox and login to the harbor portal (https://harbor.tanzu.demo:30003). Create a new project named "tap" with public access
+  - Note: It should work just fine if you set it for private access, I just set it for public because my use case is in a private nested lab environment with no inbound access
 ```sh
 ## Relocate TAP Images to your install registry
 export INSTALL_REGISTRY_USERNAME=admin
 export INSTALL_REGISTRY_PASSWORD=Harbor12345
-export INSTALL_REGISTRY_HOSTNAME=192.168.49.2:30002
+export INSTALL_REGISTRY_HOSTNAME=harbor.tanzu.demo:30003
 export TAP_VERSION="${tap_version}"
 export INSTALL_REPO="${tap_install_repo}"
 docker login $INSTALL_REGISTRY_HOSTNAME -u $INSTALL_REGISTRY_USERNAME -p $INSTALL_REGISTRY_PASSWORD
@@ -397,9 +399,9 @@ kubectl create -f contour-external-ips-overlay-secret.yaml
 ```sh
 ## Prepare and inject local ca cert into ca_cert_data key in tap-values.yaml file
 myca_path="etc/ssl/CA"
-sed 's/^/    /' "/${myca_path}/myca.pem" > "/${script_tmp_dir}/myca-indented.pem"
-sed "/ca_cert_data/ r /${script_tmp_dir}/myca-indented.pem" "/${ovathetap_assets}/tap-values.yaml.template" > "/${ovathetap_home}/config/tap-values.yaml"
-rm "/${script_tmp_dir}/myca-indented.pem"
+sudo sed 's/^/    /' "/${myca_path}/myca.pem" | sudo tee "/${script_tmp_dir}/myca-indented.pem"
+sudo sed "/ca_cert_data/ r /${script_tmp_dir}/myca-indented.pem" "/${ovathetap_assets}/tap-values.yaml.template" | sudo tee "/${ovathetap_home}/config/tap-values.yaml"
+sudo rm "/${script_tmp_dir}/myca-indented.pem"
 ## Install TAP
 export INSTALL_REGISTRY_USERNAME=admin
 export INSTALL_REGISTRY_PASSWORD=Harbor12345
