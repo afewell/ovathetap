@@ -333,9 +333,9 @@ tanzu plugin install --local cli all
 ```sh
 # Create kapp-controller-config secret manifest
 myca_path="etc/ssl/CA"
-sed 's/^/    /' "/${myca_path}/myca.pem" > "/${script_tmp_dir}/myca-indented.pem"
-sed "/caCerts/ r /${script_tmp_dir}/myca-indented.pem" "/${ovathetap_assets}/kapp-controller-config.yaml.template" > "/${ovathetap_home}/config/kapp-controller-config.yaml"
-rm "/${script_tmp_dir}/myca-indented.pem"
+sudo sed 's/^/    /' "/${myca_path}/myca.pem" | sudo tee "/${script_tmp_dir}/myca-indented.pem"
+sudo sed "/caCerts/ r /${script_tmp_dir}/myca-indented.pem" "/${ovathetap_assets}/kapp-controller-config.yaml.template" | sudo tee "/${ovathetap_home}/config/kapp-controller-config.yaml"
+sudo rm "/${script_tmp_dir}/myca-indented.pem"
 ## Install Cluster Essentials
 cd "/${home_dir}/Downloads" 
 # create a directory to unzip the tap installer files to
