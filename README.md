@@ -298,7 +298,7 @@ kubectl create secret tls my-ca-secret --key /etc/ssl/CA/myca.key --cert /etc/ss
 
 - create a file ca-issuer.yaml with the following text:
 ```sh
-cat << EOF > ca-issuer.yaml
+cat << EOF > "/${ovathetap_home}/config/ca-issuer.yaml"
 apiVersion: cert-manager.io/v1
 kind: ClusterIssuer
 metadata:
@@ -308,12 +308,10 @@ spec:
     secretName: my-ca-secret
 EOF
 # Create the ClusterIssuer with the following command
-kubectl apply -f ca-issuer.yaml -n cert-manager
+kubectl apply -f "/${ovathetap_home}/config/ca-issuer.yaml" -n cert-manager
 # Verify the cluster issuer was created and is ready with the following command:
 kubectl get ClusterIssuer
 ```
-
-
 
 
 ### Install Tanzu CLI
@@ -321,12 +319,12 @@ kubectl get ClusterIssuer
 ## Install Tanzu CLI
 cd "/${home_dir}/Downloads"
 # create a directory to unzip the tanzu CLI files to
-mkdir "/${tanzu_cli_dir}"
+mkdir -p "/${tanzu_cli_dir}"
 # unzip the file and install Tanzu CLI
 tar -xvf "${tanzu_cli_bundle_filename}" -C "/${tanzu_cli_dir}"
 export TANZU_CLI_NO_INIT=true
 cd "/${tanzu_cli_dir}" 
-export VERSION=${tanzu_cli_bundle_filename}
+export VERSION=${tanzu_cli_version}
 sudo install "cli/core/$VERSION/tanzu-core-linux_amd64" /usr/local/bin/tanzu
 tanzu plugin install --local cli all
 ```
@@ -355,6 +353,7 @@ cp "/${home_dir}/tanzu-cluster-essentials/imgpkg" /usr/local/bin/imgpkg
 cp "/${home_dir}/tanzu-cluster-essentials/kbld" /usr/local/bin/kbld
 cp "/${home_dir}/tanzu-cluster-essentials/ytt" /usr/local/bin/ytt
 ```
+
 
 ### Relocate TAP images to the local Harbor registry
 ```sh

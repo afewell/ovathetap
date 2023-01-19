@@ -33,6 +33,8 @@ openssl req -x509 -extensions v3_ca -new -nodes -sha512 -days 3650 \
  -out "/etc/ssl/CA/myca.crt"
 ## Make a copy of the ca cert as a .pem file - the source is already in pem format, but some tools require the .pem extension
 openssl x509 -outform pem -in "/etc/ssl/CA/myca.crt" -out "/etc/ssl/CA/myca.pem"
+## Make a copy of the ca cert as a .cert file - the source is already in pem format, but some tools require the .pem extension
+openssl x509 -outform pem -in "/etc/ssl/CA/myca.crt" -out "/etc/ssl/CA/myca.cert"
 ## Now install the root certificate and key:
 cp "/etc/ssl/CA/myca.key" "/etc/ssl/private/cakey.pem"
 cp "/etc/ssl/CA/myca.pem" "/etc/ssl/certs/cacert.pem"
@@ -70,14 +72,17 @@ openssl x509 -inform PEM -in "/etc/ssl/CA/harbor.tanzu.demo.crt" -out "/etc/ssl/
 mkdir -p "/etc/docker/certs.d/tanzu.demo"
 mkdir -p "/etc/docker/certs.d/harbor.tanzu.demo"
 cp "/etc/ssl/CA/myca.crt" "/etc/docker/certs.d/tanzu.demo/ca.crt"
+cp "/etc/ssl/CA/myca.cert" "/etc/docker/certs.d/tanzu.demo/ca.cert"
 cp "/etc/ssl/CA/myca.key" "/etc/docker/certs.d/tanzu.demo/ca.key"
 cp "/etc/ssl/CA/myca.crt" "/etc/docker/certs.d/harbor.tanzu.demo/ca.crt"
+cp "/etc/ssl/CA/myca.cert" "/etc/docker/certs.d/harbor.tanzu.demo/ca.cert"
 cp "/etc/ssl/CA/myca.key" "/etc/docker/certs.d/harbor.tanzu.demo/ca.key"
 cp "/etc/ssl/CA/harbor.tanzu.demo.cert" "/etc/docker/certs.d/harbor.tanzu.demo/harbor.tanzu.demo.cert"
 cp "/etc/ssl/CA/harbor.tanzu.demo.key" "/etc/docker/certs.d/harbor.tanzu.demo/harbor.tanzu.demo.key"
 ## Also copy the certs into a directory that includes the port number per harbor docs
 mkdir -p "/etc/docker/certs.d/harbor.tanzu.demo:${minikube_harbor_port}"
 cp "/etc/ssl/CA/myca.crt" "/etc/docker/certs.d/harbor.tanzu.demo:${minikube_harbor_port}/ca.crt"
+cp "/etc/ssl/CA/myca.cert" "/etc/docker/certs.d/harbor.tanzu.demo:${minikube_harbor_port}/ca.cert"
 cp "/etc/ssl/CA/myca.key" "/etc/docker/certs.d/harbor.tanzu.demo:${minikube_harbor_port}/ca.key"
 cp "/etc/ssl/CA/harbor.tanzu.demo.cert" "/etc/docker/certs.d/harbor.tanzu.demo:${minikube_harbor_port}/harbor.tanzu.demo.cert"
 cp "/etc/ssl/CA/harbor.tanzu.demo.key" "/etc/docker/certs.d/harbor.tanzu.demo:${minikube_harbor_port}/harbor.tanzu.demo.key"
