@@ -1,5 +1,12 @@
 # Semantic Versioning Changelog
 
+## [1.15.7](https://github.com/afewell/ovathetap/compare/v1.15.6...v1.15.7) (2023-01-19)
+
+
+### Bug Fixes
+
+* update to resolve [#80](https://github.com/afewell/ovathetap/issues/80) ([a364196](https://github.com/afewell/ovathetap/commit/a36419605b62b523f7d6a324732e5abd95b4fbf1))
+
 ## [1.15.6](https://github.com/afewell/ovathetap/compare/v1.15.5...v1.15.6) (2023-01-19)
 
 
