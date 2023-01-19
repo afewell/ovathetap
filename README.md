@@ -343,7 +343,7 @@ mkdir -p "/${cluster_essentials_dir}"
 # unzip the file and install cluster essentials
 tar -xvf "${cluster_essentials_bundle_filename}" -C "/${cluster_essentials_dir}" 
 kubectl create namespace kapp-controller
-kubectl apply -f 
+kubectl apply -f "/${ovathetap_home}/config/kapp-controller-config.yaml"
 export INSTALL_BUNDLE="${cluster_essentials_bundle_url}"
 export INSTALL_REGISTRY_HOSTNAME="${tanzunet_hostname}"
 export INSTALL_REGISTRY_USERNAME="${tanzunet_username}"
