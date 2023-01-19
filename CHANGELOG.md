@@ -1,5 +1,12 @@
 # Semantic Versioning Changelog
 
+## [1.15.12](https://github.com/afewell/ovathetap/compare/v1.15.11...v1.15.12) (2023-01-19)
+
+
+### Bug Fixes
+
+* updating tap-values.yaml.template to resolve [#83](https://github.com/afewell/ovathetap/issues/83) ([7597847](https://github.com/afewell/ovathetap/commit/759784712cd85645dad682df584dce8ad9a87ffd))
+
 ## [1.15.11](https://github.com/afewell/ovathetap/compare/v1.15.10...v1.15.11) (2023-01-19)
 
 
