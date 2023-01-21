@@ -374,14 +374,14 @@ imgpkg copy -b registry.tanzu.vmware.com/tanzu-application-platform/tap-packages
 ```
 
 ### Prepare Overlay for Tap Install
-- because this installation is using minikube, we have to inject an `externalIPs` key into the envoy proxy service configuration for it to work correctly. This secret must also be referenced in the tap values file during installation, as you can see in the assets/tap-values.yaml.template file for your reference.
+- because this installation is using minikube, we have to inject an `externalIPs` key into the envoy service configuration for it to work correctly. This secret must also be referenced in the tap values file during installation, as you can see in the assets/tap-values.yaml.template file for your reference.
 - enter the following commands to create a kubernetes secret with the ytt overlay values
 ```sh
-cat <<EOF > "/${ovathetap_home}/config/contour-external-ips-overlay-secret.yaml"
+cat <<EOF > "/${ovathetap_home}/config/envoy-external-ips-overlay-secret.yaml"
 apiVersion: v1
 kind: Secret
 metadata:
-  name: contour-external-ips-overlay-secret
+  name: envoy-external-ips-overlay-secret
   namespace: tap-install
 stringData:
   patch.yaml: |
@@ -393,7 +393,7 @@ stringData:
       externalIPs: ["192.168.49.2"]
 EOF
 kubectl create ns tap-install
-kubectl create -f "/${ovathetap_home}/config/contour-external-ips-overlay-secret.yaml"
+kubectl create -f "/${ovathetap_home}/config/envoy-external-ips-overlay-secret.yaml"
 ```
 
 ### Install TAP
@@ -426,6 +426,7 @@ tanzu package install tap -p tap.tanzu.vmware.com -v $TAP_VERSION --values-file 
 ## Get buildservice version number
 tanzu package available list buildservice.tanzu.vmware.com --namespace tap-install
 export BSVersion=$(tanzu package available list buildservice.tanzu.vmware.com --namespace tap-install | awk '{print $2}' | tail -n 1)
+echo $BSVersion
 ## Relocate full dependencies packages to your install repo
 imgpkg copy -b registry.tanzu.vmware.com/tanzu-application-platform/full-tbs-deps-package-repo:$BSVersion \
   --to-repo ${INSTALL_REGISTRY_HOSTNAME}/${INSTALL_REPO}/tbs-full-deps
@@ -433,7 +434,13 @@ imgpkg copy -b registry.tanzu.vmware.com/tanzu-application-platform/full-tbs-dep
 tanzu package repository add tbs-full-deps-repository \
   --url ${INSTALL_REGISTRY_HOSTNAME}/${INSTALL_REPO}/tbs-full-deps:$BSVersion \
   --namespace tap-install
+tanzu package install full-tbs-deps -p full-tbs-deps.tanzu.vmware.com -v $BSVersion -n tap-install
+tanzu package installed update tap -p tap.tanzu.vmware.com -v $TAP_VERSION  --values-file "/${ovathetap_home}/config/tap-values.yaml" -n tap-install
+add steps to validate tap install
 ```
+
+
+### Configure Ingress for Harbor
 
 <!-- I dont know if we need minikube tunnel so testing without it this round. 
 ### Start Minikube tunnel
@@ -456,7 +463,6 @@ helm upgrade --install gitlab gitlab/gitlab -n gitlab -f "/${ovathetap_home}/con
 
 
 
-### Configure Ingress for Harbor
 
 
 

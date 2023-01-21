@@ -25,4 +25,4 @@ tap_gui:
 package_overlays:
   - name: "contour"
     secrets:
-    - name: "contour-external-ips-overlay-secret"
+    - name: "envoy-external-ips-overlay-secret"
