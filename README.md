@@ -195,11 +195,20 @@ echo "the minikube ip is: $(minikube ip)"
 export minikubeip=$(minikube ip)
 ```
 
+### Setup MetalLB
+
+- This lab uses metallb to enable loadbalancer services
+- Enable metallb with the command `minikube addons enable metallb`
+- Enter the command `minikube addons configure metallb`
+- Enter Load Balancer Start IP: `192.168.49.5`
+- Enter Load Balancer End IP: `192.168.49.25`
+
 ### Complete dnsmasq configuration
 ```sh
 ## Configure dnsmasq to resolve every request to *.tanzu.demo to the minikube IP
 sudo mv /etc/dnsmasq.conf /etc/dnsmasq.old
-sudo echo "address=/tanzu.demo/${minikubeip}" | sudo tee /etc/dnsmasq.conf
+sudo echo "address=/harbor.tanzu.demo/192.168.49.5" | sudo tee /etc/dnsmasq.conf
+sudo echo "address=/tanzu.demo/192.168.49.6" | sudo tee -a /etc/dnsmasq.conf
 sudo systemctl restart dnsmasq
 echo "dnsmasq configuration complete"
 ```
@@ -384,6 +393,8 @@ sudo sed 's/^/    /' "/${myca_path}/myca.pem" | sudo tee "/${script_tmp_dir}/myc
 sudo sed "/ca_cert_data/ r /${script_tmp_dir}/myca-indented.pem" "/${ovathetap_assets}/tap-values.yaml.template" | sudo tee "/${ovathetap_home}/config/tap-values.yaml"
 sudo rm "/${script_tmp_dir}/myca-indented.pem"
 ## Install TAP
+# create tap-install namespace
+kubectl create ns tap-install
 export INSTALL_REGISTRY_USERNAME=admin
 export INSTALL_REGISTRY_PASSWORD=Harbor12345
 export INSTALL_REGISTRY_HOSTNAME=harbor.tanzu.demo:30003
