@@ -1,5 +1,12 @@
 # Semantic Versioning Changelog
 
+## [1.15.15](https://github.com/afewell/ovathetap/compare/v1.15.14...v1.15.15) (2023-01-22)
+
+
+### Bug Fixes
+
+* adding nodeport spec to resolve [#87](https://github.com/afewell/ovathetap/issues/87) ([dea80e7](https://github.com/afewell/ovathetap/commit/dea80e740fc9c30da7cf6c7266e5f4cbbb049b4d))
+
 ## [1.15.14](https://github.com/afewell/ovathetap/compare/v1.15.13...v1.15.14) (2023-01-22)
 
 
