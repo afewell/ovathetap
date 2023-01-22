@@ -1,5 +1,12 @@
 # Semantic Versioning Changelog
 
+## [1.15.16](https://github.com/afewell/ovathetap/compare/v1.15.15...v1.15.16) (2023-01-22)
+
+
+### Bug Fixes
+
+* adding metallb to resolve [#89](https://github.com/afewell/ovathetap/issues/89) ([e89ca8b](https://github.com/afewell/ovathetap/commit/e89ca8b63e1e8670f4f1fd98da29c808e1242830))
+
 ## [1.15.15](https://github.com/afewell/ovathetap/compare/v1.15.14...v1.15.15) (2023-01-22)
 
 
