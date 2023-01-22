@@ -1,7 +1,7 @@
 shared:
   ingress_domain: "tanzu.demo"
   image_registry: 
-    project_path: "https://harbor.tanzu.demo:30003/tap"
+    project_path: "https://harbor.tanzu.demo/tap"
     username: "admin"
     password: "Harbor12345"
   ca_cert_data: |

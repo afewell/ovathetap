@@ -13,4 +13,4 @@ stringData:
   caCerts: |
 
 
-  dangerousSkipTLSVerify: "harbor.tanzu.demo:30003,harbor.tanzu.demo"
+  dangerousSkipTLSVerify: "harbor.tanzu.demo"

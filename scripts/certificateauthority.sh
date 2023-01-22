@@ -79,13 +79,6 @@ cp "/etc/ssl/CA/myca.cert" "/etc/docker/certs.d/harbor.tanzu.demo/ca.cert"
 cp "/etc/ssl/CA/myca.key" "/etc/docker/certs.d/harbor.tanzu.demo/ca.key"
 cp "/etc/ssl/CA/harbor.tanzu.demo.cert" "/etc/docker/certs.d/harbor.tanzu.demo/harbor.tanzu.demo.cert"
 cp "/etc/ssl/CA/harbor.tanzu.demo.key" "/etc/docker/certs.d/harbor.tanzu.demo/harbor.tanzu.demo.key"
-## Also copy the certs into a directory that includes the port number per harbor docs
-mkdir -p "/etc/docker/certs.d/harbor.tanzu.demo:${minikube_harbor_port}"
-cp "/etc/ssl/CA/myca.crt" "/etc/docker/certs.d/harbor.tanzu.demo:${minikube_harbor_port}/ca.crt"
-cp "/etc/ssl/CA/myca.cert" "/etc/docker/certs.d/harbor.tanzu.demo:${minikube_harbor_port}/ca.cert"
-cp "/etc/ssl/CA/myca.key" "/etc/docker/certs.d/harbor.tanzu.demo:${minikube_harbor_port}/ca.key"
-cp "/etc/ssl/CA/harbor.tanzu.demo.cert" "/etc/docker/certs.d/harbor.tanzu.demo:${minikube_harbor_port}/harbor.tanzu.demo.cert"
-cp "/etc/ssl/CA/harbor.tanzu.demo.key" "/etc/docker/certs.d/harbor.tanzu.demo:${minikube_harbor_port}/harbor.tanzu.demo.key"
 ## Set {hostusername} as owner of cert files
 chown -R "${hostusername}:docker" "/etc/docker/certs.d/tanzu.demo/"
 chown -R "${hostusername}:docker" "/etc/docker/certs.d/harbor.tanzu.demo/"

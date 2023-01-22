@@ -197,6 +197,21 @@ export minikubeip=$(minikube ip)
 
 ### Setup MetalLB
 
+- Before deploying metallb, add your docker hub credentials so the images are downloaded using an authenticated account
+```sh
+# Login to docker to assist with docker hub rate limiting
+## This is important to help prevent rate limiting issues, even if you have a free account
+docker login -u "${docker_account_username}" -p "${docker_account_password}"
+# create namespace for harbor
+kubectl create ns metallb-system
+# Create a kubernetes secret with your docker credentials
+kubectl create secret generic myregistrykey \
+    --from-file=.dockerconfigjson="/home/${hostusername}/.docker/config.json" \
+    --type=kubernetes.io/dockerconfigjson -n metallb-system
+# Attach the secret with your docker credentials to the default service account for the harbor namespace
+kubectl patch serviceaccount default -p '{"imagePullSecrets": [{"name": "myregistrykey"}]}' -n metallb-system
+
+```
 - This lab uses metallb to enable loadbalancer services
 - Enable metallb with the command `minikube addons enable metallb`
 - Enter the command `minikube addons configure metallb`
