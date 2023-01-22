@@ -206,21 +206,30 @@ echo "dnsmasq configuration complete"
 
 ### Install Harbor
 ```sh
-# REQUIRED: hydrate harborvalues file with docker_proxy_cache value if on a vmware internal network, if there is no {docker_proxy_cache} value, this simply makes the required copy of the harborvalues template in the correct location. This also stubs the minikube harbor port value.
 envsubst < "/${ovathetap_assets}/harborvalues.yaml.template" > "/${ovathetap_home}/config/harborvalues.yaml"
 ## Install Harbor
 # Login to docker to assist with docker hub rate limiting
+## This is important to help prevent rate limiting issues, even if you have a free account
 docker login -u "${docker_account_username}" -p "${docker_account_password}"
-# Add the harbor repo to helm
-helm repo add harbor https://helm.goharbor.io
 # create namespace for harbor
 kubectl create ns harbor
+# Create a kubernetes secret with your docker credentials
+kubectl create secret generic myregistrykey \
+    --from-file=.dockerconfigjson="/home/${hostusername}/.docker/config.json" \
+    --type=kubernetes.io/dockerconfigjson -n harbor
+# Attach the secret with your docker credentials to the default service account for the harbor namespace
+kubectl patch serviceaccount default -p '{"imagePullSecrets": [{"name": "myregistrykey"}]}' -n harbor
+# Add the harbor repo to helm
+helm repo add harbor https://helm.goharbor.io
 # create secret for harbor tls certificate
 kubectl create secret tls harbor-cert --key /etc/ssl/CA/harbor.tanzu.demo.key --cert /etc/ssl/CA/harbor.tanzu.demo.crt -n harbor
 # install harbor
 helm install harbor harbor/harbor -f "/${ovathetap_home}/config/harborvalues.yaml" -n harbor
 ```
-- **IMPORTANT:** It may take several minutes before the harbor deployment completes. Please ensure the harbor deployment is fully running before proceeding with the following verification steps:
+- **IMPORTANT:** While this lab was under development, something changed in the Harbor chart, and it stopped deploying a key harbor service with the chart deployment. This may change, but before proceeding please check to see if you have this issue with the following steps:
+  - Enter the command `kubectl get service harbor -n harbor`
+  - If you get the response `Error from server (NotFound): services "harbor" not found`, please skip the rest of this section and implement the resolution found in the [Troubleshooting Harbor Install](#troubleshooting-harbor-install) section below.
+- It may take several minutes before the harbor deployment completes. Please ensure the harbor deployment is fully running before proceeding with the following verification steps:
   - enter the command `watch kubectl get deployments -n harbor` and wait for all of the deployments to be ready before proceeding
   - Open a tab in firefox and navigate to the url `https://harbor.tanzu.demo:30003` and verify the harbor login page is displayed
   - Add the harbor login screen to firefox bookmarks toolbar
@@ -228,20 +237,14 @@ helm install harbor harbor/harbor -f "/${ovathetap_home}/config/harborvalues.yam
   - Login to the harbor web interface with the username `admin` and password `Harbor12345`
   - Verify you can also login from your terminal with the command `docker login harbor.tanzu.demo:30003` - enter the username `admin` and password `Harbor12345` when prompted.
   - If any of these steps do not work, wait a few minutes and try again. Ensure these verification steps work before proceeding. 
- - If you cannot access the harbor interface after several minutes, please see the [Troubleshooting Harbor Install](#troubleshooting-harbor-install) section below
 
 #### Troubleshooting Harbor Install
 
 - If you were able to access harbor and login, you can skip this section
 - In some tests, the harbor helm deployment did not create a "harbor" service at all, this service should be configured for nodeport, and is required to be able to access harbor.
-- The resolution below should work in cases where BOTH the following conditions apply. If the problem you are experiencing does not meet these criteria, you may be experiencing a different problem.
-  - Condition 1:
-    - enter the command `minikube service list`
-    - The output should show that no nodeport services are available for harbor
-  - Condition 2:
-    - enter the command `kubectl get svc harbor -n harbor`
-    - You should the response `Error from server (NotFound): services "harbor" not found`
-  - Do not use the resolution below if you are not seeing both of these conditions
+  - enter the command `kubectl get svc harbor -n harbor`
+  - You should get the response `Error from server (NotFound): services "harbor" not found`
+  - Do not use the resolution below if you are not seeing this condition
 - The following commands will manually create a harbor service with nodeport:
 ```sh
 cat << EOF > "/${ovathetap_home}/config/harbor-svc.yaml"
