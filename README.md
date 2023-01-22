@@ -376,29 +376,6 @@ docker login "${tanzunet_hostname}" -u "${tanzunet_username}" -p "${tanzunet_pas
 imgpkg copy -b registry.tanzu.vmware.com/tanzu-application-platform/tap-packages:${TAP_VERSION} --to-repo ${INSTALL_REGISTRY_HOSTNAME}/${INSTALL_REPO}/tap-packages
 ```
 
-### Prepare Overlay for Tap Install
-- because this installation is using minikube, we have to inject an `externalIPs` key into the envoy service configuration for it to work correctly. This secret must also be referenced in the tap values file during installation, as you can see in the assets/tap-values.yaml.template file for your reference.
-- enter the following commands to create a kubernetes secret with the ytt overlay values
-```sh
-cat <<EOF > "/${ovathetap_home}/config/envoy-external-ips-overlay-secret.yaml"
-apiVersion: v1
-kind: Secret
-metadata:
-  name: envoy-external-ips-overlay-secret
-  namespace: tap-install
-stringData:
-  patch.yaml: |
-    #@ load("@ytt:overlay", "overlay")
-    #@overlay/match by=overlay.subset({"kind":"Service","metadata":{"namespace":"tanzu-system-ingress", "name":"envoy"}})
-    ---
-    spec:
-      #@overlay/match missing_ok=True
-      externalIPs: ["192.168.49.2"]
-EOF
-kubectl create ns tap-install
-kubectl create -f "/${ovathetap_home}/config/envoy-external-ips-overlay-secret.yaml"
-```
-
 ### Install TAP
 ```sh
 ## Prepare and inject local ca cert into ca_cert_data key in tap-values.yaml file

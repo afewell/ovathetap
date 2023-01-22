@@ -22,7 +22,15 @@ tap_gui:
       cors:
         origin: http://tap-gui.tanzu.demo
 
-package_overlays:
-  - name: "contour"
-    secrets:
-    - name: "envoy-external-ips-overlay-secret"
+contour:
+  envoy:
+    service:
+      type: NodePort
+      nodeports:
+        http: 32080
+        https: 32443
+
+#package_overlays:
+#  - name: "contour"
+#    secrets:
+#    - name: "envoy-external-ips-overlay-secret"
