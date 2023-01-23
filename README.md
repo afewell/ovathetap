@@ -127,14 +127,11 @@ nano "/${ovathetap_home}/config/secrets.env.sh"
   - Tanzu Application Platform GUI Yelb Catalog
   - tanzu-framework-bundle-linux
 
-
-
 ### Download Cluster Essentials
 
 - go to https://network.tanzu.vmware.com/products/tanzu-cluster-essentials/
 - login
 - download the cluster essentials 1.4.0 bundle for linux to the `~/Downloads` directory
-
 
 ### Install all items in taphostprep-1.sh to setup/configure linux environment
 - Ensure that the [environmental variables](${ovathetap_home}/config/vars.env.sh) are verified before proceeding.
@@ -212,7 +209,6 @@ kubectl create secret generic myregistrykey \
 kubectl patch serviceaccount default -p '{"imagePullSecrets": [{"name": "myregistrykey"}]}' -n metallb-system
 
 ```
-- This lab uses metallb to enable loadbalancer services
 - Enable metallb with the command `minikube addons enable metallb`
 - Enter the command `minikube addons configure metallb`
 - Enter Load Balancer Start IP: `192.168.49.5`
@@ -250,10 +246,7 @@ kubectl create secret tls harbor-cert --key /etc/ssl/CA/harbor.tanzu.demo.key --
 # install harbor
 helm install harbor harbor/harbor -f "/${ovathetap_home}/config/harborvalues.yaml" -n harbor
 ```
-- **IMPORTANT:** While this lab was under development, something changed in the Harbor chart, and it stopped deploying a key harbor service with the chart deployment. This may change, but before proceeding please check to see if you have this issue with the following steps:
-  - Enter the command `kubectl get service harbor -n harbor`
-  - If you get the response `Error from server (NotFound): services "harbor" not found`, please skip the rest of this section and implement the resolution found in the [Troubleshooting Harbor Install](#troubleshooting-harbor-install) section below.
-- It may take several minutes before the harbor deployment completes. Please ensure the harbor deployment is fully running before proceeding with the following verification steps:
+- **IMPORTANT:** It may take several minutes before the harbor deployment completes. Please ensure the harbor deployment is fully running before proceeding with the following verification steps:
   - enter the command `watch kubectl get deployments -n harbor` and wait for all of the deployments to be ready before proceeding
   - Open a tab in firefox and navigate to the url `https://harbor.tanzu.demo:30003` and verify the harbor login page is displayed
   - Add the harbor login screen to firefox bookmarks toolbar
@@ -262,83 +255,7 @@ helm install harbor harbor/harbor -f "/${ovathetap_home}/config/harborvalues.yam
   - Verify you can also login from your terminal with the command `docker login harbor.tanzu.demo:30003` - enter the username `admin` and password `Harbor12345` when prompted.
   - If any of these steps do not work, wait a few minutes and try again. Ensure these verification steps work before proceeding. 
 
-#### Troubleshooting Harbor Install
 
-- If you were able to access harbor and login, you can skip this section
-- In some tests, the harbor helm deployment did not create a "harbor" service at all, this service should be configured for nodeport, and is required to be able to access harbor.
-  - enter the command `kubectl get svc harbor -n harbor`
-  - You should get the response `Error from server (NotFound): services "harbor" not found`
-  - Do not use the resolution below if you are not seeing this condition
-- The following commands will manually create a harbor service with nodeport:
-```sh
-cat << EOF > "/${ovathetap_home}/config/harbor-svc.yaml"
-apiVersion: v1
-kind: Service
-metadata:
-  labels:
-  name: harbor
-  namespace: harbor
-spec:
-  ports:
-  - name: https
-    nodePort: 30003
-    port: 443
-    protocol: TCP
-    targetPort: 8443
-  - name: notary
-    nodePort: 30004
-    port: 4443
-    protocol: TCP
-    targetPort: 4443
-  selector:
-    app: harbor
-    component: nginx
-    release: harbor
-  sessionAffinity: None
-  type: NodePort
-EOF
-kubectl apply -f "/${ovathetap_home}/config/harbor-svc.yaml"
-```
-- **IMPORTANT:** Verify the harbor deployment with the following actions before proceeding
-  - enter the command `minikube service list` to verify that the harbor service has been assigned a nodeport
-  - Open a tab in firefox and navigate to the url `https://harbor.tanzu.demo:30003` and verify the harbor login page is displayed
-  - Add the harbor login screen to firefox bookmarks toolbar
-  - Navigate to manage bookmarks, and remove "Getting Started" from the bookmarks toolbar
-  - Login to the harbor web interface with the username `admin` and password `Harbor12345`
-  - Verify you can also login from your terminal with the command `docker login harbor.tanzu.demo:30003` - enter the username `admin` and password `Harbor12345` when prompted.
-  - If any of these steps do not work, wait a few minutes and try again. Ensure these verification steps work before proceeding. 
-
-### Install Cert-Manager
-
-```sh
-kubectl create ns cert-manager
-kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.11.0/cert-manager.yaml
-```
-
-### Create a kubernetes secret with your CA certificates
-
-```sh
-kubectl create secret tls my-ca-secret --key /etc/ssl/CA/myca.key --cert /etc/ssl/CA/myca.pem -n cert-manager
-``` 
-
-### Create a cert-manager ClusterIssuer using your CA secret
-
-- create a file ca-issuer.yaml with the following text:
-```sh
-cat << EOF > "/${ovathetap_home}/config/ca-issuer.yaml"
-apiVersion: cert-manager.io/v1
-kind: ClusterIssuer
-metadata:
-  name: ca-issuer
-spec:
-  ca:
-    secretName: my-ca-secret
-EOF
-# Create the ClusterIssuer with the following command
-kubectl apply -f "/${ovathetap_home}/config/ca-issuer.yaml" -n cert-manager
-# Verify the cluster issuer was created and is ready with the following command:
-kubectl get ClusterIssuer
-```
 
 
 ### Install Tanzu CLI
@@ -392,7 +309,7 @@ sudo cp "/${home_dir}/tanzu-cluster-essentials/ytt" /usr/local/bin/ytt
 ## Relocate TAP Images to your install registry
 export INSTALL_REGISTRY_USERNAME=admin
 export INSTALL_REGISTRY_PASSWORD=Harbor12345
-export INSTALL_REGISTRY_HOSTNAME=harbor.tanzu.demo:30003
+export INSTALL_REGISTRY_HOSTNAME=harbor.tanzu.demo
 export TAP_VERSION="${tap_version}"
 export INSTALL_REPO="${tap_install_repo}"
 docker login $INSTALL_REGISTRY_HOSTNAME -u $INSTALL_REGISTRY_USERNAME -p $INSTALL_REGISTRY_PASSWORD
@@ -447,6 +364,39 @@ add steps to validate tap install
 
 
 ### Configure Ingress for Harbor
+
+### Install Cert-Manager
+**This needs to be updated to reflect install from tanzu package**
+```sh
+kubectl create ns cert-manager
+kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.11.0/cert-manager.yaml
+```
+
+### Create a kubernetes secret with your CA certificates
+
+```sh
+kubectl create secret tls my-ca-secret --key /etc/ssl/CA/myca.key --cert /etc/ssl/CA/myca.pem -n cert-manager
+``` 
+
+### Create a cert-manager ClusterIssuer using your CA secret
+
+- create a file ca-issuer.yaml with the following text:
+```sh
+cat << EOF > "/${ovathetap_home}/config/ca-issuer.yaml"
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: ca-issuer
+spec:
+  ca:
+    secretName: my-ca-secret
+EOF
+# Create the ClusterIssuer with the following command
+kubectl apply -f "/${ovathetap_home}/config/ca-issuer.yaml" -n cert-manager
+# Verify the cluster issuer was created and is ready with the following command:
+kubectl get ClusterIssuer
+```
+
 
 <!-- I dont know if we need minikube tunnel so testing without it this round. 
 ### Start Minikube tunnel
