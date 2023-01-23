@@ -15,3 +15,4 @@ echo "source <(kubectl completion bash)" >> "/${home_dir}/.bashrc" # add autocom
 alias k=kubectl
 echo "alias k=kubectl" >> "/${home_dir}/.bashrc"
 complete -o default -F __start_kubectl k
+echo "complete -o default -F __start_kubectl k" >> "/${home_dir}/.bashrc"

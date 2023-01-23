@@ -213,6 +213,12 @@ kubectl patch serviceaccount default -p '{"imagePullSecrets": [{"name": "myregis
 - Enter the command `minikube addons configure metallb`
 - Enter Load Balancer Start IP: `192.168.49.5`
 - Enter Load Balancer End IP: `192.168.49.25`
+- Validate metallb installation:
+  - `kubectl get all -n metallb-system
+  - verify all of the objects are deployed correctly, if all objects appear to have deployed correctly, please proceed to the next section
+- If your pods are not deploying:
+  - In several tests, the metallb containers did not seem to use the default SA or for whatever reason, dont use the imagePullSecret and might get blocked by docker hub limits.
+  - To resolve this issue
 
 ### Complete dnsmasq configuration
 ```sh
@@ -248,16 +254,17 @@ helm install harbor harbor/harbor -f "/${ovathetap_home}/config/harborvalues.yam
 ```
 - **IMPORTANT:** It may take several minutes before the harbor deployment completes. Please ensure the harbor deployment is fully running before proceeding with the following verification steps:
   - enter the command `watch kubectl get deployments -n harbor` and wait for all of the deployments to be ready before proceeding
-  - Open a tab in firefox and navigate to the url `https://harbor.tanzu.demo:30003` and verify the harbor login page is displayed
+  - Open a tab in firefox and navigate to the url `https://harbor.tanzu.demo` and verify the harbor login page is displayed
   - Add the harbor login screen to firefox bookmarks toolbar
   - Navigate to manage bookmarks, and remove "Getting Started" from the bookmarks toolbar
   - Login to the harbor web interface with the username `admin` and password `Harbor12345`
-  - Verify you can also login from your terminal with the command `docker login harbor.tanzu.demo:30003` - enter the username `admin` and password `Harbor12345` when prompted.
+  - Verify you can also login from your terminal with the command `docker login harbor.tanzu.demo` - enter the username `admin` and password `Harbor12345` when prompted.
   - If any of these steps do not work, wait a few minutes and try again. Ensure these verification steps work before proceeding. 
 
 
 
 
+```
 ### Install Tanzu CLI
 ```sh
 ## Install Tanzu CLI
@@ -303,7 +310,7 @@ sudo cp "/${home_dir}/tanzu-cluster-essentials/ytt" /usr/local/bin/ytt
 
 
 ### Relocate TAP images to the local Harbor registry
-- **IMPORTANT** use firefox and login to the harbor portal (https://harbor.tanzu.demo:30003). Create a new project named "tap" with public access
+- **IMPORTANT** use firefox and login to the harbor portal (https://harbor.tanzu.demo). Create a new project named "tap" with public access
   - Note: It should work just fine if you set it for private access, I just set it for public because my use case is in a private nested lab environment with no inbound access
 ```sh
 ## Relocate TAP Images to your install registry
@@ -329,7 +336,7 @@ sudo rm "/${script_tmp_dir}/myca-indented.pem"
 kubectl create ns tap-install
 export INSTALL_REGISTRY_USERNAME=admin
 export INSTALL_REGISTRY_PASSWORD=Harbor12345
-export INSTALL_REGISTRY_HOSTNAME=harbor.tanzu.demo:30003
+export INSTALL_REGISTRY_HOSTNAME=harbor.tanzu.demo
 export TAP_VERSION="${tap_version}"
 export INSTALL_REPO="${tap_install_repo}"
 docker login $INSTALL_REGISTRY_HOSTNAME -u $INSTALL_REGISTRY_USERNAME -p $INSTALL_REGISTRY_PASSWORD
@@ -342,9 +349,44 @@ tanzu package repository add tanzu-tap-repository \
   --namespace tap-install
 ```
 - The Tanzu Package Repository should reconcile before proceeding
+- Prepare for cert-manager installation
+  - Cert-manager will be automatically installed as part of the TAP installation. But we want it to use a custom issuer based on our CA certificate. So here we will install the CRD's for cert-manager without installing the cert-manager application. This will allow us to create a clusterIssuer before cert-manager is installed, and then we can reference this issuer in the tap-values.yaml file, so it can be used on initial installation. 
 ```sh
-# Install profile
+# Determine the tanzu package version number for cert-manager in your tap installation
+tanzu package available list cert-manager.tanzu.vmware.com -n tap-install | grep -o '[0-9]*\.[0-9]*\.[0-9]*'
+export certmantanzupackageversion=$(tanzu package available list cert-manager.tanzu.vmware.com -n tap-install | grep -o '[0-9]*\.[0-9]*\.[0-9]*')
+# Determine cert-manager version used in by the tanzu package for cert-manager in your environment
+kubectl get package -n tap-install cert-manager.tanzu.vmware.com.${certmantanzupackageversion} -ojsonpath='{.spec.includedSoftware}' | jq -r '.[].version'
+export certmanversion=$(kubectl get package -n tap-install cert-manager.tanzu.vmware.com.${certmantanzupackageversion} -ojsonpath='{.spec.includedSoftware}' | jq -r '.[].version')
+# Install Cert-manager CRD's
+kubectl apply -f https://github.com/jetstack/cert-manager/releases/download/v${certmanversion}/cert-manager.yaml --validate=false
+# Create cert-manager namespace
+kubectl create ns cert-manager
+# Create secret from CA cert
+kubectl create secret tls my-ca-secret --key /etc/ssl/CA/myca.key --cert /etc/ssl/CA/myca.pem -n cert-manager
+# Create clusterIssuer yaml file based on lab CA cert secret
+cat << EOF > "/${ovathetap_home}/config/my-ca-issuer.yaml"
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: my-ca-issuer
+spec:
+  ca:
+    secretName: my-ca-secret
+EOF
+# Create the ClusterIssuer with the following command
+kubectl apply -f "/${ovathetap_home}/config/my-ca-issuer.yaml" -n cert-manager
+# Verify the cluster issuer was created and is ready with the following command:
+kubectl get ClusterIssuer
+# Install TAP
 tanzu package install tap -p tap.tanzu.vmware.com -v $TAP_VERSION --values-file "/${ovathetap_home}/config/tap-values.yaml" -n tap-install
+```
+- IF your tap installation fails, it may be because some packages are still reconciling.
+- Check on the status of each package install to find the issue:
+  - `kubectel get packageinstalls -n tap-install`
+- Do not proceed until the tap install completes reconciling successfully
+
+```sh
 # Install Full Dependencies Package
 ## Get buildservice version number
 tanzu package available list buildservice.tanzu.vmware.com --namespace tap-install

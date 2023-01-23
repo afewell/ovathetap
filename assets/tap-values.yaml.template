@@ -14,23 +14,67 @@ buildservice:
 
 tap_gui:
   service_type: ClusterIP
-  app_config:
-    app:
-      baseUrl: http://tap-gui.tanzu.demo
-    backend:
-      baseUrl: http://tap-gui.tanzu.demo 
-      cors:
-        origin: http://tap-gui.tanzu.demo
+
 
 contour:
   envoy:
     service:
-      type: NodePort
-      nodeports:
-        http: 32080
-        https: 32443
+      type: LoadBalancer
 
-#package_overlays:
-#  - name: "contour"
-#    secrets:
-#    - name: "envoy-external-ips-overlay-secret"
+---
+
+
+shared:
+  ingress_domain: "tanzu.demo"
+  ingress_issuer: # Optional, can denote a cert-manager.io/v1/ClusterIssuer of your choice. Defaults to "tap-ingress-selfsigned".
+
+  image_registry: 
+    project_path: "https://harbor.tanzu.demo/tap"
+    username: "admin"
+    password: "Harbor12345"
+  ca_cert_data: |
+
+ceip_policy_disclosed: true # Installation fails if this is not set to true. Not a string.
+
+#The above keys are minimum numbers of entries needed in tap-values.yaml to get a functioning TAP Full profile installation.
+
+#Below are the keys which may have default values set, but can be overridden.
+
+profile: full # Can take iterate, build, run, view.
+
+supply_chain: testing_scanning # Can take testing, testing_scanning.
+
+contour:
+  envoy:
+    service:
+      type: LoadBalancer # This is set by default, but can be overridden by setting a different value.
+
+buildservice:
+  kp_default_repository: "harbor.tanzu.demo/tap/build-service"
+  kp_default_repository_username: "admin"
+  kp_default_repository_password: "Harbor12345"
+
+tap_gui:
+  service_type: ClusterIP # If the shared.ingress_domain is set as above, this must be set to ClusterIP.
+  app_config:
+    catalog:
+      locations:
+        - type: url
+          target: https://GIT-CATALOG-URL/catalog-info.yaml
+
+metadata_store:
+  ns_for_export_app_cert: "MY-DEV-NAMESPACE"
+  app_service_type: ClusterIP # Defaults to LoadBalancer. If shared.ingress_domain is set earlier, this must be set to ClusterIP.
+
+scanning:
+  metadataStore:
+    url: "" # Configuration is moved, so set this string to empty.
+
+grype:
+  namespace: "MY-DEV-NAMESPACE"
+  targetImagePullSecret: "TARGET-REGISTRY-CREDENTIALS-SECRET"
+
+policy:
+  tuf_enabled: false # By default, TUF initialization and keyless verification are deactivated.
+tap_telemetry:
+  customer_entitlement_account_number: "CUSTOMER-ENTITLEMENT-ACCOUNT-NUMBER" # (Optional) Identify data for creating Tanzu Application Platform usage reports.
