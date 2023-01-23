@@ -114,7 +114,6 @@ cp "/${ovathetap_home}/scripts/inputs/secrets.env.sh.template" "/${ovathetap_hom
 # REQUIRED: Use nano or your preferred text editor to populate the variables in the secrets.env.sh file
 nano "/${ovathetap_home}/config/secrets.env.sh"
 ```
-- **VMWARE EMPLOYEES:** If your lab environment is on a vmware internal network, you can uncomment the docker_proxy_cache var and the default value provides the vmware docker proxy cache url for container downloads which can help bypass docker hub rate limits, but it only works from vmware internal networks. 
 
 ### Download Tanzu Application Platform
 
@@ -141,13 +140,13 @@ nano "/${ovathetap_home}/config/secrets.env.sh"
 ```sh
 # If you are using a custom hostusername, you should ensure the {hostusername} variable set in your environment and in the vars.env.sh file before proceeding
 # The following statement sets the {hostusername} variable to whatever it is already set to, if it has already been set. If the hostusername variable is not already set, it sets it to the value that is to the right of the ":-" characters, which is "viadmin"
-export hostusername="${hostusername:-viadmin}"
+export hostusername="$(whoami)"
 # source the vars files to ensure they are available in your env
 source "/home/${hostusername}/ovathetap/config/vars.env.sh"
 # source the secrets files to ensure they are available in your env. Note that since we sourced the vars file above, we can start using project variables to simplify and clarify ongoing commands
 source "/${ovathetap_home}/config/secrets.env.sh"
 # initialize temporary directory to be used for setup
-mkdir "/${script_tmp_dir}"
+mkdir -p "/${script_tmp_dir}"
 # make the taphostprep-1.sh script executable
 sudo chmod +x "/${ovathetap_scripts}/compound/taphostprep-1.sh"
 # execute the taphostprep-1.sh file. Optionally append "-u" to install all packages in non-interactive mode
