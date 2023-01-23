@@ -30,6 +30,7 @@ packages=(
   "vim"
   "git"
   "jq"
+  "age"
 )
 
 # Define an array of scripts to run
