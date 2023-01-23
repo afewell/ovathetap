@@ -1,3 +1,4 @@
+# This lab is under active development and the instructions probably will not work right now as I still have a lot of changes that I need to make which are in-progress
 # OvaTheTap
 The purpose of this document is to create a complete Full Profile installation for Tanzu Application Platform on a single VM.
 
