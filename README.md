@@ -419,7 +419,10 @@ tanzu package installed list -n tap-install
 ```sh
 # create gitlab namespace
 kubectl create ns gitlab
-# Install Gitlab 
+# Install Gitlab helm chart
+helm repo add gitlab https://charts.gitlab.io/
+helm repo update
+# Install Gitlab
 helm upgrade --install gitlab gitlab/gitlab -n gitlab -f "/${ovathetap_assets}/gitlab-values.yaml"
 ```
 - The values specified in the gitlab-values.yaml file disabled several default items from the gitlab helm chart. This is partially because we only need to access basic git repository features in gitlab, and do not need to install extended features. In addition, the ingress generation was disabled as the intent for this environment is to use the contour ingress controller included with the TAP installation for all ingress services.

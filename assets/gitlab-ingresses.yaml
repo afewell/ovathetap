@@ -1,9 +1,9 @@
 # Source: gitlab/charts/gitlab/charts/webservice/templates/ingress.yaml
-apiVersion: extensions/v1beta1
+apiVersion: networking.k8s.io/v1 
 kind: Ingress
 metadata:
   name: gitlab-webservice-default
-  namespace: default
+  namespace: gitlab
   labels:
     app: webservice
     release: gitlab
@@ -25,7 +25,7 @@ spec:
       secretName: gitlab-gitlab-tls
 ---
 # Source: gitlab/charts/minio/templates/ingress.yaml
-apiVersion: extensions/v1beta1
+apiVersion: networking.k8s.io/v1 
 kind: Ingress
 metadata:
   name: gitlab-minio
@@ -52,7 +52,7 @@ spec:
       secretName: gitlab-minio-tls
 ---
 # Source: gitlab/charts/registry/templates/ingress.yaml
-apiVersion: extensions/v1beta1
+apiVersion: networking.k8s.io/v1 
 kind: Ingress
 metadata:
   name: gitlab-registry
