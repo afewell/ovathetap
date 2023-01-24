@@ -1,6 +1,6 @@
 shared:
   ingress_domain: "tanzu.demo"
-  #ingress_issuer: # Optional, can denote a cert-manager.io/v1/ClusterIssuer of your choice. Defaults to "tap-ingress-selfsigned".
+  ingress_issuer: "my-ca-issuer" # Optional, can denote a cert-manager.io/v1/ClusterIssuer of your choice. Defaults to "tap-ingress-selfsigned".
 
   image_registry: 
     project_path: "https://harbor.tanzu.demo/tap"
