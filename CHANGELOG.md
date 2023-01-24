@@ -1,5 +1,12 @@
 # Semantic Versioning Changelog
 
+## [1.15.21](https://github.com/afewell/ovathetap/compare/v1.15.20...v1.15.21) (2023-01-24)
+
+
+### Bug Fixes
+
+* updating cert-manager to resolve [#98](https://github.com/afewell/ovathetap/issues/98) ([3c904ed](https://github.com/afewell/ovathetap/commit/3c904eda8d5cfae8490fef2d42b9e9676abd1152))
+
 ## [1.15.20](https://github.com/afewell/ovathetap/compare/v1.15.19...v1.15.20) (2023-01-24)
 
 
