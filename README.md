@@ -328,8 +328,7 @@ imgpkg copy -b registry.tanzu.vmware.com/tanzu-application-platform/tap-packages
 ### Install TAP
 ```sh
 ## Prepare and inject local ca cert into ca_cert_data key in tap-values.yaml file
-myca_path="etc/ssl/CA"
-sudo sed 's/^/    /' "/${myca_path}/myca.pem" | sudo tee "/${script_tmp_dir}/myca-indented.pem"
+sudo sed 's/^/    /' "/etc/ssl/CA/myca.pem" | sudo tee "/${script_tmp_dir}/myca-indented.pem"
 sudo sed "/ca_cert_data/ r /${script_tmp_dir}/myca-indented.pem" "/${ovathetap_assets}/tap-values.yaml.template" | sudo tee "/${ovathetap_home}/config/tap-values.yaml"
 sudo rm "/${script_tmp_dir}/myca-indented.pem"
 ## Install TAP
@@ -351,7 +350,7 @@ tanzu package repository add tanzu-tap-repository \
 ```
 - The Tanzu Package Repository should reconcile before proceeding
 - Prepare for cert-manager installation
-  - Cert-manager will be automatically installed as part of the TAP installation. But we want it to use a custom issuer based on our CA certificate. So here we will install the CRD's for cert-manager without installing the cert-manager application. This will allow us to create a clusterIssuer before cert-manager is installed, and then we can reference this issuer in the tap-values.yaml file, so it can be used on initial installation. 
+  - Cert-manager will be automatically installed as part of the TAP installation. But we want it to use a custom issuer based on our CA certificate. So here we will preinstall the tanzu package for cert manager per https://docs.vmware.com/en/VMware-Tanzu-Application-Platform/1.4/tap/cert-manager-install.html
 ```sh
 # Determine the tanzu package version number for cert-manager in your tap installation
 tanzu package available list cert-manager.tanzu.vmware.com -n tap-install | grep -o '[0-9]*\.[0-9]*\.[0-9]*'
@@ -359,10 +358,14 @@ export certmantanzupackageversion=$(tanzu package available list cert-manager.ta
 # Determine cert-manager version used in by the tanzu package for cert-manager in your environment
 kubectl get package -n tap-install cert-manager.tanzu.vmware.com.${certmantanzupackageversion} -ojsonpath='{.spec.includedSoftware}' | jq -r '.[].version'
 export certmanversion=$(kubectl get package -n tap-install cert-manager.tanzu.vmware.com.${certmantanzupackageversion} -ojsonpath='{.spec.includedSoftware}' | jq -r '.[].version')
-# Install Cert-manager CRD's
-kubectl apply -f https://github.com/jetstack/cert-manager/releases/download/v${certmanversion}/cert-manager.yaml --validate=false
 # Create cert-manager namespace
 kubectl create ns cert-manager
+# create cert manager cluster role and seervice account
+kubectl apply -f "/${ovathetap_assets}/cert-manager-rbac.yaml"
+# prepare cert manager install file
+envsubst < "/${ovathetap_assets}/cert-manager-install.yaml.template" > "/${ovathetap_home}/config/cert-manager-install.yaml"
+# Install cert-manager
+kubectl apply -f "/${ovathetap_home}/config/cert-manager-install.yaml"
 # Create secret from CA cert
 kubectl create secret tls my-ca-secret --key /etc/ssl/CA/myca.key --cert /etc/ssl/CA/myca.pem -n cert-manager
 # Create clusterIssuer yaml file based on lab CA cert secret

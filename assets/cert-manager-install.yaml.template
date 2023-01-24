@@ -1,0 +1,28 @@
+---
+apiVersion: packaging.carvel.dev/v1alpha1
+kind: PackageInstall
+metadata:
+  name: cert-manager
+  namespace: tap-install
+spec:
+  serviceAccountName: cert-manager-tap-install-sa
+  packageRef:
+    refName: cert-manager.tanzu.vmware.com
+    versionSelection:
+      constraints: "${certmantanzupackageversion}"
+      prereleases: {}
+  values:
+    - secretRef:
+        name: cert-manager-values
+
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: cert-manager-values
+  namespace: tap-install
+stringData:
+  values.yaml: |
+    issuers:
+      - name: tap-ingress-selfsigned
+        self_signed: {}
