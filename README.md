@@ -207,14 +207,20 @@ kubectl create secret generic myregistrykey \
     --type=kubernetes.io/dockerconfigjson -n metallb-system
 # Attach the secret with your docker credentials to the default service account for the harbor namespace
 kubectl patch serviceaccount default -p '{"imagePullSecrets": [{"name": "myregistrykey"}]}' -n metallb-system
-
+minikube addons enable metallb
+minikube addons configure metallb
 ```
-- Enable metallb with the command `minikube addons enable metallb`
-- Enter the command `minikube addons configure metallb`
 - Enter Load Balancer Start IP: `192.168.49.5`
 - Enter Load Balancer End IP: `192.168.49.25`
+- Enter the following commands to add the imagePullSecrets to the metallb installation:
+```sh
+# patch the metallb controller deployment yaml with the imagePullSecrets
+kubectl patch deployment controller -p '{"spec": {"template": {"spec": {"imagePullSecrets": [{"name": "myregistrykey"}]}}}}' -n metallb-system
+# patch the metallb controller deployment yaml with the imagePullSecrets
+kubectl patch daemonset speaker -n my-namespace -p '{"spec": {"template": {"spec": {"imagePullSecrets": [{"name": "myregistrykey"}]}}}}' -n metallb-system
+```
 - Validate metallb installation:
-  - `kubectl get all -n metallb-system
+  - `kubectl get all -n metallb-system`
   - verify all of the objects are deployed correctly, if all objects appear to have deployed correctly, please proceed to the next section
 - If your pods are not deploying:
   - In several tests, the metallb containers did not seem to use the default SA or for whatever reason, dont use the imagePullSecret and might get blocked by docker hub limits.
@@ -261,10 +267,6 @@ helm install harbor harbor/harbor -f "/${ovathetap_home}/config/harborvalues.yam
   - Verify you can also login from your terminal with the command `docker login harbor.tanzu.demo` - enter the username `admin` and password `Harbor12345` when prompted.
   - If any of these steps do not work, wait a few minutes and try again. Ensure these verification steps work before proceeding. 
 
-
-
-
-```
 ### Install Tanzu CLI
 ```sh
 ## Install Tanzu CLI
@@ -283,8 +285,7 @@ tanzu plugin install --local cli all
 ### Install Tanzu Cluster Essentials
 ```sh
 # Create kapp-controller-config secret manifest
-myca_path="etc/ssl/CA"
-sudo sed 's/^/    /' "/${myca_path}/myca.pem" | sudo tee "/${script_tmp_dir}/myca-indented.pem"
+sudo sed 's/^/    /' "/etc/ssl/CA/myca.pem" | sudo tee "/${script_tmp_dir}/myca-indented.pem"
 sudo sed "/caCerts/ r /${script_tmp_dir}/myca-indented.pem" "/${ovathetap_assets}/kapp-controller-config.yaml.template" | sudo tee "/${ovathetap_home}/config/kapp-controller-config.yaml"
 sudo rm "/${script_tmp_dir}/myca-indented.pem"
 ## Install Cluster Essentials
