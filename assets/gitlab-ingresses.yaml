@@ -16,9 +16,12 @@ spec:
       http:
         paths:
           - path: /
+            pathType: Prefix
             backend:
-              serviceName: gitlab-webservice-default
-              servicePort: 8181
+              service:
+                name: gitlab-webservice-default
+                port: 
+                  number: 8181
   tls:
     - hosts:
       - gitlab.tanzu.demo
@@ -43,37 +46,13 @@ spec:
       http:
         paths:
           - path: /
+            pathType: Prefix
             backend:
-              serviceName: gitlab-minio-svc
-              servicePort: 9000
+              service:
+                name: gitlab-minio-svc
+                port: 
+                  number: 9000
   tls:
     - hosts:
       - minio.example.com
       secretName: gitlab-minio-tls
----
-# Source: gitlab/charts/registry/templates/ingress.yaml
-apiVersion: networking.k8s.io/v1 
-kind: Ingress
-metadata:
-  name: gitlab-registry
-  namespace: default
-  labels:
-    app: registry
-    release: gitlab
-    
-  annotations:
-    cert-manager.io/issuer: "my-ca-issuer"
-spec:
-  
-  rules:
-    - host: registry.tanzu.demo
-      http:
-        paths:
-          - path: /
-            backend:
-              serviceName: gitlab-registry
-              servicePort: 5000
-  tls:
-    - hosts:
-      - registry.tanzu.demo
-      secretName: gitlab-registry-tls
