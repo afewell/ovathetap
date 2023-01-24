@@ -9,7 +9,7 @@ metadata:
     release: gitlab
     gitlab.com/webservice-name: default
   annotations:
-    cert-manager.io/issuer: "my-ca-issuer"
+    cert-manager.io/cluster-issuer: "my-ca-issuer"
 spec:
   rules:
     - host: gitlab.tanzu.demo
@@ -38,7 +38,7 @@ metadata:
     release: gitlab
     
   annotations:
-    cert-manager.io/issuer: "my-ca-issuer"
+    cert-manager.io/cluster-issuer: "my-ca-issuer"
 spec:
   
   rules:
