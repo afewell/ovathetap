@@ -405,63 +405,32 @@ tanzu package repository add tbs-full-deps-repository \
   --namespace tap-install
 tanzu package install full-tbs-deps -p full-tbs-deps.tanzu.vmware.com -v $BSVersion -n tap-install
 tanzu package installed update tap -p tap.tanzu.vmware.com -v $TAP_VERSION  --values-file "/${ovathetap_home}/config/tap-values.yaml" -n tap-install
-add steps to validate tap install
+# confirm tap installation - all items should be in state reconcile succeeded
+kubect get packageinstalls -n tap-install
+tanzu package installed list -n tap-install
 ```
+- Using firefox, open a browser tab to https://tap-gui.tanzu.demo
+  - Note that the GUI is still fairly empty at this point as we will add the catalog and other assets in subsequent steps.
+- Bookmark this page on the bookmarks bar
 
-
-### Configure Ingress for Harbor
-
-### Install Cert-Manager
-**This needs to be updated to reflect install from tanzu package**
-```sh
-kubectl create ns cert-manager
-kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.11.0/cert-manager.yaml
-```
-
-### Create a kubernetes secret with your CA certificates
-
-```sh
-kubectl create secret tls my-ca-secret --key /etc/ssl/CA/myca.key --cert /etc/ssl/CA/myca.pem -n cert-manager
-``` 
-
-### Create a cert-manager ClusterIssuer using your CA secret
-
-- create a file ca-issuer.yaml with the following text:
-```sh
-cat << EOF > "/${ovathetap_home}/config/ca-issuer.yaml"
-apiVersion: cert-manager.io/v1
-kind: ClusterIssuer
-metadata:
-  name: ca-issuer
-spec:
-  ca:
-    secretName: my-ca-secret
-EOF
-# Create the ClusterIssuer with the following command
-kubectl apply -f "/${ovathetap_home}/config/ca-issuer.yaml" -n cert-manager
-# Verify the cluster issuer was created and is ready with the following command:
-kubectl get ClusterIssuer
-```
-
-
-<!-- I dont know if we need minikube tunnel so testing without it this round. 
-### Start Minikube tunnel
-
-- `minikube tunnel`
-- it may ask you to enter your password
-- the process will take over the terminal session, so you will need to open a new terminal window to continue, leave the minikube tunnel terminal session open -->
-
-### (Optional) Install Gitlab
-- This lab can support github or gitlab, if you are using github, you can skip this section
+### Install Gitlab
+- The instructions for this lab focus on using gitlab. However if you prefer, you can use github instead, but instructions for using github are not provided.
 - Install Gitlab
 ```sh
-# prep and post the gitlab values template to the config directory
-envsubst < "/${ovathetap_home}/assets/gitlab-values.yaml.template" > "/${ovathetap_home}/config/gitlab-values.yaml"
+# create gitlab namespace
+kubectl create ns gitlab
 # Install Gitlab 
-helm upgrade --install gitlab gitlab/gitlab -n gitlab -f "/${ovathetap_home}/config/gitlab-values.yaml"
+helm upgrade --install gitlab gitlab/gitlab -n gitlab -f "/${ovathetap_assets}/gitlab-values.yaml"
 ```
-- The values specified in the gitlab-values.yaml file disabled several default items from the gitlab helm chart. This is partially because we only need to access basic git repository features in gitlab, and do not need to install extended features. In addition, the ingress generation was disabled as the intent for this environment is to use the contour ingress controller included with the TAP installation for all ingress services. 
-
+- The values specified in the gitlab-values.yaml file disabled several default items from the gitlab helm chart. This is partially because we only need to access basic git repository features in gitlab, and do not need to install extended features. In addition, the ingress generation was disabled as the intent for this environment is to use the contour ingress controller included with the TAP installation for all ingress services.
+```sh
+# Create ingresses for gitlab
+kubectl apply -f "/${ovathetap_assets}/gitlab-ingresses.yaml"
+# Verify Gitlab Deployment
+kubectl get all -n gitlab
+```
+- Using firefox, open a browser tab to https://gitlab.tanzu.demo
+- Bookmark this page on the bookmarks bar
 
 
 

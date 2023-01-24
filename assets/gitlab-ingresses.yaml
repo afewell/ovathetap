@@ -1,0 +1,79 @@
+# Source: gitlab/charts/gitlab/charts/webservice/templates/ingress.yaml
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: gitlab-webservice-default
+  namespace: default
+  labels:
+    app: webservice
+    release: gitlab
+    gitlab.com/webservice-name: default
+  annotations:
+    cert-manager.io/issuer: "my-ca-issuer"
+spec:
+  rules:
+    - host: gitlab.tanzu.demo
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: gitlab-webservice-default
+              servicePort: 8181
+  tls:
+    - hosts:
+      - gitlab.tanzu.demo
+      secretName: gitlab-gitlab-tls
+---
+# Source: gitlab/charts/minio/templates/ingress.yaml
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: gitlab-minio
+  namespace: default
+  labels:
+    app: minio
+    release: gitlab
+    
+  annotations:
+    cert-manager.io/issuer: "my-ca-issuer"
+spec:
+  
+  rules:
+    - host: minio.tanzu.demo
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: gitlab-minio-svc
+              servicePort: 9000
+  tls:
+    - hosts:
+      - minio.example.com
+      secretName: gitlab-minio-tls
+---
+# Source: gitlab/charts/registry/templates/ingress.yaml
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: gitlab-registry
+  namespace: default
+  labels:
+    app: registry
+    release: gitlab
+    
+  annotations:
+    cert-manager.io/issuer: "my-ca-issuer"
+spec:
+  
+  rules:
+    - host: registry.tanzu.demo
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: gitlab-registry
+              servicePort: 5000
+  tls:
+    - hosts:
+      - registry.tanzu.demo
+      secretName: gitlab-registry-tls

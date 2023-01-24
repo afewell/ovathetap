@@ -1233,4 +1233,5 @@ gitlab:
   #   praefect:
 
 minio:
-  image: ${docker_proxy_cache}minio/minio 
+  pullSecrets:
+  - name: myregistrykey
