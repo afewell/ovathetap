@@ -41,6 +41,7 @@ scripts=(
   "minikube.sh"
   "kubectl.sh"
   "helm.sh"
+  "yq.sh"
   "dnsmasq.sh"
   "certificateauthority.sh"
 )

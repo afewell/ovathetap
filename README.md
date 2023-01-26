@@ -414,6 +414,7 @@ tanzu package installed list -n tap-install
 - Bookmark this page on the bookmarks bar
 
 ### Install Gitlab
+TODO: On next test, attempt to specify gitlab initial root password in helm values file, which MAY automatically create root access token and if so, then we can bypass the requirement to manually create the token in the gui. 
 - The instructions for this lab focus on using gitlab. However if you prefer, you can use github instead, but instructions for using github are not provided.
 - Install Gitlab
 ```sh
@@ -432,8 +433,93 @@ kubectl apply -f "/${ovathetap_assets}/gitlab-ingresses.yaml"
 # Verify Gitlab Deployment
 kubectl get all -n gitlab
 ```
+- Get the initial gitlab root login password:
+  - `kubectl get secrets -n gitlab gitlab-gitlab-initial-root-password -o jsonpath={.data.password} | base64 -d`
+  - Enter this password into the secrets.env.sh file
 - Using firefox, open a browser tab to https://gitlab.tanzu.demo
-- Bookmark this page on the bookmarks bar
+  - Login with account:
+    - Username: root
+    - Password: enter the password you gathered from the secret
+  - Bookmark this page on the bookmarks bar
+- Click on the icon for the logged in account in the upper right corner of the web ui and select preferences.
+- Click `Access Tokens`
+- Create a token with the following settings: 
+  - Token name: root
+  - Expiration Date: any future date
+  - Scopes: api
+  - Click `Create personal access token`
+- Copy Personal Access Token and paste into secrets.env.sh file
+  - Source the secrets file to load the password environment variable
+  - `source "/${ovathetap_home}/secrets.env.sh`
+- Enter the following commands to create a new user account for the viadmin user:
+```sh
+export gitlab_viadmin_create_reponse=$(curl -k --request POST --header "PRIVATE-TOKEN: ${gitlab_root_token}" --data 'email=viadmin@tanzu.demo&username=viadmin&password=VMware1!&name=VI Admin&admin=true&skip_confirmation=true' https://gitlab.tanzu.demo/api/v4/users)
+echo ${gitlab_viadmin_create_reponse} | yq -p json -o yaml | tee "/${ovathetap_home}/config/gitlab_viadmin_account_details.yaml"
+export gitlab_viadmin_user_id=$(echo ${gitlab_viadmin_create_reponse} | jq -r '.id')
+# create access token for viadmin user
+export viadmin_gitlab_token_create_response=$(curl --request POST --header "PRIVATE-TOKEN: ${gitlab_root_token}" --data "name=mytoken" --data "expires_at=2025-04-04" \
+     --data "scopes[]=api" "https://gitlab.tanzu.demo/api/v4/users/${gitlab_viadmin_user_id}/personal_access_tokens")
+echo ${viadmin_gitlab_token_create_response}
+export viadmin_gitlab_token=$(echo ${viadmin_gitlab_token_create_response} | jq -r '.token')
+echo "viadmin_gitlab_api_token: ${viadmin_gitlab_token}" | tee -a "/${ovathetap_home}/config/gitlab_viadmin_account_details.yaml"
+```
+- Enter the following commands to create a new user account for the devlead user:
+```sh
+export gitlab_viadmin_create_reponse=$(curl -k --request POST --header "PRIVATE-TOKEN: ${gitlab_root_token}" --data 'email=devlead@tanzu.demo&username=devlead&password=VMware1!&name=Dev Lead&admin=true&skip_confirmation=true' https://gitlab.tanzu.demo/api/v4/users)
+echo ${gitlab_devlead_create_reponse} | yq -p json -o yaml | tee "/${ovathetap_home}/config/gitlab_devlead_account_details.yaml"
+export gitlab_devlead_user_id=$(echo ${gitlab_devlead_create_reponse} | jq -r '.id')
+# create access token for viadmin user
+export devlead_gitlab_token_create_response=$(curl --request POST --header "PRIVATE-TOKEN: ${gitlab_root_token}" --data "name=mytoken" --data "expires_at=2025-04-04" \
+     --data "scopes[]=api" "https://gitlab.tanzu.demo/api/v4/users/${gitlab_devlead_user_id}/personal_access_tokens")
+echo ${devlead_gitlab_token_create_response}
+export devlead_gitlab_token=$(echo ${devlead_gitlab_token_create_response} | jq -r '.token')
+echo "devlead_gitlab_api_token: ${devlead_gitlab_token}" | tee -a "/${ovathetap_home}/config/gitlab_devlead_account_details.yaml"
+```
+- create gitlab oauth app
+```sh
+export create_oauth_app_response=$(curl -k --request POST --header "PRIVATE-TOKEN: ${gitlab_root_token}" \
+     --data "name=MyApplication&redirect_uri=http://redirect.uri&scopes=api write_repository read_user write_registry sudo openid profile email" \
+     "https://gitlab.tanzu.demo/api/v4/applications")
+echo ${create_oauth_app_response} | yq -p json -o yaml | tee "/${ovathetap_home}/config/gitlab_oauth_app_config.yaml"
+```
+
+
+create catalog repo
+set tap-values for gitlab
+update tap install
+verify gitlab auth
+
+follow tap instructions to 
+deploy scanning_testing supply chain
+deploy developer namespaces
+install vscode plugins
+
+? Is that the end of the lab installation and setup parts?
+
+
+Exercises:
+? is it easy to do this such that
+devlead executes accelerator including auto git repo creation
+devlead modifies code, uses app live view
+devlead deploys code through scanning and testing pipeline
+devlead reviews screens and/or commands that show details of the supply chain operations
+
+devlead reviews whatever screens are available to review deployment
+devlead executes update to app that is already deployed
+
+story: devlead requests new accelerator
+
+viadmin makes new accelerator
+
+devlead executes new accelerator
+
+
+
+
+
+
+
+
 
 
 

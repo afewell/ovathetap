@@ -13,7 +13,27 @@ ceip_policy_disclosed: true # Installation fails if this is not set to true. Not
 
 profile: full # Can take iterate, build, run, view.
 
-supply_chain: basic # Can take testing, testing_scanning.
+supply_chain: basic # Can take basic, testing, testing_scanning.
+
+tap_gui:
+  app_config:
+    app:
+      baseUrl: https://tap-gui.tanzu.demo
+    integrations:
+      gitlab:
+      - host: gitlab.tanzu.demo
+        apiBaseUrl: https://gitlab.tanzu.demo/api/v4
+        token: 
+    auth:
+      providers:
+        gitlab:
+          development:
+            clientId: 0136cad277aef42179df
+            clientSecret: 63823a0f4250776a43f6526b26e846c01a7e5ca5
+            ## uncomment if using self-hosted GitLab
+            audience: https://gitlab.company.com
+            ## uncomment if using a custom redirect URI
+            callbackUrl: https://${BASE_URL}/api/auth/gitlab/handler/frame
 
 contour:
   envoy:
