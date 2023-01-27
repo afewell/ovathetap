@@ -186,7 +186,7 @@ source "/home/${hostusername}/ovathetap/config/vars.env.sh"
 # source the secrets files to ensure they are available in your env. Note that since we sourced the vars file above, we can start using project variables to simplify and clarify ongoing commands
 source "/${ovathetap_home}/config/secrets.env.sh"
 # Start Minikube
-minikube start --kubernetes-version="${kubernetes_version}" --memory="${minikube_memory}" --cpus="${minikube_cpus}" --driver=docker --embed-certs --insecure-registry=0.0.0.0/0
+minikube start --kubernetes-version="${kubernetes_version}" --memory="${minikube_memory}" --cpus="${minikube_cpus}" --driver=docker --embed-certs --insecure-registry=0.0.0.0/0 --extra-config=kubelet.max-pods=200
 # Gather minikube IP
 echo "the minikube ip is: $(minikube ip)"
 export minikubeip=$(minikube ip)
@@ -522,7 +522,15 @@ git commit -m "adding yelb catalog files"
 git push
 # after entering `git push' enter username: viadmin password: VMware1!
 ```
-
+- Update tap with gitlab settings
+```sh
+## Prepare and inject local ca cert into ca_cert_data key in tap-values-2.yaml file
+sudo sed 's/^/    /' "/etc/ssl/CA/myca.pem" | sudo tee "/${ovathetap_home}/config/myca-indented.pem"
+sudo sed "/ca_cert_data/ r /${ovathetap_home}/config/myca-indented.pem" "/${ovathetap_assets}/tap-values-2.yaml.template" | sudo tee "/${ovathetap_home}/config/tap-values-2.yaml"
+sudo rm "/${ovathetap_home}/config/myca-indented.pem"
+# update tap with new values 
+tanzu package installed update tap -p tap.tanzu.vmware.com -v $TAP_VERSION  --values-file "/${ovathetap_home}/config/tap-values-2.yaml" -n tap-install
+```
 
 
 
