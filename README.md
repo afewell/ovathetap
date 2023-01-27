@@ -450,41 +450,83 @@ kubectl get all -n gitlab
   - Click `Create personal access token`
 - Copy Personal Access Token and paste into secrets.env.sh file
   - Source the secrets file to load the password environment variable
-  - `source "/${ovathetap_home}/secrets.env.sh`
+  - `source "/${ovathetap_home}/config/secrets.env.sh`
 - Enter the following commands to create a new user account for the viadmin user:
 ```sh
-export gitlab_viadmin_create_reponse=$(curl -k --request POST --header "PRIVATE-TOKEN: ${gitlab_root_token}" --data 'email=viadmin@tanzu.demo&username=viadmin&password=VMware1!&name=VI Admin&admin=true&skip_confirmation=true' https://gitlab.tanzu.demo/api/v4/users)
+gitlab_viadmin_create_reponse=$(curl -k --request POST --header "PRIVATE-TOKEN: ${gitlab_root_token}" --data 'email=viadmin@tanzu.demo&username=viadmin&password=VMware1!&name=VI Admin&admin=true&skip_confirmation=true' https://gitlab.tanzu.demo/api/v4/users)
 echo ${gitlab_viadmin_create_reponse} | yq -p json -o yaml | tee "/${ovathetap_home}/config/gitlab_viadmin_account_details.yaml"
 export gitlab_viadmin_user_id=$(echo ${gitlab_viadmin_create_reponse} | jq -r '.id')
+echo "export gitlab_viadmin_user_id=${gitlab_viadmin_user_id}" >> "/${ovathetap_home}/config/vars.env.sh"
 # create access token for viadmin user
-export viadmin_gitlab_token_create_response=$(curl --request POST --header "PRIVATE-TOKEN: ${gitlab_root_token}" --data "name=mytoken" --data "expires_at=2025-04-04" \
+viadmin_gitlab_token_create_response=$(curl --request POST --header "PRIVATE-TOKEN: ${gitlab_root_token}" --data "name=mytoken" --data "expires_at=2025-04-04" \
      --data "scopes[]=api" "https://gitlab.tanzu.demo/api/v4/users/${gitlab_viadmin_user_id}/personal_access_tokens")
 echo ${viadmin_gitlab_token_create_response}
 export viadmin_gitlab_token=$(echo ${viadmin_gitlab_token_create_response} | jq -r '.token')
-echo "viadmin_gitlab_api_token: ${viadmin_gitlab_token}" | tee -a "/${ovathetap_home}/config/gitlab_viadmin_account_details.yaml"
+echo "export viadmin_gitlab_token=${viadmin_gitlab_token}" >> "/${ovathetap_home}/config/vars.env.sh"
 ```
 - Enter the following commands to create a new user account for the devlead user:
 ```sh
-export gitlab_viadmin_create_reponse=$(curl -k --request POST --header "PRIVATE-TOKEN: ${gitlab_root_token}" --data 'email=devlead@tanzu.demo&username=devlead&password=VMware1!&name=Dev Lead&admin=true&skip_confirmation=true' https://gitlab.tanzu.demo/api/v4/users)
+gitlab_viadmin_create_reponse=$(curl -k --request POST --header "PRIVATE-TOKEN: ${gitlab_root_token}" --data 'email=devlead@tanzu.demo&username=devlead&password=VMware1!&name=Dev Lead&admin=true&skip_confirmation=true' https://gitlab.tanzu.demo/api/v4/users)
 echo ${gitlab_devlead_create_reponse} | yq -p json -o yaml | tee "/${ovathetap_home}/config/gitlab_devlead_account_details.yaml"
 export gitlab_devlead_user_id=$(echo ${gitlab_devlead_create_reponse} | jq -r '.id')
+echo "export gitlab_devlead_user_id=${gitlab_devlead_user_id}" >> "/${ovathetap_home}/config/vars.env.sh"
 # create access token for viadmin user
-export devlead_gitlab_token_create_response=$(curl --request POST --header "PRIVATE-TOKEN: ${gitlab_root_token}" --data "name=mytoken" --data "expires_at=2025-04-04" \
+devlead_gitlab_token_create_response=$(curl --request POST --header "PRIVATE-TOKEN: ${gitlab_root_token}" --data "name=mytoken" --data "expires_at=2025-04-04" \
      --data "scopes[]=api" "https://gitlab.tanzu.demo/api/v4/users/${gitlab_devlead_user_id}/personal_access_tokens")
 echo ${devlead_gitlab_token_create_response}
 export devlead_gitlab_token=$(echo ${devlead_gitlab_token_create_response} | jq -r '.token')
-echo "devlead_gitlab_api_token: ${devlead_gitlab_token}" | tee -a "/${ovathetap_home}/config/gitlab_devlead_account_details.yaml"
+echo "export devlead_gitlab_token=${devlead_gitlab_token}" >> "/${ovathetap_home}/config/vars.env.sh"
 ```
 - create gitlab oauth app
 ```sh
-export create_oauth_app_response=$(curl -k --request POST --header "PRIVATE-TOKEN: ${gitlab_root_token}" \
-     --data "name=MyApplication&redirect_uri=http://redirect.uri&scopes=api write_repository read_user write_registry sudo openid profile email" \
+create_oauth_app_response=$(curl -k --request POST --header "PRIVATE-TOKEN: ${gitlab_root_token}" \
+     --data "name=tap&redirect_uri=https://tap-gui.tanzu.demo/api/auth/gitlab/handler/frame&scopes=api read_api read_user read_repository write_repository read_registry write_registry sudo openid profile email" \
      "https://gitlab.tanzu.demo/api/v4/applications")
 echo ${create_oauth_app_response} | yq -p json -o yaml | tee "/${ovathetap_home}/config/gitlab_oauth_app_config.yaml"
 ```
+### Setup ssh keys for viadmin
+- create ssh key
+  - `ssh-keygen -t ed25519 -f "/home/${hostusername}/.ssh/id_ed25519" -N ""`
+- the following command returns a string with your key, copy the entire string
+  - `cat "/home/${hostusername}/.ssh/id_ed25519.pub"`
+  - For example, the string you copy shoudl look similar to "`ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPs2Sfz+NWz2KmrBVIUcaobbF3CD3oMKyDjNevff9dka viadmin@ubuntudesktop`"
+- Using firefox, login to https://gitlab.tanzu.demo as the user `viadmin`. If you are already logged in as root, logout, and login as the user: `viadmin` password: `VMware1!`.
+- Click on your user icon in the upper right corner and select `Preferences`
+- Select the `SSH Keys` screen, paste in your key, and select `Add key`
+#### create catalog repo
+- From firefox, login as viadmin
+- Click `Create a group` and then `Create group` to create a group with the following settings (leave any unspecified setting at its default value):
+  - Group name: tanzu
+  - Visibility level: Public
+  - Role: Devops Engineer
+  - Who will be using this group?: My company or team
+  - Click `Create group`
+- Click `Create new project` and then `Create a blank project` - use the following settings (leave any unspecified setting at its default value):
+  - Project name: tap-catalog
+  - Visibility Level: Public
+  - Initialize repository with a README: true
+  - Click `Create project`
+- upload catalog files to repository:
+```sh
+# Setup your local git client
+git config --global user.name "viadmin"
+git config --global user.email "viadmin@gitlab.tanzu.demo"
+cd ~
+git clone https://gitlab.tanzu.demo/tanzu/tap-catalog.git
+# unpack tap catalog files to tap-catalog directory
+tar -xvzf "/home/${hostusername}/Downloads/tap-gui-yelb-catalog.tgz" -C "/home/${hostusername}/"
+cp -r "/home/${hostusername}/yelb-catalog/"* "/home/${hostusername}/tap-catalog/"
+cd "/home/${hostusername}/tap-catalog/"
+git add .
+git commit -m "adding yelb catalog files"
+git push
+# after entering `git push' enter username: viadmin password: VMware1!
+```
 
 
-create catalog repo
+
+
+
 set tap-values for gitlab
 update tap install
 verify gitlab auth
@@ -529,13 +571,48 @@ devlead executes new accelerator
 
 
 <!--
-Modify the learningcenter-portal ingress object to get cert from cert-manager
-- need to add annotations and tls sections
-- file saved to v4 branch in scripts/assets/tap/1_3/test_v3/learningcenter-portal-ingress.yaml
+This is a hidden section at the bottom of the file to place work in progress that is still desireable, but could not be completed yet for some reason
 
- this should already be addressed in the initial install steps, once verified, delete this commented step
-#### Setup Ingress for tap-gui
+# Gitlab SSH Key registration with curl
+## The current workflow has users manually register their ssh key in the gui because I could not get the api call to work
+## The snippet below represents some of the things I tried, I tried dozens and dozens of different permutations and couldnt get anything to work. I got back a wide variety of strange responses including several times I got back unauthorized even when using a root token that I gave every possible permission to, and trying to post as viadmin to viadmin account I still got unauthorized or bad request or other errors. Would be nice to automate at some point, leaving wip below:
 
-tanzu package installed update tap -p tap.tanzu.vmware.com -v $TAP_VERSION  --values-file /${ovathetap_home}/config/tap-values.yaml -n tap-install -->
+- setup ssh keys for viadmin - curl
+```sh
+# create ssh key
+ssh-keygen -t ed25519 -f "/home/${hostusername}/.ssh/id_ed25519" -N ""
+ssh-keygen -t rsa -b 2048 -f "/home/${hostusername}/.ssh/id_rsa" -N ""
+mysshkey=$(cat "/home/${hostusername}/.ssh/id_ed25519.pub")
+# add the ssh key for viadmin to gitlab using an API call
+## prepare a json snippet for the api call - populate vars
+cat << EOF > "/${ovathetap_home}/config/gitlab_ssh_api_call_data.json"
+{
+  "title": "ABC",
+  "key": "${mysshkey}",
+  "expires_at": "$(date --date="+1 year" +"%Y-%m-%dT00:00:00.000Z")",
+  "usage_type": "auth"
+}
+EOF
+## save json snippet as a envar
+export gitlab_ssh_api_call_data=$(cat "/${ovathetap_home}/config/gitlab_ssh_api_call_data.json" | jq -c .) 
+gitlab_ssh_api_call_response=$(curl -k --request POST --header "PRIVATE-TOKEN: ${gitlab_root_token}" \
+     --data "title=viadmin@ubuntudesktop&key=ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDcXE8lvSb41zO4UOcTks4wsKeZn8mKNbIcuptXuPIdNtYo2okTm0RpHOamCqsjNb5b0zWWRsoeyNnZ9HIcXGQH1ZeR62valOMMnCyHvua8wIMnz1heT4pr8BL4N8u3B6TgXgY38bQJjv7fBe9Fgp6aSGQ8kuQMeY0v70JfxvMIANiKwdXK5P52ADcUiJMlBl247J1QhJlLook7pSOoE7sHQgYo8KN7UE8fc8/9HCGXakZtPTvjA7vf5EGhtyDEluK+dy+gtqKKaivNsDA6xoKD9ULDrCkvcvoX3FszeYGUQb1NqWzLKkOaC0i/Ts+ecJAPeHLdXPrqdqf1C7HbiqL/ viadmin@ubuntudesktop" \
+     "https://gitlab.tanzu.demo/api/v4/users/${gitlab_viadmin_user_id}/keys")
+echo "${gitlab_ssh_api_call_response}"
+
+
+export gitlab_ssh_api_call_response=$(curl -k --request POST --header "Private-Token: {gitlab_root_token}" \
+     --data {"title":"viadmin@ubuntudesktop","key":"${mysshkey}"} \
+     https://gitlab.tanzu.demo/api/v4/users/${gitlab_viadmin_user_id}/keys)
+
+export gitlab_ssh_api_call_response=$(curl -k --request POST --header "Private-Token: ${viadmin_gitlab_token}" --data {"title":"viadmin@ubuntudesktop","key":"${mysshkey}"} \
+     https://gitlab.tanzu.demo/api/v4/user/keys)
+```
+
+
+
+
+
+ -->
 
 

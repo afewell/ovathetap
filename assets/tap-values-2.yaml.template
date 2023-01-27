@@ -28,12 +28,12 @@ tap_gui:
       providers:
         gitlab:
           development:
-            clientId: 0136cad277aef42179df
-            clientSecret: 63823a0f4250776a43f6526b26e846c01a7e5ca5
+            clientId: 75a8e8348ba341cd4e6747962a6d691755eae0f15bc846d3830d44896e847c59
+            clientSecret: 75a8e8348ba341cd4e6747962a6d691755eae0f15bc846d3830d44896e847c59
             ## uncomment if using self-hosted GitLab
-            audience: https://gitlab.company.com
+            audience: https://gitlab.tanzu.demo
             ## uncomment if using a custom redirect URI
-            callbackUrl: https://${BASE_URL}/api/auth/gitlab/handler/frame
+            callbackUrl: https://tap-gui.tanzu.demo/api/auth/gitlab/handler/frame
 
 contour:
   envoy:
