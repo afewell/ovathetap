@@ -1,5 +1,12 @@
 # Semantic Versioning Changelog
 
+## [1.15.28](https://github.com/afewell/ovathetap/compare/v1.15.27...v1.15.28) (2023-01-27)
+
+
+### Bug Fixes
+
+* updating gitlab config to resolve [#102](https://github.com/afewell/ovathetap/issues/102) ([3e095b9](https://github.com/afewell/ovathetap/commit/3e095b91b5c76093dbc5c18212477b10c71fc4c6))
+
 ## [1.15.27](https://github.com/afewell/ovathetap/compare/v1.15.26...v1.15.27) (2023-01-24)
 
 
