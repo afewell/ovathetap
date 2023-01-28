@@ -414,7 +414,7 @@ tanzu package installed list -n tap-install
 - Bookmark this page on the bookmarks bar
 
 ### Install Gitlab
-TODO: On next test, attempt to specify gitlab initial root password in helm values file, which MAY automatically create root access token and if so, then we can bypass the requirement to manually create the token in the gui. 
+TODO: On next test, attempt to specify gitlab initial root password in helm values file, which MAY automatically create root access token and if so, then we can bypass the requirement to manually create the token in the gui. And parameterize values files.
 - The instructions for this lab focus on using gitlab. However if you prefer, you can use github instead, but instructions for using github are not provided.
 - Install Gitlab
 ```sh
@@ -484,15 +484,6 @@ create_oauth_app_response=$(curl -k --request POST --header "PRIVATE-TOKEN: ${gi
      "https://gitlab.tanzu.demo/api/v4/applications")
 echo ${create_oauth_app_response} | yq -p json -o yaml | tee "/${ovathetap_home}/config/gitlab_oauth_app_config.yaml"
 ```
-### Setup ssh keys for viadmin
-- create ssh key
-  - `ssh-keygen -t ed25519 -f "/home/${hostusername}/.ssh/id_ed25519" -N ""`
-- the following command returns a string with your key, copy the entire string
-  - `cat "/home/${hostusername}/.ssh/id_ed25519.pub"`
-  - For example, the string you copy shoudl look similar to "`ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPs2Sfz+NWz2KmrBVIUcaobbF3CD3oMKyDjNevff9dka viadmin@ubuntudesktop`"
-- Using firefox, login to https://gitlab.tanzu.demo as the user `viadmin`. If you are already logged in as root, logout, and login as the user: `viadmin` password: `VMware1!`.
-- Click on your user icon in the upper right corner and select `Preferences`
-- Select the `SSH Keys` screen, paste in your key, and select `Add key`
 #### create catalog repo
 - From firefox, login as viadmin
 - Click `Create a group` and then `Create group` to create a group with the following settings (leave any unspecified setting at its default value):
@@ -522,7 +513,7 @@ git commit -m "adding yelb catalog files"
 git push
 # after entering `git push' enter username: viadmin password: VMware1!
 ```
-- Update tap with gitlab settings
+#### Update tap with gitlab settings
 ```sh
 ## Prepare and inject local ca cert into ca_cert_data key in tap-values-2.yaml file
 sudo sed 's/^/    /' "/etc/ssl/CA/myca.pem" | sudo tee "/${ovathetap_home}/config/myca-indented.pem"

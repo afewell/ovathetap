@@ -44,3 +44,8 @@ buildservice:
   kp_default_repository: "harbor.tanzu.demo/tap/build-service"
   kp_default_repository_username: "admin"
   kp_default_repository_password: "Harbor12345"
+
+package_overlays:
+  - name: "contour"
+    secrets:
+    - name: "envoy-gitlab-ssh-config-secret"
