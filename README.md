@@ -420,6 +420,11 @@ TODO: On next test, attempt to specify gitlab initial root password in helm valu
 ```sh
 # create gitlab namespace
 kubectl create ns gitlab
+# add docker hub login info for pulling minio chart
+docker login -u "${docker_account_username}" -p "${docker_account_password}"
+kubectl create secret generic myregistrykey \
+    --from-file=.dockerconfigjson="/home/${hostusername}/.docker/config.json" \
+    --type=kubernetes.io/dockerconfigjson -n gitlab
 # Install Gitlab helm chart
 helm repo add gitlab https://charts.gitlab.io/
 helm repo update
@@ -524,6 +529,35 @@ tanzu package installed update tap -p tap.tanzu.vmware.com -v $TAP_VERSION  --va
 ```
 
 
+# Create a manifest for the config secret
+cat <<EOF > "/${ovathetap_home}/config/envoy-gitlab-ssh-config.yaml"
+apiVersion: v1
+kind: Secret
+metadata:
+  name: envoy-gitlab-ssh-config-secret
+  namespace: tap-install
+stringData:
+  patch.yaml: |
+    #@ load("@ytt:overlay", "overlay")
+    #@overlay/match by=overlay.subset({"kind":"Service","metadata":{"namespace":"tanzu-system-ingress", "name":"envoy"}})
+    ---
+    spec:
+      #@overlay/match missing_ok=True
+      ports:
+        - name: gitlab-shell
+          port: 22
+          protocol: TCP
+          targePort: gitlab-shell
+EOF
+# deploy the secret in your kubernetes cluster:
+kubectl create -f "/${ovathetap_home}/config/envoy-gitlab-ssh-config.yaml"
+
+```sh
+package_overlays:
+  - name: "contour"
+    secrets:
+    - name: "envoy-gitlab-ssh-config-secret"
+```
 
 
 set tap-values for gitlab
