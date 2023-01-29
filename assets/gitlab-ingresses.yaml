@@ -56,3 +56,69 @@ spec:
     - hosts:
       - minio.example.com
       secretName: gitlab-minio-tls
+---
+apiVersion: networking.k8s.io/v1 
+kind: Ingress
+metadata:
+  name: gitlab-kas
+  namespace: gitlab
+  labels:
+    app: kas
+    chart: kas-6.7.5
+    release: gitlab
+    
+  annotations:
+    cert-manager.io/cluster-issuer: "my-ca-issuer"
+spec:
+  rules:
+    - host: kas.tanzu.demo
+      http:
+        paths:
+          - path: "/k8s-proxy/"
+            pathType: Prefix
+            backend:
+              service:
+                name: gitlab-kas
+                port: 
+                  number: 8154
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: gitlab-kas
+                port: 
+                  number: 8150
+  tls:
+    - hosts:
+      - kas.tanzu.demo
+      secretName: gitlab-kas-tls
+---
+# Source: gitlab/charts/registry/templates/ingress.yaml
+apiVersion: networking.k8s.io/v1 
+kind: Ingress
+metadata:
+  name: gitlab-registry
+  namespace: gitlab
+  labels:
+    app: registry
+    chart: registry-0.7.0
+    release: gitlab
+    
+  annotations:
+    cert-manager.io/cluster-issuer: "my-ca-issuer"
+spec:
+  rules:
+    - host: registry.tanzu.demo
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: gitlab-registry
+                port: 
+                  number: 5000
+  tls:
+    - hosts:
+      - registry.tanzu.demo
+      secretName: gitlab-registry-tls

@@ -1081,8 +1081,7 @@ postgresql:
 ## https://docs.gitlab.com/charts/charts/registry/
 # defaultWas: commentedOut
 registry:
-  # defaultWas: commentedOut
-  enabled: false
+  enabled: true
 
 ## Automatic shared secret generation
 ## https://docs.gitlab.com/charts/installation/secrets
