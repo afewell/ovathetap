@@ -1,5 +1,12 @@
 # Semantic Versioning Changelog
 
+## [1.15.31](https://github.com/afewell/ovathetap/compare/v1.15.30...v1.15.31) (2023-01-31)
+
+
+### Bug Fixes
+
+* updating temp dir config to resolve [#107](https://github.com/afewell/ovathetap/issues/107) ([59ee9ec](https://github.com/afewell/ovathetap/commit/59ee9ec29f85b6b7c233811d205d6bec8ed54e97))
+
 ## [1.15.30](https://github.com/afewell/ovathetap/compare/v1.15.29...v1.15.30) (2023-01-31)
 
 
