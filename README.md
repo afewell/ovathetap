@@ -4,7 +4,7 @@ The purpose of this document is to create a complete Full Profile installation f
 
 The project is currently focused on a single environment topology, using a single, minimal ubuntu desktop VM to install kubernetes and TAP on a single host. The instructions and assets provided here should work on an ubuntu host with sufficient resources and performance, regardless of whether it is on bare metal or any virtualization platform, but the user may need to adjust some values for different environments.
 
-This repository provides instructions and may include content with dependencies on licensed software. This repository does not provide any licensing or access to any licensed products that are referenced within. Should anyone attempt to use any information or content within this repository, it is that users responsibility to comply with all licensing requirements.
+This repository provides instructions and may include content with dependencies on licensed software. This repository does not provide any licensing or access to any licensed products that are referenced within. Shousld anyone attempt to use any information or content within this repository, it is that users responibility to comply with all licensing requirements.
 
 The contents of this repository are intended for educational purposes only. Any software configuration references provided are intended for non-production environments and should not be used in any production environment or depended upon in any way. The configuration referenced within is explicitly not supported, and any contributor to this repository does not provide any assurance that any design, configuration or other information/content within should work or function properly in any way. 
 
@@ -92,9 +92,7 @@ To execute the scripts and instructions on this page, you will need to verify th
 hostusername="$(whoami)"
 home_dir="home/${hostusername}"
 ovathetap_home="${home_dir}/ovathetap"
-# create an ovathetap/config directory to hold customized local-only files - this dir is gitignored
-mkdir -p /${ovathetap_home}/config
-# REQUIRED: Make a copy of the cars template
+# REQUIRED: Make a copy of the vars template
 cp "/${ovathetap_home}/scripts/inputs/vars.env.sh.template" "/${ovathetap_home}/config/vars.env.sh"
 # Use nano or your preferred text editor to verify and, if needed, modify the default variables file
 nano "/${ovathetap_home}/config/vars.env.sh"
@@ -133,7 +131,7 @@ export hostusername="$(whoami)"
 # source the vars files to ensure they are available in your env
 source "/home/${hostusername}/ovathetap/config/vars.env.sh"
 # source the secrets files to ensure they are available in your env. Note that since we sourced the vars file above, we can start using project variables to simplify and clarify ongoing commands
-source "/${ovathetap_home}/config/secrets.env.sh"
+source "/${ovathetap_config}/secrets.env.sh"
 # initialize temporary directory to be used for setup
 mkdir -p "/${script_tmp_dir}"
 # make the taphostprep-1.sh script executable
@@ -173,7 +171,7 @@ export hostusername="$(whoami)"
 # source the vars files again since you should have rebooted after running taphostprep-1.sh
 source "/home/${hostusername}/ovathetap/config/vars.env.sh"
 # source the secrets files to ensure they are available in your env. Note that since we sourced the vars file above, we can start using project variables to simplify and clarify ongoing commands
-source "/${ovathetap_home}/config/secrets.env.sh"
+source "/${ovathetap_config}/secrets.env.sh"
 # Start Minikube
 minikube start --kubernetes-version="${kubernetes_version}" --memory="${minikube_memory}" --cpus="${minikube_cpus}" --driver=docker --embed-certs --insecure-registry=0.0.0.0/0 --extra-config=kubelet.max-pods=200
 # Gather minikube IP
@@ -245,7 +243,7 @@ helm repo add harbor https://helm.goharbor.io
 # create secret for harbor tls certificate
 kubectl create secret tls harbor-cert --key /etc/ssl/CA/harbor.tanzu.demo.key --cert /etc/ssl/CA/harbor.tanzu.demo.crt -n harbor
 # install harbor
-helm install harbor harbor/harbor -f "/${ovathetap_home}/config/harborvalues.yaml" -n harbor
+helm install harbor harbor/harbor -f "/${ovathetap_config}/harborvalues.yaml" -n harbor
 ```
 - **IMPORTANT:** It may take several minutes before the harbor deployment completes. Please ensure the harbor deployment is fully running before proceeding with the following verification steps:
   - enter the command `watch kubectl get deployments -n harbor` and wait for all of the deployments to be ready before proceeding
@@ -275,7 +273,7 @@ tanzu plugin install --local cli all
 ```sh
 # Create kapp-controller-config secret manifest
 sudo sed 's/^/    /' "/etc/ssl/CA/myca.pem" | sudo tee "/${script_tmp_dir}/myca-indented.pem"
-sudo sed "/caCerts/ r /${script_tmp_dir}/myca-indented.pem" "/${ovathetap_assets}/kapp-controller-config.yaml.template" | sudo tee "/${ovathetap_home}/config/kapp-controller-config.yaml"
+sudo sed "/caCerts/ r /${script_tmp_dir}/myca-indented.pem" "/${ovathetap_assets}/kapp-controller-config.yaml.template" | sudo tee "/${ovathetap_config}/kapp-controller-config.yaml"
 sudo rm "/${script_tmp_dir}/myca-indented.pem"
 ## Install Cluster Essentials
 cd "/${home_dir}/Downloads" 
@@ -284,7 +282,7 @@ mkdir -p "/${cluster_essentials_dir}"
 # unzip the file and install cluster essentials
 tar -xvf "${cluster_essentials_bundle_filename}" -C "/${cluster_essentials_dir}" 
 kubectl create namespace kapp-controller
-kubectl apply -f "/${ovathetap_home}/config/kapp-controller-config.yaml"
+kubectl apply -f "/${ovathetap_config}/kapp-controller-config.yaml"
 export INSTALL_BUNDLE="${cluster_essentials_bundle_url}"
 export INSTALL_REGISTRY_HOSTNAME="${tanzunet_hostname}"
 export INSTALL_REGISTRY_USERNAME="${tanzunet_username}"
@@ -309,6 +307,11 @@ export INSTALL_REGISTRY_PASSWORD=Harbor12345
 export INSTALL_REGISTRY_HOSTNAME=harbor.tanzu.demo
 export TAP_VERSION="${tap_version}"
 export INSTALL_REPO="${tap_install_repo}"
+# Create the "tap" project on Harbor - this is where the TAP images will be stored
+curl -u $INSTALL_REGISTRY_USERNAME:$INSTALL_REGISTRY_PASSWORD \
+-X POST "https://$INSTALL_REGISTRY_HOSTNAME/api/projects" \
+-H "Content-Type: application/json" \
+-d '{"project_name":"tap", "public":1}'
 docker login $INSTALL_REGISTRY_HOSTNAME -u $INSTALL_REGISTRY_USERNAME -p $INSTALL_REGISTRY_PASSWORD
 docker login "${tanzunet_hostname}" -u "${tanzunet_username}" -p "${tanzunet_password}"
 imgpkg copy -b registry.tanzu.vmware.com/tanzu-application-platform/tap-packages:${TAP_VERSION} --to-repo ${INSTALL_REGISTRY_HOSTNAME}/${INSTALL_REPO}/tap-packages
@@ -318,7 +321,7 @@ imgpkg copy -b registry.tanzu.vmware.com/tanzu-application-platform/tap-packages
 ```sh
 ## Prepare and inject local ca cert into ca_cert_data key in tap-values.yaml file
 sudo sed 's/^/    /' "/etc/ssl/CA/myca.pem" | sudo tee "/${script_tmp_dir}/myca-indented.pem"
-sudo sed "/ca_cert_data/ r /${script_tmp_dir}/myca-indented.pem" "/${ovathetap_assets}/tap-values.yaml.template" | sudo tee "/${ovathetap_home}/config/tap-values.yaml"
+sudo sed "/ca_cert_data/ r /${script_tmp_dir}/myca-indented.pem" "/${ovathetap_assets}/tap-values.yaml.template" | sudo tee "/${ovathetap_config}/tap-values.yaml"
 sudo rm "/${script_tmp_dir}/myca-indented.pem"
 ## Install TAP
 # create tap-install namespace
@@ -352,13 +355,13 @@ kubectl create ns cert-manager
 # create cert manager cluster role and seervice account
 kubectl apply -f "/${ovathetap_assets}/cert-manager-rbac.yaml"
 # prepare cert manager install file
-envsubst < "/${ovathetap_assets}/cert-manager-install.yaml.template" > "/${ovathetap_home}/config/cert-manager-install.yaml"
+envsubst < "/${ovathetap_assets}/cert-manager-install.yaml.template" > "/${ovathetap_config}/cert-manager-install.yaml"
 # Install cert-manager
-kubectl apply -f "/${ovathetap_home}/config/cert-manager-install.yaml"
+kubectl apply -f "/${ovathetap_config}/cert-manager-install.yaml"
 # Create secret from CA cert
 kubectl create secret tls my-ca-secret --key /etc/ssl/CA/myca.key --cert /etc/ssl/CA/myca.pem -n cert-manager
 # Create clusterIssuer yaml file based on lab CA cert secret
-cat << EOF > "/${ovathetap_home}/config/my-ca-issuer.yaml"
+cat << EOF > "/${ovathetap_config}/my-ca-issuer.yaml"
 apiVersion: cert-manager.io/v1
 kind: ClusterIssuer
 metadata:
@@ -368,11 +371,11 @@ spec:
     secretName: my-ca-secret
 EOF
 # Create the ClusterIssuer with the following command
-kubectl apply -f "/${ovathetap_home}/config/my-ca-issuer.yaml" -n cert-manager
+kubectl apply -f "/${ovathetap_config}/my-ca-issuer.yaml" -n cert-manager
 # Verify the cluster issuer was created and is ready with the following command:
 kubectl get ClusterIssuer
 # Install TAP
-tanzu package install tap -p tap.tanzu.vmware.com -v $TAP_VERSION --values-file "/${ovathetap_home}/config/tap-values.yaml" -n tap-install
+tanzu package install tap -p tap.tanzu.vmware.com -v $TAP_VERSION --values-file "/${ovathetap_config}/tap-values.yaml" -n tap-install
 ```
 - IF your tap installation fails, it may be because some packages are still reconciling.
 - Check on the status of each package install to find the issue:
@@ -393,7 +396,7 @@ tanzu package repository add tbs-full-deps-repository \
   --url ${INSTALL_REGISTRY_HOSTNAME}/${INSTALL_REPO}/tbs-full-deps:$BSVersion \
   --namespace tap-install
 tanzu package install full-tbs-deps -p full-tbs-deps.tanzu.vmware.com -v $BSVersion -n tap-install
-tanzu package installed update tap -p tap.tanzu.vmware.com -v $TAP_VERSION  --values-file "/${ovathetap_home}/config/tap-values.yaml" -n tap-install
+tanzu package installed update tap -p tap.tanzu.vmware.com -v $TAP_VERSION  --values-file "/${ovathetap_config}/tap-values.yaml" -n tap-install
 # confirm tap installation - all items should be in state reconcile succeeded
 kubect get packageinstalls -n tap-install
 tanzu package installed list -n tap-install
@@ -444,39 +447,39 @@ kubectl get all -n gitlab
   - Click `Create personal access token`
 - Copy Personal Access Token and paste into secrets.env.sh file
   - Source the secrets file to load the password environment variable
-  - `source "/${ovathetap_home}/config/secrets.env.sh`
+  - `source "/${ovathetap_config}/secrets.env.sh`
 - Enter the following commands to create a new user account for the viadmin user:
 ```sh
 gitlab_viadmin_create_reponse=$(curl -k --request POST --header "PRIVATE-TOKEN: ${gitlab_root_token}" --data 'email=viadmin@tanzu.demo&username=viadmin&password=VMware1!&name=VI Admin&admin=true&skip_confirmation=true' https://gitlab.tanzu.demo/api/v4/users)
-echo ${gitlab_viadmin_create_reponse} | yq -p json -o yaml | tee "/${ovathetap_home}/config/gitlab_viadmin_account_details.yaml"
+echo ${gitlab_viadmin_create_reponse} | yq -p json -o yaml | tee "/${ovathetap_config}/gitlab_viadmin_account_details.yaml"
 export gitlab_viadmin_user_id=$(echo ${gitlab_viadmin_create_reponse} | jq -r '.id')
-echo "export gitlab_viadmin_user_id=${gitlab_viadmin_user_id}" >> "/${ovathetap_home}/config/vars.env.sh"
+echo "export gitlab_viadmin_user_id=${gitlab_viadmin_user_id}" >> "/${ovathetap_config}/vars.env.sh"
 # create access token for viadmin user
 viadmin_gitlab_token_create_response=$(curl --request POST --header "PRIVATE-TOKEN: ${gitlab_root_token}" --data "name=mytoken" --data "expires_at=2025-04-04" \
      --data "scopes[]=api" "https://gitlab.tanzu.demo/api/v4/users/${gitlab_viadmin_user_id}/personal_access_tokens")
 echo ${viadmin_gitlab_token_create_response}
 export viadmin_gitlab_token=$(echo ${viadmin_gitlab_token_create_response} | jq -r '.token')
-echo "export viadmin_gitlab_token=${viadmin_gitlab_token}" >> "/${ovathetap_home}/config/vars.env.sh"
+echo "export viadmin_gitlab_token=${viadmin_gitlab_token}" >> "/${ovathetap_config}/vars.env.sh"
 ```
 - Enter the following commands to create a new user account for the devlead user:
 ```sh
 gitlab_viadmin_create_reponse=$(curl -k --request POST --header "PRIVATE-TOKEN: ${gitlab_root_token}" --data 'email=devlead@tanzu.demo&username=devlead&password=VMware1!&name=Dev Lead&admin=true&skip_confirmation=true' https://gitlab.tanzu.demo/api/v4/users)
-echo ${gitlab_devlead_create_reponse} | yq -p json -o yaml | tee "/${ovathetap_home}/config/gitlab_devlead_account_details.yaml"
+echo ${gitlab_devlead_create_reponse} | yq -p json -o yaml | tee "/${ovathetap_config}/gitlab_devlead_account_details.yaml"
 export gitlab_devlead_user_id=$(echo ${gitlab_devlead_create_reponse} | jq -r '.id')
-echo "export gitlab_devlead_user_id=${gitlab_devlead_user_id}" >> "/${ovathetap_home}/config/vars.env.sh"
+echo "export gitlab_devlead_user_id=${gitlab_devlead_user_id}" >> "/${ovathetap_config}/vars.env.sh"
 # create access token for viadmin user
 devlead_gitlab_token_create_response=$(curl --request POST --header "PRIVATE-TOKEN: ${gitlab_root_token}" --data "name=mytoken" --data "expires_at=2025-04-04" \
      --data "scopes[]=api" "https://gitlab.tanzu.demo/api/v4/users/${gitlab_devlead_user_id}/personal_access_tokens")
 echo ${devlead_gitlab_token_create_response}
 export devlead_gitlab_token=$(echo ${devlead_gitlab_token_create_response} | jq -r '.token')
-echo "export devlead_gitlab_token=${devlead_gitlab_token}" >> "/${ovathetap_home}/config/vars.env.sh"
+echo "export devlead_gitlab_token=${devlead_gitlab_token}" >> "/${ovathetap_config}/vars.env.sh"
 ```
 - create gitlab oauth app
 ```sh
 create_oauth_app_response=$(curl -k --request POST --header "PRIVATE-TOKEN: ${gitlab_root_token}" \
      --data "name=tap&redirect_uri=https://tap-gui.tanzu.demo/api/auth/gitlab/handler/frame&scopes=api read_api read_user read_repository write_repository read_registry write_registry sudo openid profile email" \
      "https://gitlab.tanzu.demo/api/v4/applications")
-echo ${create_oauth_app_response} | yq -p json -o yaml | tee "/${ovathetap_home}/config/gitlab_oauth_app_config.yaml"
+echo ${create_oauth_app_response} | yq -p json -o yaml | tee "/${ovathetap_config}/gitlab_oauth_app_config.yaml"
 ```
 #### create catalog repo
 - From firefox, login as viadmin
@@ -510,7 +513,7 @@ git push
 
 # Create a manifest for the config secret
 ```sh
-cat <<EOF > "/${ovathetap_home}/config/envoy-gitlab-ssh-config.yaml"
+cat <<EOF > "/${ovathetap_config}/envoy-gitlab-ssh-config.yaml"
 apiVersion: v1
 kind: Secret
 metadata:
@@ -530,7 +533,7 @@ stringData:
           targePort: gitlab-shell
 EOF
 # deploy the secret in your kubernetes cluster:
-kubectl create -f "/${ovathetap_home}/config/envoy-gitlab-ssh-config.yaml"
+kubectl create -f "/${ovathetap_config}/envoy-gitlab-ssh-config.yaml"
 ```
 
 ```sh
@@ -543,11 +546,11 @@ package_overlays:
 #### Update tap with gitlab settings
 ```sh
 ## Prepare and inject local ca cert into ca_cert_data key in tap-values-2.yaml file
-sudo sed 's/^/    /' "/etc/ssl/CA/myca.pem" | sudo tee "/${ovathetap_home}/config/myca-indented.pem"
-sudo sed "/ca_cert_data/ r /${ovathetap_home}/config/myca-indented.pem" "/${ovathetap_assets}/tap-values-2.yaml.template" | sudo tee "/${ovathetap_home}/config/tap-values-2.yaml"
-sudo rm "/${ovathetap_home}/config/myca-indented.pem"
+sudo sed 's/^/    /' "/etc/ssl/CA/myca.pem" | sudo tee "/${ovathetap_config}/myca-indented.pem"
+sudo sed "/ca_cert_data/ r /${ovathetap_config}/myca-indented.pem" "/${ovathetap_assets}/tap-values-2.yaml.template" | sudo tee "/${ovathetap_config}/tap-values-2.yaml"
+sudo rm "/${ovathetap_config}/myca-indented.pem"
 # update tap with new values 
-tanzu package installed update tap -p tap.tanzu.vmware.com -v $TAP_VERSION  --values-file "/${ovathetap_home}/config/tap-values-2.yaml" -n tap-install
+tanzu package installed update tap -p tap.tanzu.vmware.com -v $TAP_VERSION  --values-file "/${ovathetap_config}/tap-values-2.yaml" -n tap-install
 ```
 
 #### Create Developer Namespace
@@ -633,7 +636,7 @@ ssh-keygen -t rsa -b 2048 -f "/home/${hostusername}/.ssh/id_rsa" -N ""
 mysshkey=$(cat "/home/${hostusername}/.ssh/id_ed25519.pub")
 # add the ssh key for viadmin to gitlab using an API call
 ## prepare a json snippet for the api call - populate vars
-cat << EOF > "/${ovathetap_home}/config/gitlab_ssh_api_call_data.json"
+cat << EOF > "/${ovathetap_config}/gitlab_ssh_api_call_data.json"
 {
   "title": "ABC",
   "key": "${mysshkey}",
@@ -642,7 +645,7 @@ cat << EOF > "/${ovathetap_home}/config/gitlab_ssh_api_call_data.json"
 }
 EOF
 ## save json snippet as a envar
-export gitlab_ssh_api_call_data=$(cat "/${ovathetap_home}/config/gitlab_ssh_api_call_data.json" | jq -c .) 
+export gitlab_ssh_api_call_data=$(cat "/${ovathetap_config}/gitlab_ssh_api_call_data.json" | jq -c .) 
 gitlab_ssh_api_call_response=$(curl -k --request POST --header "PRIVATE-TOKEN: ${gitlab_root_token}" \
      --data "title=viadmin@ubuntudesktop&key=ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDcXE8lvSb41zO4UOcTks4wsKeZn8mKNbIcuptXuPIdNtYo2okTm0RpHOamCqsjNb5b0zWWRsoeyNnZ9HIcXGQH1ZeR62valOMMnCyHvua8wIMnz1heT4pr8BL4N8u3B6TgXgY38bQJjv7fBe9Fgp6aSGQ8kuQMeY0v70JfxvMIANiKwdXK5P52ADcUiJMlBl247J1QhJlLook7pSOoE7sHQgYo8KN7UE8fc8/9HCGXakZtPTvjA7vf5EGhtyDEluK+dy+gtqKKaivNsDA6xoKD9ULDrCkvcvoX3FszeYGUQb1NqWzLKkOaC0i/Ts+ecJAPeHLdXPrqdqf1C7HbiqL/ viadmin@ubuntudesktop" \
      "https://gitlab.tanzu.demo/api/v4/users/${gitlab_viadmin_user_id}/keys")

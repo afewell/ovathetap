@@ -38,6 +38,7 @@ openssl x509 -outform pem -in "/etc/ssl/CA/myca.crt" -out "/etc/ssl/CA/myca.cert
 ## Now install the root certificate and key:
 cp "/etc/ssl/CA/myca.key" "/etc/ssl/private/cakey.pem"
 cp "/etc/ssl/CA/myca.pem" "/etc/ssl/certs/cacert.pem"
+cp "/etc/ssl/CA/myca.pem" "/etc/ssl/certs/myca.pem"
 ## Copy the openssl.conf file into the /etc/ssl directory
 cp "${ovathetap_assets}/openssl.conf" "/etc/ssl/openssl.conf"
 ## Create Certificate Signing Request for Harbor server
@@ -96,4 +97,12 @@ apt install -y ca-certificates
 cp "/etc/ssl/CA/harbor.tanzu.demo.crt" /etc/ssl/certs
 cp "/etc/ssl/CA/harbor.tanzu.demo.key" /etc/ssl/private
 cp "/etc/ssl/CA/myca.pem" /usr/local/share/ca-certificates
+cp "/etc/ssl/certs/cacert.pem" /usr/local/share/ca-certificates
+cp "/etc/ssl/CA/myca.crt" /usr/local/share/ca-certificates
 update-ca-certificates
+
+
+sudo chown root:root /usr/local/share/ca-certificates/cacert.pem
+sudo chmod 644 /usr/local/share/ca-certificates/cacert.pem
+sudo chown root:root /etc/ssl/certs/ca-certificates.crt
+sudo chmod 644 /etc/ssl/certs/ca-certificates.crt

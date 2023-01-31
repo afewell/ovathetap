@@ -2,7 +2,10 @@
 *secret*
 # Ignore all files in the config folder
 /config/*
+# Ignore all files in the temp folder
+/temp/*
 
-# Except for files with the .template or .age extensions
+# Except for files with the .template or .age extensions or files named dir.placeholder
 !*.template
 !*.age
+!dir.placeholder
