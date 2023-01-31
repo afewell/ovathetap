@@ -509,6 +509,7 @@ git push
 ```
 
 # Create a manifest for the config secret
+```sh
 cat <<EOF > "/${ovathetap_home}/config/envoy-gitlab-ssh-config.yaml"
 apiVersion: v1
 kind: Secret
@@ -530,6 +531,7 @@ stringData:
 EOF
 # deploy the secret in your kubernetes cluster:
 kubectl create -f "/${ovathetap_home}/config/envoy-gitlab-ssh-config.yaml"
+```
 
 ```sh
 package_overlays:
