@@ -42,6 +42,7 @@ scripts=(
   "kubectl.sh"
   "helm.sh"
   "yq.sh"
+  "tilt.sh"
   "dnsmasq.sh"
   "certificateauthority.sh"
 )

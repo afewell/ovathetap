@@ -49,3 +49,6 @@ package_overlays:
   - name: "contour"
     secrets:
     - name: "envoy-gitlab-ssh-config-secret"
+
+metadata_store:
+  ns_for_export_app_cert: "*"
