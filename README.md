@@ -518,16 +518,6 @@ git commit -m "adding yelb catalog files"
 git push
 # after entering `git push' enter username: viadmin password: VMware1!
 ```
-#### Update tap with gitlab settings
-```sh
-## Prepare and inject local ca cert into ca_cert_data key in tap-values-2.yaml file
-sudo sed 's/^/    /' "/etc/ssl/CA/myca.pem" | sudo tee "/${ovathetap_home}/config/myca-indented.pem"
-sudo sed "/ca_cert_data/ r /${ovathetap_home}/config/myca-indented.pem" "/${ovathetap_assets}/tap-values-2.yaml.template" | sudo tee "/${ovathetap_home}/config/tap-values-2.yaml"
-sudo rm "/${ovathetap_home}/config/myca-indented.pem"
-# update tap with new values 
-tanzu package installed update tap -p tap.tanzu.vmware.com -v $TAP_VERSION  --values-file "/${ovathetap_home}/config/tap-values-2.yaml" -n tap-install
-```
-
 
 # Create a manifest for the config secret
 cat <<EOF > "/${ovathetap_home}/config/envoy-gitlab-ssh-config.yaml"
@@ -559,13 +549,28 @@ package_overlays:
     - name: "envoy-gitlab-ssh-config-secret"
 ```
 
+#### Update tap with gitlab settings
+```sh
+## Prepare and inject local ca cert into ca_cert_data key in tap-values-2.yaml file
+sudo sed 's/^/    /' "/etc/ssl/CA/myca.pem" | sudo tee "/${ovathetap_home}/config/myca-indented.pem"
+sudo sed "/ca_cert_data/ r /${ovathetap_home}/config/myca-indented.pem" "/${ovathetap_assets}/tap-values-2.yaml.template" | sudo tee "/${ovathetap_home}/config/tap-values-2.yaml"
+sudo rm "/${ovathetap_home}/config/myca-indented.pem"
+# update tap with new values 
+tanzu package installed update tap -p tap.tanzu.vmware.com -v $TAP_VERSION  --values-file "/${ovathetap_home}/config/tap-values-2.yaml" -n tap-install
+```
 
-set tap-values for gitlab
-update tap install
-verify gitlab auth
+#### Create Developer Namespace
 
-follow tap instructions to 
-deploy scanning_testing supply chain
+- Create a developer namespace
+  - In Tanzu Application Platform, a developer namespace is a kubernetes namespace that uses the namespace provisioner (or alternative gitops method) to ensure that additional resources are created in the namespace such as a service account, role-binding, and registry credentials. These resources are needed to ensure the developer has an optimal user experience and can initiate supply chain and developer workflows. 
+```sh
+kubectl create ns devlead
+kubectl label namespaces devlead apps.tanzu.vmware.com/tap-ns=""
+```
+
+#### Install Tanzu Developer Tools
+
+
 deploy developer namespaces
 install vscode plugins
 
@@ -573,7 +578,7 @@ install vscode plugins
 
 
 Exercises:
-? is it easy to do this such that
+? is it easy to do this with devlead or should I use viadmin for initial lab?
 devlead executes accelerator including auto git repo creation
 devlead modifies code, uses app live view
 devlead deploys code through scanning and testing pipeline

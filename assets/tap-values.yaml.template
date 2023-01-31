@@ -25,3 +25,6 @@ buildservice:
   kp_default_repository_username: "admin"
   kp_default_repository_password: "Harbor12345"
   exclude_dependencies: true
+
+metadata_store:
+  ns_for_export_app_cert: "*"
