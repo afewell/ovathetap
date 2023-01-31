@@ -96,13 +96,7 @@ chown -R "${hostusername}:docker" "/${home_dir}/.minikube/"
 apt install -y ca-certificates
 cp "/etc/ssl/CA/harbor.tanzu.demo.crt" /etc/ssl/certs
 cp "/etc/ssl/CA/harbor.tanzu.demo.key" /etc/ssl/private
-cp "/etc/ssl/CA/myca.pem" /usr/local/share/ca-certificates
-cp "/etc/ssl/certs/cacert.pem" /usr/local/share/ca-certificates
 cp "/etc/ssl/CA/myca.crt" /usr/local/share/ca-certificates
+chown root:root /usr/local/share/ca-certificates/myca.crt
+chmod 644 /usr/local/share/ca-certificates/myca.crt
 update-ca-certificates
-
-
-sudo chown root:root /usr/local/share/ca-certificates/cacert.pem
-sudo chmod 644 /usr/local/share/ca-certificates/cacert.pem
-sudo chown root:root /etc/ssl/certs/ca-certificates.crt
-sudo chmod 644 /etc/ssl/certs/ca-certificates.crt
