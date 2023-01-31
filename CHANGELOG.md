@@ -1,5 +1,12 @@
 # Semantic Versioning Changelog
 
+## [1.15.32](https://github.com/afewell/ovathetap/compare/v1.15.31...v1.15.32) (2023-01-31)
+
+
+### Bug Fixes
+
+* updating certificateauthority.sh to resolve [#108](https://github.com/afewell/ovathetap/issues/108) ([a0f134c](https://github.com/afewell/ovathetap/commit/a0f134cd8a01d5ce24c1a11d8a0b142be356acd8))
+
 ## [1.15.31](https://github.com/afewell/ovathetap/compare/v1.15.30...v1.15.31) (2023-01-31)
 
 
