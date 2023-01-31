@@ -10,17 +10,6 @@ The contents of this repository are intended for educational purposes only. Any 
 
 # TAP 1.4 Single-node Lab Install Flow
 
-## References:
-- [1] https://docs.vmware.com/en/VMware-Tanzu-Application-Platform/1.4
-- [2] https://tanzu.vmware.com/developer/guides/cert-manager-gs/
-- [3] https://tanzu.vmware.com/developer/guides/tanzu-application-platform-local-devloper-install/
-- [4] https://tanzu.vmware.com/developer/guides/harbor-gs/#set-up-dns
-- [5] https://github.com/afewell/scripts/
-- [6] https://tanzu.vmware.com/developer/blog/securely-connect-with-your-local-kubernetes-environment/
-- [7] https://thesecmaster.com/how-to-set-up-a-certificate-authority-on-ubuntu-using-openssl/
-- [8] https://computingforgeeks.com/install-and-configure-dnsmasq-on-ubuntu/
-- [9] https://goharbor.io/docs/2.6.0/install-config/configure-https/
-
 ## Host Preparation and Setup
 ### Provision an Ubuntu host
 
