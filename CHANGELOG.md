@@ -1,5 +1,12 @@
 # Semantic Versioning Changelog
 
+## [1.15.30](https://github.com/afewell/ovathetap/compare/v1.15.29...v1.15.30) (2023-01-31)
+
+
+### Bug Fixes
+
+* add jdk install and instructions to install tap vscode extensions to resolve [#106](https://github.com/afewell/ovathetap/issues/106) ([f39a8d6](https://github.com/afewell/ovathetap/commit/f39a8d66dee5ca3d7f07459b44537c53676911d9))
+
 ## [1.15.29](https://github.com/afewell/ovathetap/compare/v1.15.28...v1.15.29) (2023-01-31)
 
 
