@@ -1,5 +1,12 @@
 # Semantic Versioning Changelog
 
+## [1.15.29](https://github.com/afewell/ovathetap/compare/v1.15.28...v1.15.29) (2023-01-31)
+
+
+### Bug Fixes
+
+* add tilt to taphostprep & install instructs for creating dev namespace to readme - resolves [#105](https://github.com/afewell/ovathetap/issues/105) ([df2105b](https://github.com/afewell/ovathetap/commit/df2105bcee142932748893a799d74798cf38feb5))
+
 ## [1.15.28](https://github.com/afewell/ovathetap/compare/v1.15.27...v1.15.28) (2023-01-27)
 
 
