@@ -45,6 +45,7 @@ scripts=(
   "tilt.sh"
   "dnsmasq.sh"
   "certificateauthority.sh"
+  "liberica_jdk_17.sh"
 )
 
 ## Define Functions

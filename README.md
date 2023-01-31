@@ -564,21 +564,40 @@ tanzu package installed update tap -p tap.tanzu.vmware.com -v $TAP_VERSION  --va
 - Create a developer namespace
   - In Tanzu Application Platform, a developer namespace is a kubernetes namespace that uses the namespace provisioner (or alternative gitops method) to ensure that additional resources are created in the namespace such as a service account, role-binding, and registry credentials. These resources are needed to ensure the developer has an optimal user experience and can initiate supply chain and developer workflows. 
 ```sh
-kubectl create ns devlead
-kubectl label namespaces devlead apps.tanzu.vmware.com/tap-ns=""
+kubectl create ns viadmin
+kubectl label namespaces viadmin apps.tanzu.vmware.com/tap-ns=""
 ```
 
 #### Install Tanzu Developer Tools
 
+- Open VS Code.
+- Press cmd+shift+P to open the Command Palette and run Extensions: Install from VSIX....
+- Select the extension file tanzu-vscode-extension.vsix which is located in the ~/Downloads directory.
+- Install the following extensions from VS Code Marketplace:
+  - Debugger for Java
+  - Language Support for Java(™) by Red Hat
+  - YAML
+  - Spring Boot Extension Pack
+- Configure Tanzu Dev Tools Extension
+  - Go to Code > Preferences > Settings > Extensions > Tanzu Developer Tools and set the following:
+  - Enable Live Hover
+  - Source Image: (Required) The registry location for publishing local source code. For example, registry.io/yourapp-source. This must include both a registry and a project name.
+  - Local Path: (Optional) The path on the local file system to a directory of source code to build. This is the current directory by default.
+  - Namespace: (Optional) This is the namespace that workloads are deployed into. The namespace set in kubeconfig is the default.
+- Reload VS Code for this change to take effect.
 
-deploy developer namespaces
-install vscode plugins
 
-? Is that the end of the lab installation and setup parts?
+- Open VS Code.
+- Press cmd+shift+P to open the Command Palette and run Extensions: Install from VSIX....
+- Select the extension file tanzu-app-accelerator-0.1.5.vsix which is located in the ~/Downloads directory to install.
+- Configure Extension
+  - Go to Code > Preferences > Settings > Extensions > Tanzu App Accelerator and set the following:
+  - Set the Tap GUI backend URL to `https://tap-gui.tanzu.demo`
+- Reload VS Code for this change to take effect.
 
 
 Exercises:
-? is it easy to do this with devlead or should I use viadmin for initial lab?
+TODO:
 devlead executes accelerator including auto git repo creation
 devlead modifies code, uses app live view
 devlead deploys code through scanning and testing pipeline
