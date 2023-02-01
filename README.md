@@ -299,7 +299,7 @@ sudo cp "/${home_dir}/tanzu-cluster-essentials/ytt" /usr/local/bin/ytt
 
 ### Relocate TAP images to the local Harbor registry
 - **IMPORTANT** use firefox and login to the harbor portal (https://harbor.tanzu.demo). Create a new project named "tap" with public access
-  - Note: It should work just fine if you set it for private access, I just set it for public because my use case is in a private nested lab environment with no inbound access
+  - Note: It should work just fine if you set it for private access, I just set it for public for simplicity
 ```sh
 ## Relocate TAP Images to your install registry
 export INSTALL_REGISTRY_USERNAME=admin
