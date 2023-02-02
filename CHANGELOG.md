@@ -1,5 +1,12 @@
 # Semantic Versioning Changelog
 
+## [1.15.33](https://github.com/afewell/ovathetap/compare/v1.15.32...v1.15.33) (2023-02-02)
+
+
+### Bug Fixes
+
+* updating gitlab install assets to resolve [#110](https://github.com/afewell/ovathetap/issues/110) ([90e9b0c](https://github.com/afewell/ovathetap/commit/90e9b0c030a1cca9ab6eea171afb8cb860e14211))
+
 ## [1.15.32](https://github.com/afewell/ovathetap/compare/v1.15.31...v1.15.32) (2023-01-31)
 
 
