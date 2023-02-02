@@ -23,18 +23,21 @@ tap_gui:
       gitlab:
       - host: gitlab.tanzu.demo
         apiBaseUrl: https://gitlab.tanzu.demo/api/v4
-        token: 
+        token: ${gitlab_root_token}
     auth:
       providers:
         gitlab:
           development:
-            clientId: "${oauth_app_id}"
-            clientSecret: "${oauth_app_secret}"
+            clientId: ${oauth_app_id}
+            clientSecret: ${oauth_app_secret}
             ## uncomment if using self-hosted GitLab
             audience: https://gitlab.tanzu.demo
             ## uncomment if using a custom redirect URI
             callbackUrl: https://tap-gui.tanzu.demo/api/auth/gitlab/handler/frame
-
+    catalog:
+      locations:
+        - type: url
+          target: https://gitlab.tanzu.demo/tanzu/tap-catalog/-/blob/main/catalog-info.yaml
 contour:
   envoy:
     service:
@@ -44,7 +47,8 @@ buildservice:
   kp_default_repository: "harbor.tanzu.demo/tap/build-service"
   kp_default_repository_username: "admin"
   kp_default_repository_password: "Harbor12345"
-
+  exclude_dependencies: true
+  
 package_overlays:
   - name: "contour"
     secrets:
