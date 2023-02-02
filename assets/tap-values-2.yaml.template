@@ -28,8 +28,8 @@ tap_gui:
       providers:
         gitlab:
           development:
-            clientId: 75a8e8348ba341cd4e6747962a6d691755eae0f15bc846d3830d44896e847c59
-            clientSecret: 75a8e8348ba341cd4e6747962a6d691755eae0f15bc846d3830d44896e847c59
+            clientId: "${oauth_app_id}"
+            clientSecret: "${oauth_app_secret}"
             ## uncomment if using self-hosted GitLab
             audience: https://gitlab.tanzu.demo
             ## uncomment if using a custom redirect URI

@@ -406,7 +406,6 @@ tanzu package installed list -n tap-install
 - Bookmark this page on the bookmarks bar
 
 ### Install Gitlab
-TODO: On next test, attempt to specify gitlab initial root password in helm values file, which MAY automatically create root access token and if so, then we can bypass the requirement to manually create the token in the gui. And parameterize values files.
 - The instructions for this lab focus on using gitlab. However if you prefer, you can use github instead, but instructions for using github are not provided.
 - Install Gitlab
 ```sh
@@ -430,9 +429,13 @@ kubectl apply -f "/${ovathetap_assets}/gitlab-ingresses.yaml"
 # Verify Gitlab Deployment
 kubectl get all -n gitlab
 ```
+- The Gitlab deployment usually takes several minutes to finish deploying. Do not proceed until all of the deployments and other objects shown with `kubectl get all -n gitlab` are running. 
 - Get the initial gitlab root login password:
-  - `kubectl get secrets -n gitlab gitlab-gitlab-initial-root-password -o jsonpath={.data.password} | base64 -d`
-  - Enter this password into the secrets.env.sh file
+```sh
+export gitlab_root_password=$(kubectl get secrets -n gitlab gitlab-gitlab-initial-root-password -o jsonpath={.data.password} | base64 -d)
+# Append the root password to the secrets.env.sh file
+echo -e "\nexport gitlab_root_password=${gitlab_root_password}" | tee -a "/${ovathetap_config}/secrets.env.sh"
+```
 - Using firefox, open a browser tab to https://gitlab.tanzu.demo
   - Login with account:
     - Username: root
@@ -442,37 +445,38 @@ kubectl get all -n gitlab
 - Click `Access Tokens`
 - Create a token with the following settings: 
   - Token name: root
-  - Expiration Date: any future date
-  - Scopes: api
+  - Expiration Date: at least 1 year in the future from date of configuration
+  - Scopes: select all scopes
   - Click `Create personal access token`
-- Copy Personal Access Token and paste into secrets.env.sh file
+- Copy Personal Access Token to the secrets.env.sh file with the following command - be sure to replace `<access token>` with your token:
+  - `echo -e "\nexport gitlab_root_token=<access token>" | tee -a "/${ovathetap_config}/secrets.env.sh"`
   - Source the secrets file to load the password environment variable
-  - `source "/${ovathetap_config}/secrets.env.sh`
+  - `source "/${ovathetap_config}/secrets.env.sh"`
 - Enter the following commands to create a new user account for the viadmin user:
 ```sh
 gitlab_viadmin_create_reponse=$(curl -k --request POST --header "PRIVATE-TOKEN: ${gitlab_root_token}" --data 'email=viadmin@tanzu.demo&username=viadmin&password=VMware1!&name=VI Admin&admin=true&skip_confirmation=true' https://gitlab.tanzu.demo/api/v4/users)
 echo ${gitlab_viadmin_create_reponse} | yq -p json -o yaml | tee "/${ovathetap_config}/gitlab_viadmin_account_details.yaml"
 export gitlab_viadmin_user_id=$(echo ${gitlab_viadmin_create_reponse} | jq -r '.id')
-echo "export gitlab_viadmin_user_id=${gitlab_viadmin_user_id}" >> "/${ovathetap_config}/vars.env.sh"
+echo -e "\nexport gitlab_viadmin_user_id=${gitlab_viadmin_user_id}" | tee -a "/${ovathetap_config}/vars.env.sh"
 # create access token for viadmin user
-viadmin_gitlab_token_create_response=$(curl --request POST --header "PRIVATE-TOKEN: ${gitlab_root_token}" --data "name=mytoken" --data "expires_at=2025-04-04" \
+viadmin_gitlab_token_create_response=$(curl -k --request POST --header "PRIVATE-TOKEN: ${gitlab_root_token}" --data "name=mytoken" --data "expires_at=2025-04-04" \
      --data "scopes[]=api" "https://gitlab.tanzu.demo/api/v4/users/${gitlab_viadmin_user_id}/personal_access_tokens")
 echo ${viadmin_gitlab_token_create_response}
 export viadmin_gitlab_token=$(echo ${viadmin_gitlab_token_create_response} | jq -r '.token')
-echo "export viadmin_gitlab_token=${viadmin_gitlab_token}" >> "/${ovathetap_config}/vars.env.sh"
+echo -e "\nexport viadmin_gitlab_token=${viadmin_gitlab_token}" | tee -a "/${ovathetap_config}/vars.env.sh"
 ```
 - Enter the following commands to create a new user account for the devlead user:
 ```sh
 gitlab_viadmin_create_reponse=$(curl -k --request POST --header "PRIVATE-TOKEN: ${gitlab_root_token}" --data 'email=devlead@tanzu.demo&username=devlead&password=VMware1!&name=Dev Lead&admin=true&skip_confirmation=true' https://gitlab.tanzu.demo/api/v4/users)
 echo ${gitlab_devlead_create_reponse} | yq -p json -o yaml | tee "/${ovathetap_config}/gitlab_devlead_account_details.yaml"
 export gitlab_devlead_user_id=$(echo ${gitlab_devlead_create_reponse} | jq -r '.id')
-echo "export gitlab_devlead_user_id=${gitlab_devlead_user_id}" >> "/${ovathetap_config}/vars.env.sh"
+echo -e "\nexport gitlab_devlead_user_id=${gitlab_devlead_user_id}" >> "/${ovathetap_config}/vars.env.sh"
 # create access token for viadmin user
-devlead_gitlab_token_create_response=$(curl --request POST --header "PRIVATE-TOKEN: ${gitlab_root_token}" --data "name=mytoken" --data "expires_at=2025-04-04" \
+devlead_gitlab_token_create_response=$(curl -k --request POST --header "PRIVATE-TOKEN: ${gitlab_root_token}" --data "name=mytoken" --data "expires_at=2025-04-04" \
      --data "scopes[]=api" "https://gitlab.tanzu.demo/api/v4/users/${gitlab_devlead_user_id}/personal_access_tokens")
 echo ${devlead_gitlab_token_create_response}
 export devlead_gitlab_token=$(echo ${devlead_gitlab_token_create_response} | jq -r '.token')
-echo "export devlead_gitlab_token=${devlead_gitlab_token}" >> "/${ovathetap_config}/vars.env.sh"
+echo -e "\nexport devlead_gitlab_token=${devlead_gitlab_token}" | tee -a "/${ovathetap_config}/vars.env.sh"
 ```
 - create gitlab oauth app
 ```sh
@@ -480,9 +484,13 @@ create_oauth_app_response=$(curl -k --request POST --header "PRIVATE-TOKEN: ${gi
      --data "name=tap&redirect_uri=https://tap-gui.tanzu.demo/api/auth/gitlab/handler/frame&scopes=api read_api read_user read_repository write_repository read_registry write_registry sudo openid profile email" \
      "https://gitlab.tanzu.demo/api/v4/applications")
 echo ${create_oauth_app_response} | yq -p json -o yaml | tee "/${ovathetap_config}/gitlab_oauth_app_config.yaml"
+export oauth_app_id=$(echo ${create_oauth_app_response} | jq '.application_id')
+echo -e "\nexport oauth_app_id=${oauth_app_id}" | tee -a "/${ovathetap_config}/secrets.env.sh"
+export oauth_app_secret=$(echo ${create_oauth_app_response} | jq '.secret')
+echo -e "\nexport oauth_app_secret=${oauth_app_secret}" | tee -a "/${ovathetap_config}/secrets.env.sh"
 ```
-#### create catalog repo
-- From firefox, login as viadmin
+#### Create Repository to Host TAP Catalog
+- From firefox, login to Gitlab as viadmin
 - Click `Create a group` and then `Create group` to create a group with the following settings (leave any unspecified setting at its default value):
   - Group name: tanzu
   - Visibility level: Public
@@ -511,7 +519,10 @@ git push
 # after entering `git push' enter username: viadmin password: VMware1!
 ```
 
-# Create a manifest for the config secret
+#### Enable SSH access to GitLab
+- Our gitlab implementation did not include their standard Ingress and LoadBalancer services and instead will use Contour and Envoy to provide these services.
+- We already provisioned custom ingresses to replace the default objects, but ingresses do not handle ssh traffic 
+- The default gitlab helm chart deployment configures the load balancer service with and additional port to support ssh. We will replicate this configuration on envoy, but there is no standard schema fields to include the configuration in the tap values file, so here we will create a ytt patch to pass the required configuration to Envoy. 
 ```sh
 cat <<EOF > "/${ovathetap_config}/envoy-gitlab-ssh-config.yaml"
 apiVersion: v1
@@ -535,7 +546,7 @@ EOF
 # deploy the secret in your kubernetes cluster:
 kubectl create -f "/${ovathetap_config}/envoy-gitlab-ssh-config.yaml"
 ```
-
+- Please Note - In order for this secret to be applied to the envoy configuration, you will need to reference the secret in the tap-values file. The needed configuration is already prepared, the file [tap-values-2.yaml.template](/assets/tap-values-2.yaml.template) has already been configured with the following snippet to enable the contour package overlay:
 ```sh
 package_overlays:
   - name: "contour"
@@ -543,23 +554,29 @@ package_overlays:
     - name: "envoy-gitlab-ssh-config-secret"
 ```
 
-#### Update tap with gitlab settings
+#### Update TAP with GitLab settings
 ```sh
 ## Prepare and inject local ca cert into ca_cert_data key in tap-values-2.yaml file
-sudo sed 's/^/    /' "/etc/ssl/CA/myca.pem" | sudo tee "/${ovathetap_config}/myca-indented.pem"
-sudo sed "/ca_cert_data/ r /${ovathetap_config}/myca-indented.pem" "/${ovathetap_assets}/tap-values-2.yaml.template" | sudo tee "/${ovathetap_config}/tap-values-2.yaml"
-sudo rm "/${ovathetap_config}/myca-indented.pem"
+sed 's/^/    /' "/etc/ssl/CA/myca.pem" | sudo tee "/${script_tmp_dir}/myca-indented.pem"
+sed "/ca_cert_data/ r /${script_tmp_dir}/myca-indented.pem" "/${ovathetap_assets}/tap-values-2.yaml.template" | tee "/${script_tmp_dir}/tap-values-2.yaml.tmp"
+ rm "/${script_tmp_dir}/myca-indented.pem"
+# Hydrate the tap values 2 file with gitlab configuration variables created during gitlab installation
+envsubst < "/${script_tmp_dir}/tap-values-2.yaml.tmp" > "/${ovathetap_config}/tap-values-2.yaml"
 # update tap with new values 
 tanzu package installed update tap -p tap.tanzu.vmware.com -v $TAP_VERSION  --values-file "/${ovathetap_config}/tap-values-2.yaml" -n tap-install
 ```
 
-#### Create Developer Namespace
+#### Create Developer Namespaces
 
 - Create a developer namespace
   - In Tanzu Application Platform, a developer namespace is a kubernetes namespace that uses the namespace provisioner (or alternative gitops method) to ensure that additional resources are created in the namespace such as a service account, role-binding, and registry credentials. These resources are needed to ensure the developer has an optimal user experience and can initiate supply chain and developer workflows. 
 ```sh
+# create namespace for viadmin user
 kubectl create ns viadmin
 kubectl label namespaces viadmin apps.tanzu.vmware.com/tap-ns=""
+# create namespace for devlead user
+kubectl create ns devlead
+kubectl label namespaces devlead apps.tanzu.vmware.com/tap-ns=""
 ```
 
 #### Install Tanzu Developer Tools
