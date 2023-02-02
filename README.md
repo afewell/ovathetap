@@ -225,7 +225,7 @@ echo "dnsmasq configuration complete"
 
 ### Install Harbor
 ```sh
-envsubst < "/${ovathetap_assets}/harborvalues.yaml.template" > "/${ovathetap_home}/config/harborvalues.yaml"
+envsubst < "/${ovathetap_assets}/harborvalues.yaml.template" > "/${ovathetap_config}/harborvalues.yaml"
 ## Install Harbor
 # Login to docker to assist with docker hub rate limiting
 ## This is important to help prevent rate limiting issues, even if you have a free account
@@ -559,9 +559,10 @@ package_overlays:
 ## Prepare and inject local ca cert into ca_cert_data key in tap-values-2.yaml file
 sed 's/^/    /' "/etc/ssl/CA/myca.pem" | sudo tee "/${script_tmp_dir}/myca-indented.pem"
 sed "/ca_cert_data/ r /${script_tmp_dir}/myca-indented.pem" "/${ovathetap_assets}/tap-values-2.yaml.template" | tee "/${script_tmp_dir}/tap-values-2.yaml.tmp"
- rm "/${script_tmp_dir}/myca-indented.pem"
+sudo rm "/${script_tmp_dir}/myca-indented.pem"
 # Hydrate the tap values 2 file with gitlab configuration variables created during gitlab installation
 envsubst < "/${script_tmp_dir}/tap-values-2.yaml.tmp" > "/${ovathetap_config}/tap-values-2.yaml"
+sudo rm "/${script_tmp_dir}/tap-values-2.yaml.tmp"
 # update tap with new values 
 tanzu package installed update tap -p tap.tanzu.vmware.com -v $TAP_VERSION  --values-file "/${ovathetap_config}/tap-values-2.yaml" -n tap-install
 ```
@@ -592,9 +593,8 @@ kubectl label namespaces devlead apps.tanzu.vmware.com/tap-ns=""
 - Configure Tanzu Dev Tools Extension
   - Go to Code > Preferences > Settings > Extensions > Tanzu Developer Tools and set the following:
   - Enable Live Hover
-  - Source Image: (Required) The registry location for publishing local source code. For example, registry.io/yourapp-source. This must include both a registry and a project name.
-  - Local Path: (Optional) The path on the local file system to a directory of source code to build. This is the current directory by default.
-  - Namespace: (Optional) This is the namespace that workloads are deployed into. The namespace set in kubeconfig is the default.
+  - Source Image: https://harbor.tanzu.demo/tanzu
+  - Namespace: viadmin
 - Reload VS Code for this change to take effect.
 
 
@@ -607,21 +607,6 @@ kubectl label namespaces devlead apps.tanzu.vmware.com/tap-ns=""
 - Reload VS Code for this change to take effect.
 
 
-Exercises:
-TODO:
-devlead executes accelerator including auto git repo creation
-devlead modifies code, uses app live view
-devlead deploys code through scanning and testing pipeline
-devlead reviews screens and/or commands that show details of the supply chain operations
-
-devlead reviews whatever screens are available to review deployment
-devlead executes update to app that is already deployed
-
-story: devlead requests new accelerator
-
-viadmin makes new accelerator
-
-devlead executes new accelerator
 
 
 
@@ -640,6 +625,11 @@ devlead executes new accelerator
 
 <!--
 This is a hidden section at the bottom of the file to place work in progress that is still desireable, but could not be completed yet for some reason
+
+
+
+
+
 
 # Gitlab SSH Key registration with curl
 ## The current workflow has users manually register their ssh key in the gui because I could not get the api call to work
