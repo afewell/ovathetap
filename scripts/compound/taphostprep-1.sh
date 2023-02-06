@@ -9,10 +9,15 @@ fi
 ## Script variables
 ### Inject envars from input file
 hostusername="${hostusername:-viadmin}"
-script_tmp_dir=${script_tmp_dir:-tmp/taphostprep}
-echo "hostusername: $(echo $hostusername)"
-echo 'source "/home/${hostusername}/ovathetap/config/vars.env.sh"'
-source "/home/${hostusername}/ovathetap/config/vars.env.sh"
+echo "hostusername: ${hostusername}"
+echo "source /home/${hostusername}/ovathetap/config/vars.env.sh"
+# if the config/vars.env.sh file exists, source it. Else source default vars template
+if [ -e "/home/${hostusername}/ovathetap/config/vars.env.sh" ];
+then
+  source "/home/${hostusername}/ovathetap/config/vars.env.sh"
+else
+  source "/home/${hostusername}/ovathetap/scripts/inputs/vars.env.sh.template"
+fi
 echo "Here is the env command output:"
 env
 echo "The above line is end of the env output"
@@ -30,11 +35,11 @@ packages=(
   "vim"
   "git"
   "jq"
+  "age"
 )
 
 # Define an array of scripts to run
 scripts=(
-  "age-v1_0_0.sh"
   "dockerce.sh"
   "vscode.sh"
   "minikube.sh"
