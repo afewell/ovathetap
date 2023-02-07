@@ -1,5 +1,12 @@
 # Semantic Versioning Changelog
 
+## [1.15.35](https://github.com/afewell/ovathetap/compare/v1.15.34...v1.15.35) (2023-02-06)
+
+
+### Bug Fixes
+
+* updating taphostprep-1.sh to resolve [#111](https://github.com/afewell/ovathetap/issues/111) ([99c3cdd](https://github.com/afewell/ovathetap/commit/99c3cddd933f191a7ebee537a326b27b6751d171))
+
 ## [1.15.34](https://github.com/afewell/ovathetap/compare/v1.15.33...v1.15.34) (2023-02-02)
 
 
