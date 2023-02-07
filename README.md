@@ -201,9 +201,9 @@ minikube addons configure metallb
 - Enter Load Balancer End IP: `192.168.49.25`
 - Enter the following commands to add the imagePullSecrets to the metallb installation:
 ```sh
-# patch the metallb controller deployment yaml with the imagePullSecrets
+# patch the metallb controller deployment yaml with the imagePullSecrets - because minikube does not use the default SA and associated secret
 kubectl patch deployment controller -p '{"spec": {"template": {"spec": {"imagePullSecrets": [{"name": "myregistrykey"}]}}}}' -n metallb-system
-# patch the metallb controller deployment yaml with the imagePullSecrets
+# patch the metallb controller deployment yaml with the imagePullSecrets - because minikube does not use the default SA and associated secret
 kubectl patch daemonset speaker -n my-namespace -p '{"spec": {"template": {"spec": {"imagePullSecrets": [{"name": "myregistrykey"}]}}}}' -n metallb-system
 ```
 - Validate metallb installation:
@@ -298,8 +298,7 @@ sudo cp "/${home_dir}/tanzu-cluster-essentials/ytt" /usr/local/bin/ytt
 
 
 ### Relocate TAP images to the local Harbor registry
-- **IMPORTANT** use firefox and login to the harbor portal (https://harbor.tanzu.demo). Create a new project named "tap" with public access
-  - Note: It should work just fine if you set it for private access, I just set it for public for simplicity
+
 ```sh
 ## Relocate TAP Images to your install registry
 export INSTALL_REGISTRY_USERNAME=admin
@@ -342,7 +341,7 @@ tanzu package repository add tanzu-tap-repository \
 ```
 - The Tanzu Package Repository should reconcile before proceeding
 - Prepare for cert-manager installation
-  - Cert-manager will be automatically installed as part of the TAP installation. But we want it to use a custom issuer based on our CA certificate. So here we will preinstall the tanzu package for cert manager per https://docs.vmware.com/en/VMware-Tanzu-Application-Platform/1.4/tap/cert-manager-install.html
+  - Cert-manager is automatically installed as part of the TAP installation. But we want it to use a custom issuer based on our CA certificate prior to installation. So here we will preinstall the tanzu package for cert manager per https://docs.vmware.com/en/VMware-Tanzu-Application-Platform/1.4/tap/cert-manager-install.html
 ```sh
 # Determine the tanzu package version number for cert-manager in your tap installation
 tanzu package available list cert-manager.tanzu.vmware.com -n tap-install | grep -o '[0-9]*\.[0-9]*\.[0-9]*'
@@ -377,9 +376,9 @@ kubectl get ClusterIssuer
 # Install TAP
 tanzu package install tap -p tap.tanzu.vmware.com -v $TAP_VERSION --values-file "/${ovathetap_config}/tap-values.yaml" -n tap-install
 ```
-- IF your tap installation fails, it may be because some packages are still reconciling.
+- If your tap installation fails, it may be because some packages are still reconciling.
 - Check on the status of each package install to find the issue:
-  - `kubectel get packageinstalls -n tap-install`
+  - `kubectl get packageinstalls -n tap-install`
 - Do not proceed until the tap install completes reconciling successfully
 
 ```sh
@@ -448,34 +447,47 @@ echo -e "\nexport gitlab_root_password=${gitlab_root_password}" | tee -a "/${ova
   - Expiration Date: at least 1 year in the future from date of configuration
   - Scopes: select all scopes
   - Click `Create personal access token`
-- Copy Personal Access Token to the secrets.env.sh file with the following command - be sure to replace `<access token>` with your token:
-  - `echo -e "\nexport gitlab_root_token=<access token>" | tee -a "/${ovathetap_config}/secrets.env.sh"`
-  - Source the secrets file to load the password environment variable
-  - `source "/${ovathetap_config}/secrets.env.sh"`
+- Copy Personal Access Token to the vars.env.sh file with the following command - be sure to replace `<access token>` with your token:
+  - `echo -e "\nexport gitlab_root_token=<access token>" | tee -a "/${ovathetap_config}/vars.env.sh"`
+  - Source the vars file to load gitlab_root_token environment variable
+  - `source "/${ovathetap_config}/vars.env.sh"`
 - Enter the following commands to create a new user account for the viadmin user:
 ```sh
+# Create viadmin user account
 gitlab_viadmin_create_reponse=$(curl -k --request POST --header "PRIVATE-TOKEN: ${gitlab_root_token}" --data 'email=viadmin@tanzu.demo&username=viadmin&password=VMware1!&name=VI Admin&admin=true&skip_confirmation=true' https://gitlab.tanzu.demo/api/v4/users)
+# Save account details in yaml format to a file for records
 echo ${gitlab_viadmin_create_reponse} | yq -p json -o yaml | tee "/${ovathetap_config}/gitlab_viadmin_account_details.yaml"
+# Create envar with viadmin user id
 export gitlab_viadmin_user_id=$(echo ${gitlab_viadmin_create_reponse} | jq -r '.id')
+# Add this envar to the vars file
 echo -e "\nexport gitlab_viadmin_user_id=${gitlab_viadmin_user_id}" | tee -a "/${ovathetap_config}/vars.env.sh"
 # create access token for viadmin user
 viadmin_gitlab_token_create_response=$(curl -k --request POST --header "PRIVATE-TOKEN: ${gitlab_root_token}" --data "name=mytoken" --data "expires_at=2025-04-04" \
      --data "scopes[]=api" "https://gitlab.tanzu.demo/api/v4/users/${gitlab_viadmin_user_id}/personal_access_tokens")
+# Display the response on the terminal
 echo ${viadmin_gitlab_token_create_response}
+# create an envar for the viadmin users token
 export viadmin_gitlab_token=$(echo ${viadmin_gitlab_token_create_response} | jq -r '.token')
+# add this envar to the vars file
 echo -e "\nexport viadmin_gitlab_token=${viadmin_gitlab_token}" | tee -a "/${ovathetap_config}/vars.env.sh"
 ```
 - Enter the following commands to create a new user account for the devlead user:
 ```sh
-gitlab_viadmin_create_reponse=$(curl -k --request POST --header "PRIVATE-TOKEN: ${gitlab_root_token}" --data 'email=devlead@tanzu.demo&username=devlead&password=VMware1!&name=Dev Lead&admin=true&skip_confirmation=true' https://gitlab.tanzu.demo/api/v4/users)
+gitlab_devlead_create_reponse=$(curl -k --request POST --header "PRIVATE-TOKEN: ${gitlab_root_token}" --data 'email=devlead@tanzu.demo&username=devlead&password=VMware1!&name=Dev Lead&admin=true&skip_confirmation=true' https://gitlab.tanzu.demo/api/v4/users)
+# Save devlead account details in yaml to file for records
 echo ${gitlab_devlead_create_reponse} | yq -p json -o yaml | tee "/${ovathetap_config}/gitlab_devlead_account_details.yaml"
+# Create envar with devlead user id
 export gitlab_devlead_user_id=$(echo ${gitlab_devlead_create_reponse} | jq -r '.id')
+# Add new envar to vars file
 echo -e "\nexport gitlab_devlead_user_id=${gitlab_devlead_user_id}" >> "/${ovathetap_config}/vars.env.sh"
 # create access token for viadmin user
 devlead_gitlab_token_create_response=$(curl -k --request POST --header "PRIVATE-TOKEN: ${gitlab_root_token}" --data "name=mytoken" --data "expires_at=2025-04-04" \
      --data "scopes[]=api" "https://gitlab.tanzu.demo/api/v4/users/${gitlab_devlead_user_id}/personal_access_tokens")
+# Display the response on the terminal
 echo ${devlead_gitlab_token_create_response}
+# Create envar for devlead_gitlab_token
 export devlead_gitlab_token=$(echo ${devlead_gitlab_token_create_response} | jq -r '.token')
+# Add new envar to vars file
 echo -e "\nexport devlead_gitlab_token=${devlead_gitlab_token}" | tee -a "/${ovathetap_config}/vars.env.sh"
 ```
 - create gitlab oauth app
@@ -585,7 +597,7 @@ kubectl label namespaces devlead apps.tanzu.vmware.com/tap-ns=""
 - Open VS Code.
 - Press cmd+shift+P to open the Command Palette and run Extensions: Install from VSIX....
 - Select the extension file tanzu-vscode-extension.vsix which is located in the ~/Downloads directory.
-- Install the following extensions from VS Code Marketplace:
+- The following extensions should have been installed automatically, check installed extensions to verify each of these are installed:
   - Debugger for Java
   - Language Support for Java(™) by Red Hat
   - YAML
